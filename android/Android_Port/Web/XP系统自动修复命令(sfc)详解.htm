@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0055)http://blog.csdn.net/withdreams/article/details/7898881 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./XP系统自动修复命令(sfc)详解_files/XP系统自动修复命令(sfc)详解.htm">
+        XP系统自动修复命令(sfc)详解
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+
+<p>意外重启、安装了不兼容的软件、恶意程序侵扰、误删文件……有太多种可能性会使我们的<strong>系统文件受损</strong>，而系统文件受损后最直接的表现就是系统不稳定、经常出现错误等。在Windows 98时代，对付这种情况还比较简单，放进安装光盘然后运行SFC(System File Check，系统文件检查程序)，恢复一下受损的系统文件就行了，可是到了现在，这种修复方式就变复杂了，因为系统经常在线升级，原来的安装光盘中的系统文件已经成为了旧版本。没有了光盘，应该怎么修复受损的系统呢?</p>
+<p>　　<strong>一、硬盘出马，让光盘下岗</strong></p>
+<p>　　点击“开始→运行”，输入“sfc /scannow”回车就会开始检查系统文件，当SFC检查到有系统文件被替换或丢失时，它就会<a href="http://www.mydown.com/soft/develop/install/416/403916.shtml" target="_blank">提示</a>插入Windows XP安装光盘来进行修复(见图1)，这时你可能需要翻箱倒柜找出Windows XP安装光盘，这就是使用SFC的第一大不爽。很多朋友都是直接把Windows XP光盘上的安装文件复制到硬盘上了，那是不是可以让SFC在修复系统文件时直接使用硬盘上的Windows
+ XP安装文件呢?</p>
+<p>　　<img alt="Windows2000/XP系统文件受损的修复方法_天极软件整理" src="./XP系统自动修复命令(sfc)详解_files/5cl7c27mlqs7.jpg" width="382" height="152"></p>
+<p>　　例如你将Windows XP安装文件备份到了E:\winxp目录，那么运行regedit打开“注册表编辑器”，定位至[HKEY_LOCAL_MACHINE\SOFTWARE\<a href="http://product.yesky.com/database/microsoft/" target="_blank">Microsoft</a>\Windows\CurrentVersion\Setup]主键，首先在右边将“CDInstall”键值数据修改为“0”，然后再分别将“ServicePackSourcePath”和“SourcePath”两个键值的数值都修改为“E:\winxp”即可(见图2)。</p>
+<p>　　以后再运行“sfc /scannow”命令时，你会发现它已经可以完全自动地进行系统文件修复，不再出现插入光盘的提示了。</p>
+<p>　　小提示：运行CMD打开“命令提示符”，在其中输入“sfc /?”命令可以查看“系统文件检查程序”的详细参数。另外，很多“命令提示符”下的命令行程序都能使用这个参数来查看详细参数，同类型的还有“-?”和“/help”等。</p>
+<p>　　<strong>二、修复文件不再“老掉牙”</strong></p>
+<p>　　这就是开头提到的文件版本问题，大部分用户先安装的是没有集成SP2的原始版Windows XP，然后在此基础上安装的SP2补丁包，这时在C:\WINDOWS目录下会增加一个ServicePackFiles目录，即SP2的安装文件，该目录会占用近400MB的磁盘空间，不过我们并不能删除这个文件夹，否则当一个ServicePack系统文件损坏时，Windows文件保护功能将无法自动还原，不但没有任何错误提示，同时还会导致一些系统组件无法更新。为了减少系统分区的空间占用，我们也可以将ServicePackFiles目录移动到其他分区，但需要按照前面介绍的方法修改“ServicePackSourcePath”和“ServicePackCachePath”键值指向转移后的新路径。这种方法比较繁琐，最好的办法则是把SP2补丁包手工集成到硬盘上的Windows
+ XP安装文件中。</p>
+<p>　　假设SP2补丁包的文件名为xpsp2.exe，打开命令行窗口，进入xpsp2.exe所在目录，输入提取文件的命令“xpsp2.exe -x”，会弹出提示让你选择提取目录(见图3)，例如输入路径为“c:\xpsp2”。提取完成后进入c:\xpsp2\i386\update目录，输入命令“update.exe -S:e:\winxp”，注意这里的路径“e:\winxp”是指硬盘上的Windows XP安装文件路径，参数“-s:”和路径之间没有空格，当提示“集成安装已经结束”即告完成。</p>
+<p>　　小提示：许多媒体在介绍系统优化的文章中都会提到删除C:\WINDOWS\system32\dllcache目录中的系统文件备份可以减少系统分区空间占用，但这样会导致系统文件保护功能恢复被替换的系统文件时也弹出插入Windows XP安装光盘的提示，按照上面的方法修改注册表同样可以解决这个问题。</p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

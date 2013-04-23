@@ -1,0 +1,185 @@
+android虚拟硬件加载过程
+
+一．概要
+Android HAL层，即硬件抽象层，是Google响应厂家“希望不公开源码”的要求推出的新概念,在Android中采用HAL来实现硬件的抽象,同时封装一些驱动的逻辑在其中.
+
+二 源代码和目标位置
+	源代码： /hardware/libhardware目录,该目录的目录结构如下：
+	/hardware/libhardware/hardware.c编译成libhardware.so，目标位置为/system/lib目录
+	/hardware/libhardware/include/hardware目录下包含如下头文件：
+	hardware.h 通用硬件模块头文件
+	copybit.h copybit模块头文件(提高显示效率)
+	gralloc.h gralloc模块头文件(为显存分配空间)
+	lights.h  背光模块头文件
+	overlay.h overlay模块头文件(提高显示效率)
+	qemud.h  qemud模块头文件(模拟器相关)
+	sensors.h 传感器模块头文件
+	/hardware/libhardware/modules目录下定义了很多硬件模块
+
+	这些硬件模块都编译成xxx.xxx.so，目标位置为/system/lib/hw目录
+
+三 HAL层的实现方式
+	JNI->通用硬件模块->硬件模块->内核驱动接口
+	具体一点：JNI->libhardware.so->xxx.xxx.so->kernel
+	具体来说：android frameworks中JNI调用/hardware/libhardware/hardware.c中定义的hw_get_module函数来获取硬件模块，
+	然后调用硬件模块中的方法，硬件模块中的方法直接调用内核接口完成相关功能
+
+四 HAL的三大结构体
+	4.1  hw_device_t
+	对于每一个设备数据结构体都必须以该结构体开头，该结构体是所有设备的引导线，在该结构体之后才是每一个设备自己的数据。
+	typedef struct hw_device_t {
+		uint32_t tag;  --必须初始化为HARDWARE_DEVICE_TAG
+		uint32_t version;  --hw_device_t版本号
+		struct hw_module_t* module; --指向该设备所属的module
+		uint32_t reserved[12];  --保留
+		int (*close)(struct hw_device_t* device); --关闭设备
+	} hw_device_t;
+
+	4.2 hw_module_methods_t
+	该结构体仅提供一个打开特殊设备的opne函数的接口。传入参数为hw_module_t，id和hw_device_t,该函数是用于初始化hw_device_t 的各成员。
+	typedef struct hw_module_methods_t {
+	int (*open)(const struct hw_module_t* module, const char* id,
+	struct hw_device_t** device);
+	} hw_module_methods_t;
+
+	4.3 hw_module_t
+	每一个硬件模块的必须申明一个HAL_MODULE_INFO_SYM的数据结构体，该结构体的第一个成员必须是以hw_module_t为数据的结构体。
+	typedef struct hw_module_t {
+		/** tag must be initialized to HARDWARE_MODULE_TAG */
+		uint32_t tag;									//tag,必须为HARDWARE_MODULE_TAG
+
+		/** major version number for the module */
+		uint16_t version_major;							//模块主版本号
+
+		/** minor version number of the module */
+		uint16_t version_minor;							//模块次版本号
+
+		/** Identifier of module */
+		const char *id;									//模块id
+
+		/** Name of this module */
+		const char *name;								//模块名称
+
+		/** Author/owner/implementor of the module */
+		const char *author;								//模块开发者
+
+		/** Modules methods */
+		struct hw_module_methods_t* methods;			//模块的接口
+
+		/** module's dso */
+		void* dso;										//动态模块加载
+
+		/** padding to 128 bytes, reserved for future use */
+		uint32_t reserved[32-7];
+
+		} hw_module_t;
+
+	hw_get_module函数声明如下：
+	int hw_get_module(const char *id, const struct hw_module_t **module);
+	参数id为模块标识，定义在/hardware/libhardware/include/hardware目录下的硬件模块头文件中，
+	参数module是硬件模块地址，定义了/hardware/libhardware/include/hardware/hardware.h中
+
+
+五 HAL之Led
+	struct led_module_t { 
+	   struct hw_module_t common; --在此成员之后可以添加该module的其余操作
+	} ; 
+	struct led_control_device_t { 
+	   struct hw_device_t common; -- hw_device_t必须是为第一个成员。
+	   /* supporting control APIs go here */ 
+	   int ( * set_on) ( struct led_control_device_t * dev, int32_t led) ; 
+	   int ( * set_off) ( struct led_control_device_t * dev, int32_t led) ; 
+	} ; 
+	struct led_control_context_t { 
+		struct led_control_device_t device; 
+	};
+	 
+	static int led_device_open( const struct hw_module_t* module, const char * name, struct hw_device_t* * device) 
+	{ 
+		struct led_control_device_t * dev; 
+		dev = ( struct led_control_device_t * ) malloc ( sizeof ( * dev) ) ; 
+		memset ( dev, 0, sizeof ( * dev) ) ; 
+		dev->common.tag = HARDWARE_DEVICE_TAG; 
+		dev->common.version = 0; 
+		dev->common.module = module; 
+		dev->common.close = led_device_close; 
+		dev->set_on = led_on; 
+		dev->set_off = led_off; 
+		* device = &dev->common; 
+	success: 
+		return 0; 
+	} 
+	该module操作集仅有一个函数open。
+	static struct hw_module_methods_t led_module_methods = { 
+		open : led_device_open
+	} ; 
+
+	定义一个以HAL_MODULE_INFO_SYM为名的module结构体
+	const struct led_module_t HAL_MODULE_INFO_SYM = { 
+		common: { 
+			tag: HARDWARE_MODULE_TAG, --必须如此初始
+			version_major: 1, 
+			version_minor: 0, 
+			id: LED_HARDWARE_MODULE_ID,
+			name: "Sample LED Stub" , 
+			author: "The Mokoid Open Source Project" , 
+			methods: & led_module_methods, --定义该module的操作集
+		} 
+		/* supporting APIs go here */ 
+	};
+
+
+六 Led之C++调用
+	void led_open(const struct hw_module_t  *module,struct led_control_device_t **led_device)
+	{
+			 return module->methods->open(module,NULL,(strcut hw_device_t **)led_device);
+	}
+	void led_test(void)
+	{
+			Hw_module_t const module;
+			hw_get_module(LED_HARDWARE_MODULE_ID, &module);
+			led_control_device _t *led_device;
+			led_open(module,&led_device);
+			led_device->set_on();
+	}
+	从上面的调用中也应该知道其实led_device仅仅提供了一个指针，其所指向的实体在open中开辟空间。其实这里实现了一个强制类型转换，将具体的设备数据结构体强制转换成hw_device_t结构体，这也可以从此来理解为什么hw_device_t必须定义为具体device结构体的第一个成员。将底层的操作通过该种方式来实现屏蔽。那我们来看动态链接库是如何被加载的。
+	#define HAL_MODULE_INFO_SYM         HMI   --还记否所有的设备的module名都必须声明为该值。
+	#define HAL_MODULE_INFO_SYM_AS_STR  "HMI"
+	hw_get_module->load,其动态库的加载的核心为load
+	static int load(const char *id,const char *path,const struct hw_module_t **pHmi)
+	{
+		int status;
+		void *handle;
+		struct hw_module_t *hmi;
+		handle = dlopen(path, RTLD_NOW); --打开动态库
+		if (handle == NULL) {
+			char const *err_str = dlerror();
+			LOGE("load: module=%s\n%s", path, err_str?err_str:"unknown");
+			status = -EINVAL;
+			goto done;
+		}
+		const char *sym = HAL_MODULE_INFO_SYM_AS_STR;
+		hmi = (struct hw_module_t *)dlsym(handle, sym);  --获取动态库中HMI的结构体
+		if (hmi == NULL) {
+			status = -EINVAL;
+			goto done;
+		}
+		if (strcmp(id, hmi->id) != 0) {
+			status = -EINVAL;
+			goto done;
+		}
+		hmi->dso = handle;
+		status = 0;
+	done:
+		if (status != 0) {
+			hmi = NULL;
+			if (handle != NULL) {
+				dlclose(handle);
+				handle = NULL;
+			}
+		} else {
+	   }
+		*pHmi = hmi;
+		return status;
+	}
+	Android hardware中的硬件的HAL通过一个公用的HMI的结构体名来实现了对底层的屏蔽。这里面涉及一个很重要的概念就是所有的硬件设备抽象层都必须要有共同点，那就是hw_module_t和hw_device_t均是不同设备数据结构体的第一个成员，唯有第一个成员才能实现类型的强制转换。

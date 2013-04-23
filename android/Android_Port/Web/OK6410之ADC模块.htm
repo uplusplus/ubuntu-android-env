@@ -1,0 +1,813 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0102)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/OK6410%E4%B9%8BADC%E6%A8%A1%E5%9D%97.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./OK6410之ADC模块_files/default.css">
+<style type="text/css"></style><link type="text/css" rel="stylesheet" href="./OK6410之ADC模块_files/style.css"><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+
+
+<link rel="stylesheet" type="text/css" href="./OK6410之ADC模块_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+
+<script type="text/javascript">
+    var username = "eastmoon502136";
+    var blog_address = "http://blog.csdn.net/eastmoon502136";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";
+</script>
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/OK6410%E4%B9%8BADC%E6%A8%A1%E5%9D%97_files/OK6410%E4%B9%8BADC%E6%A8%A1%E5%9D%97.htm">
+        OK6410之ADC模块
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+<span style="font-size:18px"></span>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-family:Times New Roman">OK6410</span>上还有个<span style="font-family:Times New Roman">AD</span>模块呢。网上找了找资料，发现还是可以去尝试下实现的。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面看代码：</span></p>
+<p><span style="font-size:18px"></span>&nbsp;</p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 576px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#include&nbsp;</span><span class="tag">&lt;</span><span class="tag-name">linux</span><span>/module.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/types.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/fs.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/errno.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/mm.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/sched.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/init.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/cdev.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/io.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/system.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/uaccess.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/device.h</span><span class="tag">&gt;</span><span>&nbsp;/*&nbsp;device_create()*/&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/io.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/irq.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/uaccess.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">mach</span><span>/map.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">plat</span><span>/regs-adc.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">mach</span><span>/map.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;void&nbsp;__iomem&nbsp;*base_addr;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;__ADCREG(name)&nbsp;&nbsp;(*(volatile&nbsp;unsigned&nbsp;long&nbsp;*)(base_addr&nbsp;+&nbsp;name))&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;ADCCON&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__ADCREG(S3C_ADCCON)&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;ADC&nbsp;control&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;ADCDAT0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__ADCREG(S3C_ADCDAT0)&nbsp;&nbsp;&nbsp;//&nbsp;ADC&nbsp;conversion&nbsp;data&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;ADC_START&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1&nbsp;<span class="tag">&lt;</span><span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;ADC_SIZE&nbsp;&nbsp;&nbsp;&nbsp;0x1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;ADC_MAJOR&nbsp;&nbsp;&nbsp;240&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;int&nbsp;<span class="attribute">adc_major</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">ADC_MAJOR</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>struct&nbsp;adc_dev&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;cdev&nbsp;cdev;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;char&nbsp;mem[ADC_SIZE];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>};&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>struct&nbsp;adc_dev&nbsp;*adc_devp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;int&nbsp;adc_init(void)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;<span class="attribute">preScaler</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">0XFF</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">ADCCON</span><span>&nbsp;=&nbsp;(1</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">14</span><span>)&nbsp;|&nbsp;(preScaler</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">6</span><span>)&nbsp;|&nbsp;(0</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">3</span><span>)&nbsp;|&nbsp;(0</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">2</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ADCCON&nbsp;|=&nbsp;ADC_START;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;int&nbsp;adc_open(struct&nbsp;inode&nbsp;*inode,&nbsp;struct&nbsp;file&nbsp;*filp)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>printk("$$$$$%s$$$$$\n",&nbsp;__func__);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;adc_init();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;int&nbsp;adc_release(struct&nbsp;inode&nbsp;*inode,&nbsp;struct&nbsp;file&nbsp;*filp)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>printk("$$$$$$%s$$$$$\n",&nbsp;__func__);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;ssize_t&nbsp;adc_read(struct&nbsp;file&nbsp;*filp,&nbsp;char&nbsp;__user&nbsp;*buf,&nbsp;size_t&nbsp;size,&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;loff_t&nbsp;*ppos)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;<span class="attribute">count</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">size</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="attribute">ret</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">0</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>printk("$$$$$%s$$$$$\n",&nbsp;__func__);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ADCCON&nbsp;|=&nbsp;ADC_START;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;while(ADCCON&nbsp;&amp;&nbsp;0x01);//check&nbsp;if&nbsp;Enable_start&nbsp;is&nbsp;low&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;while(!(ADCCON&nbsp;&amp;0x8000));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">ret</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">ADCDAT0</span><span>&nbsp;&amp;&nbsp;0x3ff;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">count</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">copy_to_user</span><span>(buf,(char&nbsp;*)&amp;ret,sizeof(ret));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;sizeof(ret);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;const&nbsp;struct&nbsp;file_operations&nbsp;<span class="attribute">adc_fops</span><span>&nbsp;=&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.owner</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">THIS_MODULE</span><span>,&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.read</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">adc_read</span><span>,&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.open</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">adc_open</span><span>,&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.release</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">adc_release</span><span>,&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>};&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;void&nbsp;adc_setup_cdev(struct&nbsp;adc_dev&nbsp;*dev,&nbsp;int&nbsp;index)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;err,&nbsp;<span class="attribute">devno</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">MKDEV</span><span>(adc_major,&nbsp;index);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;cdev_init(&amp;dev-<span class="tag">&gt;</span><span>cdev,&nbsp;&amp;adc_fops);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-<span class="tag">&gt;</span><span class="attribute">cdev.owner</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">THIS_MODULE</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">err</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">cdev_add</span><span>(&amp;dev-</span><span class="tag">&gt;</span><span>cdev,&nbsp;devno,&nbsp;1);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(err)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_NOTICE&nbsp;"Error&nbsp;%d&nbsp;adding&nbsp;LED%d",&nbsp;err,&nbsp;index);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>struct&nbsp;class&nbsp;*myclass;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>int&nbsp;adc_dev_init(void)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;result;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>printk("$$$$$$%s$$$$$$\n",&nbsp;__func__);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev_t&nbsp;<span class="attribute">devno</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">MKDEV</span><span>(adc_major,&nbsp;0);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(adc_major)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">result</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">register_chrdev_region</span><span>(devno,&nbsp;1,&nbsp;"adc");&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">result</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">alloc_chrdev_region</span><span>(&amp;devno,&nbsp;0,&nbsp;1,&nbsp;"adc");&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">adc_major</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">MAJOR</span><span>(devno);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(result&nbsp;<span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;result;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">adc_devp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">kmalloc</span><span>(sizeof(struct&nbsp;adc_dev),&nbsp;GFP_KERNEL);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!adc_devp)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">result</span><span>&nbsp;=&nbsp;&nbsp;-&nbsp;ENOMEM;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;goto&nbsp;fail_malloc;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(adc_devp,&nbsp;0,&nbsp;sizeof(struct&nbsp;adc_dev));&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;adc_setup_cdev(adc_devp,&nbsp;0);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">myclass</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">class_create</span><span>(THIS_MODULE,"test_char");&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;device_create(myclass,&nbsp;NULL,&nbsp;MKDEV(adc_major,0),&nbsp;NULL,&nbsp;"adc");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">base_addr</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">ioremap</span><span>(0x7E00B000,0X20);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(<span class="attribute">base_addr</span><span>&nbsp;==&nbsp;NULL)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk("failed&nbsp;to&nbsp;remap\n");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;-ENOMEM;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>fail_malloc:&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unregister_chrdev_region(devno,&nbsp;1);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;result;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>void&nbsp;adc_dev_exit(void)&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;cdev_del(&amp;adc_devp-<span class="tag">&gt;</span><span>cdev);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;kfree(adc_devp);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unregister_chrdev_region(MKDEV(adc_major,&nbsp;0),&nbsp;1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;class_destroy(myclass);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;device_destroy(myclass,MKDEV(adc_major,0));&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;iounmap(base_addr);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>MODULE_AUTHOR("Barry&nbsp;Song&nbsp;<span class="tag">&lt;</span><span class="tag-name">21cnbao</span><span>@gmail.com</span><span class="tag">&gt;</span><span>");&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>MODULE_LICENSE("Dual&nbsp;BSD/GPL");&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>module_param(adc_major,&nbsp;int,&nbsp;S_IRUGO);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>module_init(adc_dev_init);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>module_exit(adc_dev_exit);&nbsp;&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">#include &lt;linux/module.h&gt;  
+
+#include &lt;linux/types.h&gt;  
+
+#include &lt;linux/fs.h&gt;  
+
+#include &lt;linux/errno.h&gt;  
+
+#include &lt;linux/mm.h&gt;  
+
+#include &lt;linux/sched.h&gt;  
+
+#include &lt;linux/init.h&gt;  
+
+#include &lt;linux/cdev.h&gt;  
+
+#include &lt;asm/io.h&gt;  
+
+#include &lt;asm/system.h&gt;  
+
+#include &lt;asm/uaccess.h&gt;  
+
+#include &lt;linux/device.h&gt; /* device_create()*/  
+
+#include &lt;asm/io.h&gt;     
+
+#include &lt;asm/irq.h&gt;     
+
+#include &lt;asm/uaccess.h&gt;     
+
+#include &lt;mach/map.h&gt;     
+
+#include &lt;plat/regs-adc.h&gt;    
+
+#include &lt;mach/map.h&gt;    
+
+     
+
+  
+
+static void __iomem *base_addr;  
+
+    
+
+#define __ADCREG(name)  (*(volatile unsigned long *)(base_addr + name))    
+
+#define ADCCON          __ADCREG(S3C_ADCCON)    // ADC control    
+
+#define ADCDAT0         __ADCREG(S3C_ADCDAT0)   // ADC conversion data 0    
+
+   
+
+#define ADC_START           (1 &lt;&lt; 0)     
+
+  
+
+#define ADC_SIZE    0x1000      
+
+#define ADC_MAJOR   240      
+
+  
+
+static int adc_major = ADC_MAJOR;  
+
+struct adc_dev {  
+
+    struct cdev cdev;   
+
+    unsigned char mem[ADC_SIZE];   
+
+};  
+
+  
+
+struct adc_dev *adc_devp;   
+
+   
+
+static int adc_init(void)    
+
+{    
+
+    unsigned int preScaler = 0XFF;    
+
+    ADCCON = (1&lt;&lt;14) | (preScaler&lt;&lt;6) | (0&lt;&lt;3) | (0&lt;&lt;2);    
+
+    ADCCON |= ADC_START;     
+
+ 
+
+return 0;    
+
+}    
+
+  
+
+static int adc_open(struct inode *inode, struct file *filp)  
+
+{
+
+printk("$$$$$%s$$$$$\n", __func__);  
+
+    adc_init();    
+
+ 
+
+return 0;  
+
+}  
+
+ 
+
+static int adc_release(struct inode *inode, struct file *filp)  
+
+{  
+
+printk("$$$$$$%s$$$$$\n", __func__);
+
+    return 0;  
+
+}  
+
+    
+
+static ssize_t adc_read(struct file *filp, char __user *buf, size_t size,  
+
+    loff_t *ppos)  
+
+{  
+
+    unsigned int count = size;  
+
+    int ret = 0;  
+
+printk("$$$$$%s$$$$$\n", __func__);
+
+    ADCCON |= ADC_START;     
+
+    while(ADCCON &amp; 0x01);//check if Enable_start is low     
+
+    while(!(ADCCON &amp;0x8000));    
+
+    ret = ADCDAT0 &amp; 0x3ff;  
+
+    count = copy_to_user(buf,(char *)&amp;ret,sizeof(ret));  
+
+  
+
+return sizeof(ret);  
+
+}  
+
+  
+
+static const struct file_operations adc_fops = {  
+
+    .owner = THIS_MODULE,  
+
+    .read = adc_read,  
+
+    .open = adc_open,  
+
+    .release = adc_release,  
+
+};  
+
+  
+
+static void adc_setup_cdev(struct adc_dev *dev, int index)  
+
+{  
+
+    int err, devno = MKDEV(adc_major, index);  
+
+  
+
+    cdev_init(&amp;dev-&gt;cdev, &amp;adc_fops);  
+
+    dev-&gt;cdev.owner = THIS_MODULE;  
+
+    err = cdev_add(&amp;dev-&gt;cdev, devno, 1);  
+
+    if (err)  
+
+        printk(KERN_NOTICE "Error %d adding LED%d", err, index);  
+
+}  
+
+  
+
+struct class *myclass;  
+
+  
+
+int adc_dev_init(void)  
+
+{  
+
+    int result;  
+
+printk("$$$$$$%s$$$$$$\n", __func__);    
+
+    dev_t devno = MKDEV(adc_major, 0);  
+
+  
+
+    if (adc_major)  
+
+        result = register_chrdev_region(devno, 1, "adc");  
+
+    else {   
+
+        result = alloc_chrdev_region(&amp;devno, 0, 1, "adc");  
+
+        adc_major = MAJOR(devno);  
+
+    }  
+
+    if (result &lt; 0)  
+
+        return result;  
+
+  
+
+    adc_devp = kmalloc(sizeof(struct adc_dev), GFP_KERNEL);  
+
+    if (!adc_devp) {      
+
+        result =  - ENOMEM;  
+
+        goto fail_malloc;  
+
+    }  
+
+  
+
+    memset(adc_devp, 0, sizeof(struct adc_dev));  
+
+  
+
+    adc_setup_cdev(adc_devp, 0);  
+
+  
+
+    myclass = class_create(THIS_MODULE,"test_char");  
+
+    device_create(myclass, NULL, MKDEV(adc_major,0), NULL, "adc");     
+
+  
+
+     base_addr = ioremap(0x7E00B000,0X20);     
+
+     if(base_addr == NULL)    
+
+       {    
+
+           printk("failed to remap\n");    
+
+           return -ENOMEM;    
+
+       }    
+
+      
+
+    return 0;  
+
+  
+
+fail_malloc:  
+
+    unregister_chrdev_region(devno, 1);  
+
+    return result;  
+
+}  
+
+  
+
+void adc_dev_exit(void)  
+
+{  
+
+    cdev_del(&amp;adc_devp-&gt;cdev);     
+
+    kfree(adc_devp);       
+
+    unregister_chrdev_region(MKDEV(adc_major, 0), 1);   
+
+    class_destroy(myclass);  
+
+    device_destroy(myclass,MKDEV(adc_major,0));  
+
+    iounmap(base_addr);    
+
+}  
+
+  
+
+MODULE_AUTHOR("Barry Song &lt;21cnbao@gmail.com&gt;");  
+
+MODULE_LICENSE("Dual BSD/GPL");  
+
+  
+
+module_param(adc_major, int, S_IRUGO);  
+
+  
+
+module_init(adc_dev_init);  
+
+module_exit(adc_dev_exit);  
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 代码不是本人写的，参考的，然后稍微去掉不必要的，加了些测试打印，用以消化。</span></p>
+<p><span style="font-size:18px">看上面的代码，主要用到的就是那两个寄存器了。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先看下<span style="font-family:Times New Roman">AD</span>模块的原理图和管脚吧</span></p>
+<p><img src="./OK6410之ADC模块_files/1341501141_3928.png" alt=""></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 其管脚是</span></p>
+<p><img src="./OK6410之ADC模块_files/1341501156_4503.png" alt=""><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 再来看看这两个寄存器吧</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><img src="./OK6410之ADC模块_files/1341501181_3859.png" alt=""></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="./OK6410之ADC模块_files/1341501196_7316.png" alt=""></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 8015px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span class="attribute">ADCCON</span><span>&nbsp;=&nbsp;(1</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">14</span><span>)&nbsp;|&nbsp;(preScaler</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">6</span><span>)&nbsp;|&nbsp;(0</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">3</span><span>)&nbsp;|&nbsp;(0</span><span class="tag">&lt;</span><span class="tag">&lt;</span><span class="tag-name">2</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">ADCCON = (1&lt;&lt;14) | (preScaler&lt;&lt;6) | (0&lt;&lt;3) | (0&lt;&lt;2);  
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这里的</span><span style="font-family:Times New Roman">1&lt;&lt;14</span><span style="font-family:Arial">就是启动</span><span style="font-family:Times New Roman">AD</span><span style="font-family:Arial">转换。</span><span style="font-family:Times New Roman">preScaler&lt;&lt;6</span><span style="font-family:Arial">就是</span><span style="font-family:Times New Roman">ADC</span><span style="font-family:Arial">预定标器值</span><span style="font-family:Times New Roman">0xff</span><span style="font-family:Arial">了，</span><span style="font-family:Times New Roman">0&lt;&lt;3</span><span style="font-family:Arial">就表示</span><span style="font-family:Times New Roman">adc</span><span style="font-family:Arial">通道</span><span style="font-family:Times New Roman">0</span><span style="font-family:Arial">，就是这个</span><span style="font-family:Times New Roman">AD</span><span style="font-family:Arial">模块了。然后</span><span style="font-family:Times New Roman">
+ 0 &lt;&lt; 2</span><span style="font-family:Arial">就是正常运作模式了。</span></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好了分析完控制寄存器那么就是数据寄存器了。</span></p>
+<p><img src="./OK6410之ADC模块_files/1341501290_3279.png" alt=""><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 8843px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>while(ADCCON&nbsp;&amp;&nbsp;0x01);//check&nbsp;if&nbsp;Enable_start&nbsp;is&nbsp;low&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>while(!(ADCCON&nbsp;&amp;0x8000));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="attribute">ret</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">ADCDAT0</span><span>&nbsp;&amp;&nbsp;0x3ff;&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">while(ADCCON &amp; 0x01);//check if Enable_start is low     
+
+while(!(ADCCON &amp;0x8000));    
+
+ret = ADCDAT0 &amp; 0x3ff;
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while(ADCCON &amp; 0x01);</span>判断是否<span style="font-family:Times New Roman">AD</span>转换好了。<span style="font-family:Times New Roman">while(!(ADCCON &amp;0x8000));</span>判断<span style="font-family:Times New Roman">AD</span>转换是否结束。<span style="font-family:Times New Roman">
+ ret = ADCDAT0 &amp; 0x3ff;</span>，正常的<span style="font-family:Times New Roman">ADC</span>转换后的值。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 就这样，搞定了，很简单？还行吧，差不多吧，只能说。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着就是<span style="font-family:Times New Roman">makefile</span>了：</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 9184px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>obj-m&nbsp;</span><span class="attribute">:</span><span>=</span><span class="attribute-value">adc</span><span>.o&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">obj-m :=adc.o  
+
+ 
+
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+<span style="font-family:Arial">然后建个</span><span style="font-family:Times New Roman">makemod</span><span style="font-family:Arial">，代码如下</span></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 9385px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>make&nbsp;-C&nbsp;/home/eastmoon/work/linux2.6.28/&nbsp;</span><span class="attribute">M</span><span>=`pwd`&nbsp;modules&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">make -C /home/eastmoon/work/linux2.6.28/ M=`pwd` modules  
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>然后只要<span style="font-family:Times New Roman">source makemod</span>就可以编译成<span style="font-family:Times New Roman">buzzer.ko</span>了</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OK</span>，驱动就这么着了，然后就是应用程序了</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 9628px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#include&nbsp;</span><span class="tag">&lt;</span><span class="tag-name">stdio.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">fcntl.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">unistd.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;DEVICE&nbsp;"/dev/myadc"&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>int&nbsp;main()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;fp,adc_data,i;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;ret;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">fp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">open</span><span>(DEVICE,&nbsp;O_RDWR);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if(fp&nbsp;<span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("open&nbsp;failed!\n");&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;-1;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;while(1)&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">ret</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">read</span><span>(fp,&amp;adc_data,sizeof(adc_data));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(ret<span class="tag">&lt;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("read&nbsp;ADC&nbsp;failed!\n");&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;-1;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Read&nbsp;ADC&nbsp;value&nbsp;is:&nbsp;%d\n",adc_data);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;close(fp);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">#include &lt;stdio.h&gt;     
+
+#include &lt;fcntl.h&gt;     
+
+#include &lt;unistd.h&gt;     
+
+   
+
+#define DEVICE "/dev/myadc"
+
+ 
+
+int main()    
+
+{    
+
+    int fp,adc_data,i;  
+
+    int ret;  
+
+    fp = open(DEVICE, O_RDWR);    
+
+    if(fp &lt; 0)  
+
+    {
+
+        printf("open failed!\n"); 
+
+        return -1; 
+
+    }
+
+      
+
+    while(1) 
+
+    {    
+
+        ret = read(fp,&amp;adc_data,sizeof(adc_data));    
+
+        if(ret&lt;0)  
+
+        {  
+
+            printf("read ADC failed!\n");  
+
+            return -1;  
+
+        }  
+
+        else  
+
+        {
+
+           printf("Read ADC value is: %d\n",adc_data);    
+
+        }
+
+        sleep(1);    
+
+    }    
+
+    close(fp);    
+
+return 0;    
+
+}
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着<span style="font-family:Times New Roman">makefile</span>：</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7720353#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 10981px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_7" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_7" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=7&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span class="attribute">CC</span><span>&nbsp;=&nbsp;/usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-gcc&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>adcapp:adcapp.o&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(CC)&nbsp;-o&nbsp;adcapp&nbsp;adcapp.o&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>adcapp.o:adcapp.c&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(CC)&nbsp;-c&nbsp;adcapp.c&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>clean&nbsp;:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm&nbsp;adcapp.o&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">CC = /usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-gcc 
+
+ 
+
+adcapp:adcapp.o
+
+       $(CC) -o adcapp adcapp.o
+
+adcapp.o:adcapp.c 
+
+       $(CC) -c adcapp.c
+
+ 
+
+clean :
+
+       rm adcapp.o
+
+</pre>
+<p><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 终于搞定，于是便是到板子上去调试了。把<span style="font-family:Times New Roman">adc.ko</span>和<span style="font-family:Times New Roman">adcapp</span>拷贝到<span style="font-family:Times New Roman">SD</span>卡上，然后再拷贝到板子上。开始测试：</p>
+<p><img src="./OK6410之ADC模块_files/1341501361_8313.png" alt=""></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Init</span>进去了，没提示错误，表示一切<span style="font-family:Times New Roman">OK</span>。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着<span style="font-family:Times New Roman">mknod</span>设备文件</span></p>
+<p><span style="font-size:18px"><img src="./OK6410之ADC模块_files/1341501377_7431.png" alt=""></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好了，设备节点<span style="font-family:Times New Roman">OK</span>，接着就是测试程序了。</span></p>
+<p><span style="font-size:18px"><img src="./OK6410之ADC模块_files/1341501394_5174.png" alt=""></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一开始电位器的位置是这样的，然后旋转电位器</span></p>
+<p><img src="./OK6410之ADC模块_files/1341501406_7876.png" alt=""></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 再旋转范围大点的：</span></p>
+<p><span style="font-size:18px"><img src="./OK6410之ADC模块_files/1341501416_3088.png" alt=""></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 最后结束：</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;<img src="./OK6410之ADC模块_files/1341501430_4224.png" alt=""></span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OK</span>，测试都通过了</span></p>
+<p></p>
+
+</div>
+
+<!--192.168.1.237-->
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    $(function(){
+        var d_top=$('#d-top');
+        document.onscroll=function(){
+            var scrTop=(document.body.scrollTop||document.documentElement.scrollTop);
+            if(scrTop>500){
+                d_top.show();
+            }else{
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function(){
+            scrollTo(0,0);
+            this.blur();
+            return false;
+        });
+    });
+</script>
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript" src="./OK6410之ADC模块_files/newblog.min.js"></script>
+<script type="text/javascript" src="./OK6410之ADC模块_files/showblogmedal.ashx"></script>
+
+<script type="text/javascript" src="./OK6410之ADC模块_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./OK6410之ADC模块_files/pub_footer_2012.css"><div class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd>京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>北京创新乐知信息技术有限公司 版权所有</dd><dd>世纪乐知(北京)网络技术有限公司 提供技术支持</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd><img src="./OK6410之ADC模块_files/ico_email.gif" alt="" title=""> 联系邮箱：webmaster(at)csdn.net</dd><dd>Copyright © 1999-2012, CSDN.NET, All Rights Reserved&nbsp;<a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./OK6410之ADC模块_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div><script type="text/javascript" charset="utf-8" src="./OK6410之ADC模块_files/tracking.js"></script><link rel="stylesheet" type="text/css" href="./OK6410之ADC模块_files/pub_footer_2012(1).css"><script type="text/javascript" charset="utf-8" src="./OK6410之ADC模块_files/tracking(1).js"></script>
+
+<script type="text/javascript" src="./OK6410之ADC模块_files/login.js"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./OK6410之ADC模块_files/pv.aspx" border="0" width="0" height="0"><img src="./OK6410之ADC模块_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./OK6410之ADC模块_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./OK6410之ADC模块_files/msg.popup.js"></script>
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

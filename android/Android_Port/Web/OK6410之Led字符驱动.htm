@@ -1,0 +1,710 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0059)http://blog.csdn.net/eastmoon502136/article/details/7705733 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>OK6410之Led字符驱动</title>
+
+<meta name="description" content="公司待了一个下午，浑浑噩噩的，看了会android的wifi框架，还是懵懵懂懂的。都怪昨天热的睡不着，又不想开空调，唉，夏天，快过去吧。不过也算有点收获吧。吃了晚饭回到宿舍。想着，上几个实验都是看看串口的输出，没劲，好歹以前玩51，FPGA什么的时候，都是做出效果来的，于是觉得，得干出点实物来啊，好吧，记得51和FPGA是从led灯开始的，那么就。。。。。。。。。         还是先上代码">
+
+
+
+
+<link rel="Stylesheet" type="text/css" href="./OK6410之Led字符驱动_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/eastmoon502136/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./OK6410之Led字符驱动_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<script src="./OK6410之Led字符驱动_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./OK6410之Led字符驱动_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+<div id="body"><div id="main"><div class="main"><div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+<h3><span class="link_title"><a href="./OK6410之Led字符驱动_files/OK6410之Led字符驱动.htm">OK6410之Led字符驱动</a></span></h3></div><div id="article_content" class="article_content">
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<span style="font-family:Times New Roman; font-size:16px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 579px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#include&nbsp;</span><span class="tag">&lt;</span><span class="tag-name">linux</span><span>/module.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/kernel.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/fs.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/init.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/miscdevice.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/delay.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/uaccess.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/device.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/cdev.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">asm</span><span>/irq.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">mach</span><span>/gpio.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">plat</span><span>/regs-gpio.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">plat</span><span>/gpio-cfg.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">mach</span><span>/hardware.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">linux</span><span>/io.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;LED_MAJOR&nbsp;240&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>int&nbsp;led_open(struct&nbsp;inode&nbsp;*inode,&nbsp;struct&nbsp;file&nbsp;*filp)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;tmp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMCON);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;(tmp&nbsp;&amp;&nbsp;~(0xffff)&nbsp;|&nbsp;(0x1111));&nbsp;//set&nbsp;the&nbsp;GPIO&nbsp;output&nbsp;mode&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMCON);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("$$$$$$$$$$$led_open$$$$$$$$$\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>ssize_t&nbsp;led_read(struct&nbsp;file&nbsp;*filp,&nbsp;char&nbsp;__user&nbsp;*buf,&nbsp;size_t&nbsp;count,&nbsp;loff_t&nbsp;*f_pos)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("$$$$$$$$$$led_read$$$$$$$$$\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;count;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>ssize_t&nbsp;led_write(struct&nbsp;file&nbsp;*filp,&nbsp;char&nbsp;__user&nbsp;*buf,&nbsp;size_t&nbsp;count,&nbsp;loff_t&nbsp;*f_pos)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;mbuf[10];&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;tmp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;copy_from_user(mbuf,buf,count);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;switch(mbuf[0])&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;0:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;|=&nbsp;(0x1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;1:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;&amp;=&nbsp;~(0x1);&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;2:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;|=&nbsp;(0x2);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;3:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;&amp;=&nbsp;~(0x2);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;4:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;|=&nbsp;(0x4);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;5:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;&amp;=&nbsp;~(0x4);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;6:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;|=&nbsp;(0x8);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;7:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMDAT);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp&nbsp;&amp;=&nbsp;~(0x8);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(tmp,&nbsp;S3C64XX_GPMDAT);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("$$$$$$$$$$led_write$$$$$$$$$\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;count;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>int&nbsp;led_release(struct&nbsp;inode&nbsp;*inode,&nbsp;struct&nbsp;file&nbsp;*filp)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("$$$$$$$$$$led_release$$$$$$$$$\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>struct&nbsp;file_operations&nbsp;<span class="attribute">my_fops</span><span>&nbsp;=&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.owner</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">THIS_MODULE</span><span>,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.open</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">led_open</span><span>,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.read</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">led_read</span><span>,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.write</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">led_write</span><span>,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">.release</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">led_release</span><span>,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;int&nbsp;led_init(void)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;rc;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("Test&nbsp;led&nbsp;dev\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">rc</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">register_chrdev</span><span>(LED_MAJOR,&nbsp;"led",&nbsp;&amp;my_fops);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if(rc&nbsp;<span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk("register&nbsp;%s&nbsp;mychar&nbsp;dev&nbsp;error\n",&nbsp;"led");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;-1;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("$$$$$$$$$&nbsp;register&nbsp;led&nbsp;dev&nbsp;OK\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>static&nbsp;void&nbsp;led_exit(void)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;unregister_chrdev(LED_MAJOR,&nbsp;"led");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk("Good&nbsp;Bye!\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>MODULE_LICENSE("GPL");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>module_init(led_init);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>module_exit(led_exit);&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">#include &lt;linux/module.h&gt;
+
+#include &lt;linux/kernel.h&gt;
+
+#include &lt;linux/fs.h&gt;
+
+#include &lt;linux/init.h&gt;
+
+#include &lt;linux/miscdevice.h&gt;
+
+#include &lt;linux/delay.h&gt;
+
+#include &lt;asm/uaccess.h&gt;
+
+#include &lt;linux/device.h&gt;
+
+#include &lt;linux/cdev.h&gt;
+
+#include &lt;asm/irq.h&gt;
+
+#include &lt;mach/gpio.h&gt;
+
+#include &lt;plat/regs-gpio.h&gt;
+
+#include &lt;plat/gpio-cfg.h&gt;
+
+#include &lt;mach/hardware.h&gt;
+
+#include &lt;linux/io.h&gt;
+
+ 
+
+#define LED_MAJOR 240
+
+ 
+
+int led_open(struct inode *inode, struct file *filp)
+
+{
+
+    unsigned int tmp;
+
+    tmp = readl(S3C64XX_GPMCON);
+
+    tmp = (tmp &amp; ~(0xffff) | (0x1111)); //set the GPIO output mode
+
+    writel(tmp, S3C64XX_GPMCON);
+
+    printk("$$$$$$$$$$$led_open$$$$$$$$$\n");
+
+return 0;
+
+}
+
+ 
+
+ssize_t led_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+
+{
+
+    printk("$$$$$$$$$$led_read$$$$$$$$$\n");
+
+return count;
+
+}
+
+ 
+
+ 
+
+ssize_t led_write(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+
+{
+
+    char mbuf[10];
+
+    unsigned int tmp;
+
+    copy_from_user(mbuf,buf,count);
+
+    
+
+    switch(mbuf[0])
+
+    {
+
+        case 0:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp |= (0x1);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 1:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp &amp;= ~(0x1); 
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 2:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp |= (0x2);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 3:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp &amp;= ~(0x2);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 4:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp |= (0x4);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 5:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp &amp;= ~(0x4);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 6:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp |= (0x8);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        case 7:
+
+            tmp = readl(S3C64XX_GPMDAT);
+
+            tmp &amp;= ~(0x8);
+
+            writel(tmp, S3C64XX_GPMDAT);
+
+            break;
+
+        default:
+
+            break;
+
+    }
+
+    
+
+    printk("$$$$$$$$$$led_write$$$$$$$$$\n");
+
+return count;
+
+}
+
+ 
+
+int led_release(struct inode *inode, struct file *filp)
+
+{
+
+    printk("$$$$$$$$$$led_release$$$$$$$$$\n");
+
+return 0;
+
+}
+
+ 
+
+struct file_operations my_fops = {
+
+    .owner = THIS_MODULE,
+
+    .open = led_open,
+
+    .read = led_read,
+
+    .write = led_write,
+
+    .release = led_release,
+
+};
+
+ 
+
+static int led_init(void)
+
+{
+
+    int rc;
+
+    printk("Test led dev\n");
+
+    rc = register_chrdev(LED_MAJOR, "led", &amp;my_fops);
+
+    if(rc &lt; 0)
+
+    {
+
+        printk("register %s mychar dev error\n", "led");
+
+        return -1;
+
+    }
+
+    printk("$$$$$$$$$ register led dev OK\n");
+
+return 0;
+
+}
+
+ 
+
+static void led_exit(void)
+
+{
+
+    unregister_chrdev(LED_MAJOR, "led");
+
+    printk("Good Bye!\n");
+
+}
+
+ 
+
+MODULE_LICENSE("GPL");
+
+module_init(led_init);
+
+module_exit(led_exit);
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 唉，代码是越来越长了，为了实现流水灯，写得搓搓的代码，其实可以不用那么复杂的。既然写复杂了也就懒得改了。其实，流水灯就是控制<span style="font-family:Times New Roman">GPIO</span>口，让<span style="font-family:Times New Roman">GPIO</span>口输出高低电平，记得<span style="font-family:Times New Roman">51</span>是直接<span style="font-family:Times New Roman">P1
+ = 0xFF</span>之类的。而<span style="font-family:Times New Roman">FPGA</span>的话，<span style="font-family:Times New Roman">verilog</span>也是很简单的<span style="font-family:Times New Roman">led=8’b11111110;</span>嵌入式就是烦，跑系统的东西嘛，总得有个门槛，要不然谁都很容易会了，那么那些嵌入式工程师不是没饭吃了？哈哈哈哈。。。</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 既然是控制<span style="font-family:Times New Roman">GPIO</span>口，那总得知道是哪个<span style="font-family:Times New Roman">GPIO</span>口吧？看看原理图吧。</span></p>
+<p></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;<img src="./OK6410之Led字符驱动_files/1341066869_4551.png" width="463" height="300" alt=""></span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 是<span style="font-family:Times New Roman">GPM</span>口，对应的，<span style="font-family:Times New Roman">GPM0-GPM4</span>分别是<span style="font-family:Times New Roman">LED1-LED4</span>。接着看看<span style="font-family:Times New Roman">GPIO</span>的一些寄存器吧，</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067009_9332.png" alt=""><img src="./OK6410之Led字符驱动_files/1341067003_3165.png" alt=""></p>
+<p></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 控制寄存器<span style="font-family:Times New Roman">GPMCON,</span>主要流水灯只要设置为输出就好了。所以代码中有写着</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;&nbsp; </span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 6488px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span class="attribute">tmp</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">readl</span><span>(S3C64XX_GPMCON);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="attribute">tmp</span><span>&nbsp;=&nbsp;(tmp&nbsp;&amp;&nbsp;~(0xffff)&nbsp;|&nbsp;(0x1111));&nbsp;//set&nbsp;the&nbsp;GPIO&nbsp;output&nbsp;mode&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>writel(tmp,&nbsp;S3C64XX_GPMCON);&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">    tmp = readl(S3C64XX_GPMCON);
+
+    tmp = (tmp &amp; ~(0xffff) | (0x1111)); //set the GPIO output mode
+
+    writel(tmp, S3C64XX_GPMCON);
+
+</pre>
+<p><br>
+<span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 先读取，然后设置，然后再写进去。</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后就是控制那个<span style="font-family:Times New Roman">GPIO</span>输出的<span style="font-family:Times New Roman">0</span>、<span style="font-family:Times New Roman">1</span>值了。</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067067_5641.png" alt=""></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 就是这个<span style="font-family:Times New Roman">GPMDAT</span>了，对应的每一位就是每一个<span style="font-family:Times New Roman">GPIO</span>口的输出值了。这个是低电平点亮，高电平灭掉的，所以值为<span style="font-family:Times New Roman">1</span>是灭，值为<span style="font-family:Times New Roman">0</span>是亮。知道这些，看着代码，应该很容易理解了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着<span style="font-family:Times New Roman">makefile</span></span></p>
+<span style="font-family:Times New Roman; font-size:16px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 6955px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>obj-m&nbsp;</span><span class="attribute">:</span><span>=</span><span class="attribute-value">led</span><span>.o&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="tag">&lt;</span><span class="tag-name">span</span><span>&nbsp;</span><span class="attribute">style</span><span>=</span><span class="attribute-value">"font-family:Times&nbsp;New&nbsp;Roman;font-size:16px;"</span><span class="tag">&gt;</span><span>&nbsp;</span><span class="tag">&lt;/</span><span class="tag-name">span</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">obj-m :=led.o
+
+<span style="font-family:Times New Roman;font-size:16px;">&nbsp;</span></pre>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="font-size:16px">然后建个<span style="font-family:Times New Roman">makemod</span>，代码如下</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<span style="font-family:Times New Roman; font-size:16px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 7131px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>make&nbsp;-C&nbsp;/home/eastmoon/work/linux2.6.28/&nbsp;</span><span class="attribute">M</span><span>=`pwd`&nbsp;modules&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">make -C /home/eastmoon/work/linux2.6.28/ M=`pwd` modules
+
+ 
+
+</pre>
+<p><br>
+<span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后只要<span style="font-family:Times New Roman">source makemod</span>就可以编译成<span style="font-family:Times New Roman">led.ko</span>了</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp; </span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 万事具备了，那么为了实现驱动，我们还得写应用啊，所以说啊，搞驱动的，也得写应用，要不然，怎么知道你写的驱动好不好用。别人来看你的驱动写应用也太累了。好了，还是上代码吧：</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<span style="font-family:Times New Roman; font-size:16px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 7411px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#include&nbsp;</span><span class="tag">&lt;</span><span class="tag-name">stdio.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">sys</span><span>/types.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">sys</span><span>/stat.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#include&nbsp;<span class="tag">&lt;</span><span class="tag-name">fcntl.h</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#define&nbsp;DEVICE&nbsp;"/dev/myled"&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>int&nbsp;main(void)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;fd,&nbsp;i;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;buf[10]&nbsp;=&nbsp;{0,&nbsp;1,&nbsp;2,&nbsp;3,&nbsp;4,&nbsp;5,&nbsp;6,&nbsp;7};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">fd</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">open</span><span>(DEVICE,&nbsp;O_RDWR);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;if(fd&nbsp;<span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">0</span><span>)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Open&nbsp;/dev/myled&nbsp;file&nbsp;error\n");&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;-1;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;while(1)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(<span class="attribute">i</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">0</span><span>;&nbsp;i&nbsp;</span><span class="tag">&lt;</span><span>&nbsp;</span><span class="tag-name">8</span><span>;&nbsp;i&nbsp;+=&nbsp;2)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(fd,&nbsp;&amp;buf[i],&nbsp;1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep(1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(<span class="attribute">i</span><span>&nbsp;=&nbsp;</span><span class="attribute-value">7</span><span>;&nbsp;i&nbsp;</span><span class="tag">&gt;</span><span>&nbsp;0;&nbsp;i&nbsp;</span><span class="attribute">-</span><span>=&nbsp;</span><span class="attribute-value">2</span><span>)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(fd,&nbsp;&amp;buf[i],&nbsp;1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep(1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;close(fd);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>return&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">#include &lt;stdio.h&gt;
+
+#include &lt;sys/types.h&gt;
+
+#include &lt;sys/stat.h&gt;
+
+#include &lt;fcntl.h&gt;
+
+ 
+
+#define DEVICE "/dev/myled"
+
+ 
+
+int main(void)
+
+{
+
+    int fd, i;
+
+    char buf[10] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+    fd = open(DEVICE, O_RDWR);
+
+    if(fd &lt; 0)
+
+    {
+
+        printf("Open /dev/myled file error\n");
+
+        return -1;
+
+    }
+
+    
+
+    while(1)
+
+    {
+
+        for(i = 0; i &lt; 8; i += 2)
+
+        {
+
+            write(fd, &amp;buf[i], 1);
+
+            sleep(1);
+
+        }
+
+        for(i = 7; i &gt; 0; i -= 2)
+
+        {
+
+            write(fd, &amp;buf[i], 1);
+
+            sleep(1);
+
+        }
+
+    }
+
+    close(fd);
+
+return 0;
+
+}
+
+</pre>
+<p><br>
+<span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 看看驱动，然后再看，应该还是很好理解的，就是个水水的流水灯嘛。</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后<span style="font-family:Times New Roman">makefile</span></span></p>
+<span style="font-family:Times New Roman; font-size:16px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 8817px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span class="attribute">CC</span><span>&nbsp;=&nbsp;/usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-gcc&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>ledapp:ledapp.o&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(CC)&nbsp;-o&nbsp;ledapp&nbsp;ledapp.o&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>ledapp.o:ledapp.c&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(CC)&nbsp;-c&nbsp;ledapp.c&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>clean&nbsp;:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm&nbsp;ledapp.o&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">CC = /usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-gcc 
+
+ledapp:ledapp.o
+
+       $(CC) -o ledapp ledapp.o
+
+ledapp.o:ledapp.c 
+
+       $(CC) -c ledapp.c
+
+ 
+
+clean :
+
+       rm ledapp.o
+
+ 
+
+</pre>
+<p><br>
+<span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 终于搞定了，累死了，还好下雷雨了，天气没有下午那么热了。然后就是板子上去看看效果了。</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 至于怎么把编译好的<span style="font-family:Times New Roman">led.ko
+</span>和<span style="font-family:Times New Roman">ledapp</span>放到板子上，方法很多，我是用<span style="font-family:Times New Roman">SD</span>卡的，具体看以前的<span style="font-family:Times New Roman">blog</span>中。</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067199_8379.png" alt=""></p>
+<p></p>
+<p><span style="font-size:16px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ok</span>，注册成功了。</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067230_5219.png" alt=""></p>
+<p><span style="font-size:16px"></span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 设备文件也创建了</span></p>
+<p><span style="font-size:16px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;<img src="./OK6410之Led字符驱动_files/1341067040_5664.png" alt=""></span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 看看，<span style="font-family:Times New Roman">myled</span>这个节点也有了，看来离成功不远了</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着跑跑应用看看</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067270_8246.png" alt=""></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一直在写数据，流水灯也出来了。哈哈哈</span></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><img src="./OK6410之Led字符驱动_files/1341067600_2650.png" width="454" height="215" alt=""></p>
+<p><span style="font-family:Times New Roman; font-size:16px">&nbsp;</span></p>
+<p><span style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后结束流水灯</span></p>
+<p><span style="font-size:16px"><img src="./OK6410之Led字符驱动_files/1341067252_9029.png" alt=""></span></p>
+<p></p>
+<p><br></p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var fileName = '7705733';
+    var commentscount = 0;
+    var islock = false
+</script>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/comment.js"></script>
+
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+<div id="d-top" style="display: block;">
+<a id="d-top-a" href="http://blog.csdn.net/eastmoon502136/article/details/7705733#" title="回到顶部">
+<img src="./OK6410之Led字符驱动_files/top.png" alt="TOP"></a>
+</div>
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/shCore-src.js"></script>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/ZeroClipboard.js"></script>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/article_code.js"></script>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/cnick.js"></script>
+
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/show.js"></script>
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/showblogmedal.ashx"></script>
+
+<script type="text/javascript" src="./OK6410之Led字符驱动_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./OK6410之Led字符驱动_files/pub_footer_2012.css"><div class="pub_footerall"><dl><dt><br></dt></dl></div><script type="text/javascript" charset="utf-8" src="./OK6410之Led字符驱动_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="http://counter.csdn.net/pv.aspx?id=24" border="0" width="0" height="0" style="display: none !important; visibility: hidden !important; opacity: 0 !important; background-position: 0px 0px;">
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+
+<!--ad.csdn.net-->
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

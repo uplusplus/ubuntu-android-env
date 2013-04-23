@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!-- saved from url=(0136)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/%E4%BD%BF%E7%94%A8KGDB%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8%20on%20QEMU.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head profile="http://gmpg.org/xfn/11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	
+
+	
+	
+	
+	
+
+	
+	
+	
+	
+			
+		
+	
+
+	
+	
+	
+	
+
+	
+<link rel="stylesheet" id="codebox-css" href="./使用KGDB调试内核 on QEMU_files/codebox.css" type="text/css" media="screen">
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<body contenteditable="false">
+<!-- wrap START -->
+<div id="wrap">
+
+<!-- container START -->
+<div id="container">
+
+
+
+
+
+
+
+
+
+
+<div id="content">
+
+	<!-- main START -->
+	<div id="main">
+
+
+	
+
+	<div class="post" id="post-337">
+		<h2>使用KGDB调试内核 on QEMU</h2>
+		
+		<div class="content">
+			<div class="announcement_post">
+<h3>1: 编译Linux + <a href="http://www.kgdb.info/">KGDB</a></h3>
+<h2>1.1: 安装编译工具</h2>
+<p style="padding-left: 30px">请参考其他相关教程，推荐在安装系统的时候就选择上编译器及支持库</p>
+<h2>1.2: 下载最新内核代码</h2>
+<p>在<a href="http://lkml.org/">lmkl.org</a>下载最新的内核源码, 可以直接使用浏览器下载代码，当然也可以使用命令wget来下载，下载后需使用tar来解压源代码。这里我们选择linux-2.6.34.1来演示。</p>
+<p>假设缺省工作目录为/usr/src/work</p>
+
+<div class="wp_codebox_msgheader"><span class="right"><br></span><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3371"><td class="code" id="p337code1"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">sudo</span> <span style="color: #c20cb9; font-weight: bold;">mkdir</span> <span style="color: #660033;">-p</span>  <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work
+<span style="color: #c20cb9; font-weight: bold;">sudo</span> <span style="color: #c20cb9; font-weight: bold;">chmod</span> <span style="color: #000000;">777</span> <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work <span style="color: #660033;">-R</span>
+<span style="color: #7a0874; font-weight: bold;">cd</span> <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work
+<span style="color: #c20cb9; font-weight: bold;">wget</span> http:<span style="color: #000000; font-weight: bold;">//</span>www.kernel.org<span style="color: #000000; font-weight: bold;">/</span>pub<span style="color: #000000; font-weight: bold;">/</span>linux<span style="color: #000000; font-weight: bold;">/</span>kernel<span style="color: #000000; font-weight: bold;">/</span>v2.6<span style="color: #000000; font-weight: bold;">/</span>linux-2.6.34.1.tar.bz2
+<span style="color: #c20cb9; font-weight: bold;">tar</span> <span style="color: #660033;">-jxvf</span> linux-2.6.34.1.tar.bz2</pre></td></tr></tbody></table></div>
+
+<h2>1.3: 配置内核选择 </h2>
+<p>使能kgdb调试,并使用kgdboc作为与gdb通信模块。</p>
+
+<div class="wp_codebox_msgheader"><br></div><div class="wp_codebox"><table><tbody><tr id="p3372"><td class="code" id="p337code2"><pre class="bash" style="font-family:monospace;"><span style="color: #7a0874; font-weight: bold;">cd</span> linux-2.6.34.1
+<span style="color: #c20cb9; font-weight: bold;">make</span> defconfig
+<span style="color: #c20cb9; font-weight: bold;">make</span> menuconfig</pre></td></tr></tbody></table></div>
+
+<p>需确保如下选项被选中(参考<a href="http://www.kgdb.info/kgdb/use_kgdb/enable_kgdb_option/">kgdb内核选项配置</a>)</p>
+
+<div class="wp_codebox_msgheader"><span class="right"><br></span><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3373"><td class="code" id="p337code3"><pre class="bash" style="font-family:monospace;"> General setup  ---<span style="color: #000000; font-weight: bold;">&gt;</span> 
+     <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> Prompt <span style="color: #000000; font-weight: bold;">for</span> development and<span style="color: #000000; font-weight: bold;">/</span>or incomplete code<span style="color: #000000; font-weight: bold;">/</span>drivers
+Kernel hacking&nbsp; ---<span style="color: #000000; font-weight: bold;">&gt;</span>
+     <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> Compile the kernel with debug info
+     <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> Compile the kernel with frame pointers
+     <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> KGDB: kernel debugger  ---<span style="color: #000000; font-weight: bold;">&gt;</span>
+           <span style="color: #000000; font-weight: bold;">&lt;</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #000000; font-weight: bold;">&gt;</span>   KGDB: use kgdb over the serial console</pre></td></tr></tbody></table></div>
+
+<h2>1.4: 编译</h2>
+
+<div class="wp_codebox_msgheader"><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3374"><td class="code" id="p337code4"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">make</span></pre></td></tr></tbody></table></div>
+
+<p>如果你的机器是多核的，可以使用-j+CPU数来进行并行编译，从而加快编译速度，如：</p>
+
+<div class="wp_codebox_msgheader"><br></div><div class="wp_codebox"><table><tbody><tr id="p3375"><td class="code" id="p337code5"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">make</span> <span style="color: #660033;">-j2</span></pre></td></tr></tbody></table></div>
+
+<p>编译完成后，复制bzImage和vmlinux到工作目录下备用</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3376"><td class="code" id="p337code6"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">cp</span> arch<span style="color: #000000; font-weight: bold;">/</span>x86<span style="color: #000000; font-weight: bold;">/</span>boot<span style="color: #000000; font-weight: bold;">/</span>bzImage <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work
+<span style="color: #c20cb9; font-weight: bold;">cp</span> vmlinux <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work</pre></td></tr></tbody></table></div>
+
+<h3>2: 制作自己的文件系统</h3>
+<h2>2.1: 下载busybox</h2>
+<p>去<a href="http://www.busybox.net/downloads/"><strong>busybox站点</strong></a>下载一个busybox源码包，并解压。</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3377"><td class="code" id="p337code7"><pre class="bash" style="font-family:monospace;"><span style="color: #7a0874; font-weight: bold;">cd</span> <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>work
+<span style="color: #c20cb9; font-weight: bold;">wget</span> http:<span style="color: #000000; font-weight: bold;">//</span>www.busybox.net<span style="color: #000000; font-weight: bold;">/</span>downloads<span style="color: #000000; font-weight: bold;">/</span>busybox-1.17.0.tar.bz2
+<span style="color: #c20cb9; font-weight: bold;">tar</span> <span style="color: #660033;">-jxvf</span> busybox-1.17.0.tar.bz2
+<span style="color: #7a0874; font-weight: bold;">cd</span> busybox-1.17.0</pre></td></tr></tbody></table></div>
+
+<h2>2.2: 编译busybox</h2>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p3378"><td class="code" id="p337code8"><pre class="bash" style="font-family:monospace;"><span style="color: #c20cb9; font-weight: bold;">make</span> menuconfig
+&nbsp;
+Busybox Settings&nbsp; ---<span style="color: #000000; font-weight: bold;">&gt;</span> 
+   Build Options&nbsp; ---<span style="color: #000000; font-weight: bold;">&gt;</span>
+        <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> Build BusyBox <span style="color: #c20cb9; font-weight: bold;">as</span> a static binary <span style="color: #7a0874; font-weight: bold;">(</span>no shared libs<span style="color: #7a0874; font-weight: bold;">)</span>
+   Installation Options&nbsp; ---<span style="color: #000000; font-weight: bold;">&gt;</span>
+        <span style="color: #7a0874; font-weight: bold;">[</span> <span style="color: #000000; font-weight: bold;">*</span> <span style="color: #7a0874; font-weight: bold;">]</span> Don<span style="color: #ff0000;">'t use /usr
+Miscellaneous Utilities  ---&gt; 
+[ ] flashcp 
+[ ] flash_lock
+[ ] flash_unlock
+[ ] flash_eraseall
+&nbsp;
+注:[ ] 表示不选择</span></pre></td></tr></tbody></table></div>
+
+<p>保存配置文件后开始编译和安装</p>
+
+<div class="wp_codebox_msgheader"><br></div><div class="wp_codebox"><table><tbody><tr id="p3379"><td class="code" id="p337code9"><pre class="make" style="font-family:monospace;">make
+make install</pre></td></tr></tbody></table></div>
+
+<p>此时在当前目录下生成了一个_install目录，里面就是busybox的执行文件</p><p><br></p><p>busybox 1.21.0 版本编译问题:</p><p>1 找不到pmap_set,pmap_unset引用</p><p><span class="Apple-tab-span" style="white-space:pre">	</span>禁用neetworking utilities/inetd/support rpc services</p>
+<h2>2.3: 制作文件系统</h2>
+<p>使用如下命令来创建一个虚拟文件系统磁盘文件，</p>
+<p>在当前目录下创建一个名为busybox.img,大小为100M的文件，并将其格式化为ext3的文件系统</p>
+
+<div class="wp_codebox_msgheader"><span class="right"><br></span><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33710"><td class="code" id="p337code10"><pre class="busybox" style="font-family:monospace;">cd /usr/src/work
+dd if=/dev/zero of=./busybox.img bs=1M count=100
+mkfs.ext3 busybox.img</pre></td></tr></tbody></table></div>
+
+<p>将这个虚拟磁盘文件到本地系统中，这样我们可以像访问本地文件一样访问它，<br>
+并将生成好的busybox的文件拷贝到这个文件里。</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33711"><td class="code" id="p337code11"><pre class="mount" style="font-family:monospace;">sudo mkdir /mnt/disk
+sudo mount -o loop /usr/src/work/busybox.img /mnt/disk
+sudo cp -rf /usr/src/work/busybox-1.17.0/_install/* /mnt/disk</pre></td></tr></tbody></table></div>
+
+
+<div class="wp_codebox_msgheader"><br></div><div class="wp_codebox"><table><tbody><tr id="p33712"><td class="code" id="p337code12"><pre class="mount" style="font-family:monospace;">创建必须的文件系统目录
+cd /mnt/disk/
+sudo mkdir dev sys proc etc lib mnt
+&nbsp;
+使用busybox默认的设置文件
+sudo cp -a /usr/src/work/busybox-1.17.0/examples/bootfloppy/etc/* /mnt/disk/etc
+sudo vi /mnt/disk/etc/init.d/rcS
+&nbsp;
+将下面内容拷贝到rcS里:
+&nbsp;
+#! /bin/sh
+/bin/mount -a
+/bin/mount -t&nbsp; sysfs sysfs /sys
+/bin/mount -t tmpfs tmpfs /dev
+#动态添加虚拟机环境中的设备
+/sbin/mdev -s</pre></td></tr></tbody></table></div>
+
+<p>做完上面对工作后，我们就可以卸载虚拟磁盘文件了。</p>
+
+<div class="wp_codebox_msgheader"><br></div><div class="wp_codebox"><table><tbody><tr id="p33713"><td class="code" id="p337code13"><pre class="unmount" style="font-family:monospace;">cd /usr/src/work
+sudo umount /mnt/disk</pre></td></tr></tbody></table></div>
+
+<h3>3: 安装qemu</h3>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33714"><td class="code" id="p337code14"><pre class="bash" style="font-family:monospace;">Ubuntu<span style="color: #000000; font-weight: bold;">/</span>Debian:
+<span style="color: #c20cb9; font-weight: bold;">sudo</span> <span style="color: #c20cb9; font-weight: bold;">apt-get</span> <span style="color: #c20cb9; font-weight: bold;">install</span> qemu
+&nbsp;
+Fedora:
+<span style="color: #c20cb9; font-weight: bold;">sudo</span> yum <span style="color: #c20cb9; font-weight: bold;">install</span> qemu</pre></td></tr></tbody></table></div>
+
+<h3>4: 使用qemu运行自己编译的内核</h3>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33715"><td class="code" id="p337code15"><pre class="qemu" style="font-family:monospace;"> qemu -kernel /usr/src/work/bzImage -append "root=/dev/hda" -boot c -hda
+/usr/src/work/busybox.img -k en-us
+&nbsp;
+note:
+如果你的硬盘是sata接口的，你也许需要将上面的 "root=/dev/hda" 替换为 "root=/dev/sda".</pre></td></tr></tbody></table></div>
+
+<p>如果顺利的话，自己编译的内核+文件系统就会在那qemu黑乎乎的窗口里展现出来，<br>
+给自己倒杯水，庆祝下吧！</p><p>Qemu在ubuntu上提示加载kvm失败:</p><p>1 保证kvm已安装</p><p><span class="Apple-tab-span" style="white-space:pre">	</span>apt-get install qemu-kvm</p><p>2 保证模块已加载</p><p><span class="Apple-tab-span" style="white-space:pre">	</span>lsmod | grep kvm</p><p>3 加载CPU相关的kvm</p><p><span class="Apple-tab-span" style="white-space:pre">	</span>modprobe kvm-intel</p><p><br></p>
+<h3>5: gdb + kgdb 调试内核</h3>
+<p>使能kgdb可以在内核启动时增加使能参数，也可以在内核启动后echo kgdboc模块的参数来达到目的，这里我们采取在内核启动时增加启动参数(kgdboc=ttyS0,115200 kgdbwait)的方式：</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33716"><td class="code" id="p337code16"><pre class="qemu" style="font-family:monospace;">qemu -kernel /usr/src/work/bzImage -append "root=/dev/hda kgdboc=ttyS0,115200
+kgdbwait" -boot c -hda /usr/src/work/busybox.img -k en-us -serial tcp::4321,server</pre></td></tr></tbody></table></div>
+
+<p>这时，运行qemu的终端将提示等待远程连接到本地端口4321：<br>
+QEMU waiting for connection on: tcp:0.0.0.0:4321,server</p>
+<p>这时使用另外一个控制台执行：</p>
+
+<div class="wp_codebox_msgheader"><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33717"><td class="code" id="p337code17"><pre class="gdb" style="font-family:monospace;">gdb /usr/src/work/vmlinux
+<span style="font-weight:bold;">(</span>gdb<span style="font-weight:bold;">)</span> target remote localhost:<span style="color: #FF00BF;">4321</span></pre></td></tr></tbody></table></div>
+
+<p>然后qemu就可以继续正常运行下去，最后停止内核，并显示如下信息:<br>
+kgdb: Waiting for connection from remote gdb…</p>
+<p>这时gdb这边就可以看到如下的提示：</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33718"><td class="code" id="p337code18"><pre class="gdb" style="font-family:monospace;"><span style="font-weight:bold;">(</span>gdb<span style="font-weight:bold;">)</span> target remote localhost:<span style="color: #FF00BF;">4321</span>
+Remote debugging using localhost:<span style="color: #FF00BF;">4321</span>
+kgdb_breakpoint <span style="font-weight:bold;">(</span><span style="font-weight:bold;">)</span> at <span style="color: #0066FF; text-style:italic;">kernel/debug/debug_core.c</span>:<span style="color: #FF00BF;">983</span>
+<span style="color: #cc66cc;">983</span>		wmb<span style="font-weight:bold;">(</span><span style="font-weight:bold;">)</span>; /* Sync point after breakpoint */
+<span style="font-weight:bold;">(</span>gdb<span style="font-weight:bold;">)</span></pre></td></tr></tbody></table></div>
+
+<p>开始你的内核之旅吧～～～</p>
+<p>如果gdb提示如下信息：<br>
+warning: Invalid remote reply:<br>
+可以使用Ctrl+C来终止当前gdb的操作，再次使用下面命令重新连接一次kgdb即可：<br>
+(gdb) target remote localhost:4321</p>
+<h3>6: gdb + kgdb 调试内核操作示例</h3>
+<p>待完善…</p>
+<h3>7: 引用/扩展阅读:</h3>
+<p>1： <a href="http://blog.chinaunix.net/u/8057/showart_1087126.html">使用 KGDB 调试 Linux 内核（on qemu）</a><br>
+该文章对qemu和kgdb的一些参数介绍得非常详细，本文的4和5章节都是参考它写的，强烈推荐大家看看。<br>
+2： <a href="http://linux-hacks.blogspot.com/2008/05/setting-up-kgdb-using-kvmqemu.html">setting up kgdb using kvmqemu</a><br>
+该文章也是关于qemu和kgdb，不过它介绍qemu如何联网等内容。PS：和上面的文章不同的是，它将qemu的虚拟串口导向到本地的一个”pty”设备上，<br>
+而前面我们是导向到一个socket端口上. qemu -serial参数介绍如下:</p>
+
+<div class="wp_codebox_msgheader"><br><br><div class="codebox_clear"></div></div><div class="wp_codebox"><table><tbody><tr id="p33719"><td class="code" id="p337code19"><pre class="qemu" style="font-family:monospace;">-serial dev
+Redirect the virtual serial port to host character device dev. The default device
+is "vc" in graphical mode and "stdio" in non graphical mode. This option can be
+used several times to simulate up to 4 serials ports.</pre></td></tr></tbody></table><br></div><div class="wp_codebox"><br></div><div class="wp_codebox"><h1 class="postTitle" style="color: rgb(0, 0, 0);"><a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/yangnas/archive/2010/05/03/1726728.html">用DDD+GDB+QEMU 进行linux内核源码级调试</a></h1></div><div class="wp_codebox"><h1 class="postTitle" style="color: rgb(0, 0, 0);"><div class="postBody" style="font-size: medium; font-weight: normal;"><div id="cnblogs_post_body"><p>在看此文章之前，请先参看我写的一篇《利用busybox制作一个小巧的linux系统》制作出一个initrd内存盘。</p><p>1. 首先编译内核,编译内核时注意要选中</p><p>&nbsp;&nbsp;&nbsp; kernel hacking –&gt; kernel debugging –&gt; compile the kernel with debug info</p><p>&nbsp;&nbsp;&nbsp; kernel hacking –&gt; compile the kernel with frame pointers</p><p>&nbsp; 两个选项。(注意:除此之外kernel hacking 选项下其他的选项都不要选,否则会出现断点无法拦截的情况。)</p><p>2. 假设你的内核目录位于/home/xxx/linux-2.6.28中，且编译内核时你指定的大O参数指定的目录是O=/home/xxx/linux-2.6.28-obj。</p><p>用新编译的带调试信息的内核，启动一个虚拟机。</p><p>$ qemu –kernel /home/xxx/linux-2.6.28-obj/arch/x86/boot/bzImage –append "root=/dev/ram0 rw"</p><p>-initrd /home/initrd.gz –s –S 具体选项的含义可以参看qemu的文档。</p><p>这样启动虚拟机后，它会在1234端口产生一个gdb stub以供调试时使用。</p><p>然后我们打开令一个xterm终端运行gdb命令开始调试：</p><p>$ gdb /home/xxx/linux-2.6.28-obj/vmlinux</p><p>然后在gdb的提示符下输入: target remote localhost:1234 连接gdb stub</p><p>然后开始设置断点,比如: break start_kernel</p><p>然后输入c命令，然后qemu继续运行后，就会在start_kernel 入口处停了下来。</p><p>这时候你就可以输入各种gdb命令来对linux kernel进行hack了。。</p><p>当然，这里采用gdb的一个前端工具ddd会更好。但还是需要学习一些常用的gdb命令(这样才能更熟练的进行调试)</p><p>&nbsp;</p><p>常用的gdb调试命令:</p><p>1. file &lt;文件名&gt; :&nbsp; 加载被调试的可执行程序文件.</p><p>2. run(简写r也可以): 运行被调试程序,直到遇到断点.</p><p>3. c : 继续执行被调试程序,直到下一断点.</p><p>4. b : 设置断点.</p><p>5. d &lt;编号&gt; : 删除断点.</p><p>6. info breakpoints : 显示已设置的断点列表.</p><p>7. s : 源码级的单步进入.</p><p>8. n : 源码级的单步步过.</p><p>9. si/ni : 指令级的单步进入和步过.(需要先运行display /i $pc)</p><p>10. info all-register: 显示所有寄存器的值.</p><p>11. p /x $eax : 以16进制显示某一特定寄存器的值.</p><p>12. q: 退出gdb调试环境.</p><p>13. disassemble &lt;0xXXXXXXXX&gt; : 反汇编指定地址处的指令.(加/r选项,显示对应汇编代码的机器码)</p><p>14. set disassembly-flavor &lt;intel | att&gt; : 设定汇编显示的格式(Intel格式或者AT&amp;T格式)</p><p>15. 修改指定地址的内存数据:set {unsigned char} &lt;0xXXXXXXXX&gt;= &lt;new data&gt;</p><p>16. 显示源代码文件: list</p><p>17. info stack: 查看栈追踪(栈回溯). 或者使用 backtrace 也可以</p><p>18. x /nfu &lt;addr&gt; : 查看指定地址处的内存内容.</p><p>&nbsp;&nbsp;&nbsp;&nbsp; n: 表示个数.&nbsp;&nbsp; f(format): x,16进制.&nbsp; d,10进制. i,指令. &nbsp; u(每一项的长度): b,单字节. w,4字节. h,双字节.</p><p>&nbsp;&nbsp;&nbsp;&nbsp; 例如: x /1xw 0x804a010 : 显示0x804a010起始地址处的一个4字节的16进制值.</p><p>　　　　x /100i 0x804a010 : 显示0x804010起始地址往后的100个指令</p></div></div></h1></div>
+
+</div>
+			
+
+
+
+		</div>
+		
+	</div>
+
+	
+		
+
+	
+
+
+
+
+
+	
+
+			
+	
+
+	
+
+
+	</div>
+	
+
+	
+
+
+
+	
+</div>
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+</body></html>

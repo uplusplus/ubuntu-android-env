@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0064)http://www.360doc.com/content/11/1210/00/8076359_171156992.shtml -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+ 
+ 
+ 
+  
+  <div class="mainzt">
+<table class="index_main" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<tr>
+<td align="left" valign="top" width="727px">
+ 
+ 
+<table border="0" cellpadding="0" cellspacing="0" class="mainbj6" id="docArtClass">
+<tbody>
+
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" style=" width:100%; text-align:center;">
+<tbody>
+
+
+<tr>
+<td>
+<table class="wenzhangcss" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                        <tr><td style="height:29px;">
+                                        <div class="xiantao"></div>
+                                        </td></tr>
+                                            <tr>
+                                                <td align="left" valign="top" width="670px" style=" height:200px;">
+                                                    <span id="articlecontent" onmouseup="NewHighlight(event)" style=""><table>
+                                                        <tbody><tr><td width="670px">
+
+<div class="detail" id="detail" style="LINE-HEIGHT: 1.3">
+<p><font size="4"><b><font color="#800080"><font color="#f00000" size="5"><font color="#000000" size="4">三篇文章差不多，但都涉及了一些其他东西，所以都转了。<br><br></font><br>第一篇</font></font></b></font> <font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><br><br><b><font color="#0000f0" size="4">===========================================================================</font></b><br><b><font color="#000080" size="4">1.进入终端</font></b><br><font size="2">&nbsp; 1. 直接执行命令emulator -shell;</font></span></span></font> 
+</p><div class="cnt" id="blog_text">
+<div class="blogstory">
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp; 2. 在启动emulator后，通过命令adb shell进入。</span></span></font></p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#000080" size="4">2.下载busybox以及交叉编译工具</font></b></span></span></font> 
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">1. 首先去</font></span></span><a title="busybox主页" href="http://blog.chinaunix.net/link.php?url=http://www.busybox.net%2F" target="_blank"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">busybox主页</font></span></span></a><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2"> 下载最新版本的</font></span></span><a title="busybox主页" href="http://blog.chinaunix.net/link.php?url=http://www.busybox.net%2F" target="_blank"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">busybox</font></span></span></a><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">源代码.</font></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">2. 下载交叉编译工具: GNU&nbsp;Toolchain&nbsp;for&nbsp;ARM&nbsp;Processors&nbsp;</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp;&nbsp; 下载地址：</font></span></span><a class="contentlink" href="http://www.codesourcery.com/gnu_toolchains/arm/download.html" target="_blank"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">http://www.codesourcery.com/gnu_toolchains/arm/download.html</font></span></span></a></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp; 其中第一项选择ARM&nbsp;EABI或ARM&nbsp;GNU/Linux，第二项选择IA32&nbsp;GNU/Linux TAR即可。</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp; 最后得到一个arm-2007q3-51-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2文件</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp; 将压缩包解压到linux下某个目录, 并设置好环境变量, 使之能找到前缀为"arm-none-linux-gnueabi-"的交叉编译工具.</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#000080" size="4">3.对busybox进行相应配置<br></font></b></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">3. 进入busybox源码目录.</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp;&nbsp; 先执行make menuconfig命令对编译过程进行配置.&nbsp; 过程如下:</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp;&nbsp;<b><font color="#f00000">&nbsp; Busybox Settings -&gt; Build Options -&gt;</font></b></font></span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2"><b><font color="#f00000">&nbsp;&nbsp;&nbsp;&nbsp; [*] Build BusyBox as a static binary (no shared libs</font></b>) 这个要选上，因上这样子编译出来的busyBox才是可以独立运行的。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#f00000"> (/home/jo/tool/arm-2008q3/bin/arm-none-linux-gnueabi-) Cross Compiler prefex</font></b> 这是交叉编译器的"路径+前缀"，要根据具体的情况来设置。<br>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#f00000"><b> Busybox Settings -&gt; Installation Options-&gt;</b></font><br>&nbsp;&nbsp;&nbsp;&nbsp; <b><font color="#f00000">[*] Don’t use /usr</font></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这样子编译出来的busybox才不会安装到你主机的/usr目录下。一定要选上。</font></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">4 执行make编译源码.&nbsp; 如果编译过程中产生无法找到头文件的错误,<b><font color="#f00000"> 可指定交叉编译器用到的头文件所在路径</font></b>. 如</span></span></font></p>
+<p><b><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp;<font color="#f00000"> </font></font><font color="#f00000" size="4">$make -I ./home/jo/tool/arm-2008q3/arm-none-linux-gnueabi/libc/usr/include/</font></span></span></font></b></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">5 编译成功后将得到一个名为busybox的可执行文件.</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#000080" size="4">4.把busybox移植入android<br></font></b></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">6 在Android的console下建立目录/data/busybox, 并使用下面的命令将文件busybox复制该目录中:</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp;<b><font color="#000080"> adb push busybox /data/busybox</font></b></font></span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">7 从Android的console进入/data/busybox目录, 为可执行文件busybox加上可执行属性: <b><font color="#000080">chmod 775 busybox</font></b></font></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">8 这时我们就可以使用busybox工具了, 如果希望在任何目录下都可以直接使用bosybox,则需要将路径/data/busybox export到path环境变量中:</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp;<b><font color="#000080"> export PATH=$PATH:/data/busybox</font></b></font></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">9 设置环境变量之后, 在命令行输入busybox, 即可看到其用法, 如:</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp; 在当前目录及其子目录中查找名为init.rc的文件可使用以下命令:</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp; $busybox find . -name init.rc&nbsp;</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">10 <b><font color="#f00000">安装busybox</font></b>。</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp; 通过执行./busybox --install&nbsp;-s 我们会看到出现一些错误, 原因是因为Android系统的根目录和/sbin目录是只读的.&nbsp; 因此我们无法把一些常用命令安装到/bin目录下, 也不能修改/init.rc文件来设置PATH环境变量.&nbsp;</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp;对于如何执行命令busybox --install&nbsp;-s 的默认安装路径, 这里我还不太清楚, 或许跟Makefile和编译busybox的相关设置有关.&nbsp;</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp; 尽管我们不可以在Android里面通过执行busybox --install&nbsp;-s 命令来安装常用命令, 我们却可以通过另外一个方法来把常用命令安装到Android里面. &nbsp;</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><font size="2">&nbsp;&nbsp; <b><font color="#000080">方法很简单, 可以先在外面的linux系统中执行make install命令把相关的命令提取出来. 然后再通过命令adb push ./_install/bin /data/busybox/bin 把这些常用命令复制进Android系统中. 注意: make install安装命令的所在路径可通过执行make menuconfig进行设置, 默认为./_install目录下面.</font></b></font></span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp; 这样,我们就不用每次使用busybox提供的一个命令时, 都要在前面加上busybox了.</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">11 修改/init.rc文件设置环境变量.</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp;&nbsp; 要提醒的是, 修改PATH环境变量的时候,<b><font color="#000080"> 应该把busybox常用命令的路径"/data/busybox/bin"放在Android的常用命令路径"/system/bin"的前面, 否则, 先查找得到的将不是busybox的命令,</font></b>&nbsp; 可以这样设置:</span></span></font></p>
+<p><font color="#000000" size="2"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)">&nbsp;&nbsp;&nbsp; &nbsp;export PATH /data/busybox/bin:/sbin:/system/sbin:/system/bin:/system/xbin</span></span></font></p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#0000f0" size="4">===========================================================================</font></b></span></span></font></p>
+<p><b><font color="#800080" size="5">第二篇</font></b></p>
+<div id="cnblogs_post_body">
+<p>大家是否有过这样的经历，在命令行里输入adb shell，然后使用命令操作你的手机或模拟器，但是那些命令都是常见Linux命令的阉割缩水版，用起来很不爽。是否想过在Android上使用较完整的shell呢？用BusyBox吧。不论使用adb连接设备使用命令行还是在手机上直接用terminal emulator都可以。</p>
+<p>一、什么是BusyBox ？</p>
+<p>BusyBox 是标准 Linux 工具的一个单个可执行实现。BusyBox 包含了一些简单的工具，例如 cat 和 echo，还包含了一些更大、更复杂的工具，例如 grep、find、mount 以及 telnet。有些人将 BusyBox 称为 Linux 工具里的瑞士军刀.简单的说BusyBox就好像是个大工具箱，它集成压缩了 Linux 的许多工具和命令。（摘自百度百科）</p>
+<p>二、在Android上安装BusyBox</p>
+<p>准备：</p>
+<p>0. 先要把手机给Root了，具体教程这里就不提供了，网上有很多。</p>
+<p>1. 下载BusyBox的binary，打开这个地址&nbsp;<a href="http://blog.chinaunix.net/link.php?url=http://www.busybox.net%2Fdownloads%2Fbinaries" target="_blank">http://www.busybox.net/downloads/binaries</a> ，选择最新版本，然后下载对应你的设备架构的版本，这里我下载了busybox-armv6l，下面将以这个文件名为示例。</p>
+<p><img src="./android安装busybox_files/19916370_1.png"></p>
+<p>2. 需要有一个命令行的环境，在电脑上使用adb或在手机上使用terminal emulator。</p>
+<p>3. 连接手机和电脑，手机的USB Mode设置成None（仅充电），并且开启USB调试模式。</p>
+<p>安装：</p>
+<p>1. 将busybox-armv6l重命名为busybox</p>
+<p>2<font color="#000080">. <b>将busybox传入手机的SD卡</b></font>，可以使用下面的命令或自己想其他办法。</p>
+<p>打开terminal（Linux，Mac）或cmd（Windows）</p>
+<div class="cnblogs_Highlighter">
+<div class="syntaxhighlighter nogutter  perl" id="highlighter_399209">
+<div class="lines">
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><b><font color="#f00000">adb push ~/Desktop/busybox /mnt/sdcard</font></b></td></tr></tbody></table></div></div></div></div>
+<p>其中的<span style="BACKGROUND-COLOR: rgb(192,192,192)">~/Desktop</span>请根据自己的情况替换成正确的路径</p>
+<p><font color="#808000"><b><font size="5">3. 输入以下命令，为了在/system目录写入文件</font></b></font></p>
+<div class="cnblogs_Highlighter">
+<div class="syntaxhighlighter nogutter  perl" id="highlighter_32730">
+<div class="lines">
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><font color="#808000">adb shell</font></td></tr></tbody></table></div>
+<div class="line alt2">
+<table>
+<tbody>
+<tr>
+<td class="content"><font color="#808000">su</font></td></tr></tbody></table></div>
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><font color="#808000"><b>mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system</b></font></td></tr></tbody></table></div></div></div></div>
+<p>使用 ls 检查一下 /system 里是否有 xbin 目录，没有的话输入 mkdir xbin 创建，因为本示例是要把busybox安装到 /system/xbin 。</p>
+<p>4. 复制 busybox 文件到 /system/xbin，并为其分配“可执行”的权限</p>
+<div class="cnblogs_Highlighter">
+<div class="syntaxhighlighter nogutter  perl" id="highlighter_990460">
+<div class="lines">
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><font color="#f00000"><b>cp /mnt/sdcard/busybox /system/xbin</b></font></td></tr></tbody></table></div>
+<div class="line alt2">
+<table>
+<tbody>
+<tr>
+<td class="content"><b><font color="#f00000">chmod 755 busybox</font></b></td></tr></tbody></table></div></div></div></div>
+<p>5. 这时就可以使用 busybox 的命令了，例如以前没有清屏的clear命令，现在只需输入 busybox clear 就可以实现清屏功能，使用完整版的 ls 只需输入 busybox ls 。</p>
+<p>但是每次前面都加上个busybox太麻烦了，所以我们还要继续完成安装。</p>
+<p><b><font color="#f00000">在 /system/xbin 下输入</font></b></p>
+<div class="cnblogs_Highlighter">
+<div class="syntaxhighlighter nogutter  perl" id="highlighter_529444">
+<div class="lines">
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><b><font color="#f00000">busybox --install .</font></b></td></tr></tbody></table></div></div></div></div>
+<p>如果想安装到别的目录，则把点替换成别的路径。</p>
+<p>至此就安装完成了，比较一下原来的 ls 命令和 busybox 里的 ls 命令。</p>
+<p><img src="./android安装busybox_files/19916370_2.png"></p>
+<p><font color="#f00000"><strong>常见错误：</strong></font></p>
+<p>1. 如果安装时出现这样的错误，</p>
+<p><span style="BACKGROUND-COLOR: rgb(204,153,255)">busybox: /bin/zcat: No such file or directory</span></p>
+<p><span style="BACKGROUND-COLOR: rgb(204,153,255)">busybox: /sbin/zcip: Invalid cross-device link</span></p>
+<p>说明没有输入安装路径，正确的示例&nbsp;<b><font color="#f00000"><span style="BACKGROUND-COLOR: rgb(192,192,192)">busybox --install /system/xbin</span></font></b></p>
+<p><span style="BACKGROUND-COLOR: rgb(255,255,255)">2. 如果出现这样的错误，</span></p>
+<p><span style="BACKGROUND-COLOR: rgb(255,255,255)"><span style="BACKGROUND-COLOR: rgb(204,153,255)">cp: /system/xbin/busybox: Read-only file system</span></span></p>
+<p>说明没有正确输入上面第三步的mount命令。</p>
+<p><strong>小技巧：</strong></p>
+<p>1. busybox 里有 ash 和 hush 还有 sh 这几种 shell，在命令行输入 ash 或 hush，可以像在 bash 里那样，通过按上下键选择刚才输入的命令。</p>
+<p>2. android系统本身就有ls命令，busybox里也有ls，输入ls时调用的是android的ls，那么想用busybox的ls就要每次都在前面加个busybox吗？不用，使用alias命令可以搞定。</p>
+<div class="cnblogs_Highlighter">
+<div class="syntaxhighlighter nogutter  perl" id="highlighter_328886">
+<div class="lines">
+<div class="line alt1">
+<table>
+<tbody>
+<tr>
+<td class="content"><b><font color="#f00000">alias ls='busybox ls'</font></b></td></tr></tbody></table></div></div></div></div>
+<p>同样的，cp、mv等二者都有的命令都可以这样搞定。也可以通过修改 /init.rc 来解决。</p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#0000f0" size="4">===========================================================================</font></b></span></span></font></p></div>
+<p><b><font color="#800080" size="5">第三篇</font></b></p>
+<p><b><font color="#800080" size="5"><font color="#f00000"><br></font></font></b></p>
+<p><b><font color="#800080" size="5"><font color="#f00000" size="4">android 自带的toolbox</font><br></font></b></p>
+<div id="content">
+<p>shell实现分为两部分：</p>
+<p>一、shell解释器和内置命令</p>
+<p>源码位于system/core/sh目录下，主要完成shell命令的解释查找，对于builtins.c中包含的内置命令，直接执行，对于 toolbox的扩展命令，间接调用toolbox程序完成。</p>
+<table width="97%" align="center" border="0">
+<tbody>
+<tr>
+<td colspan="3">
+<div align="center"></div><br></td></tr></tbody></table>
+<p>二、toolbox扩展命令</p>
+<p>主要完成扩展命令的执行，每一个扩展命令对应一个name_main函数，如ls命令，对应ls_main函数。同时，每一个扩展命令都由一个 system/core/toolbox/目录下面的.c文件实现。toolbox.c会根据这个目录下面的.c文件生成tools.h头文件，并在 system/core/toolbox/<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>.mk 文件中为每个命令生成指向toolbox的连接。toolbox的实现结构使它扩展一个命令很容易。</p>
+<p>假设现在我们自己想手工添加一个shell命令mycommand，只要在system/core/toolbox/目录下面新建一个 mycommand.c文件，并在里面实现一个mycommand_main函数，然后在system/core/toolbox/<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>.mk 中添加mycommand.c即可。Android.mk会自动把它编译进toolbox程序，并在编译生成的Android系统/system/bin 目录下为这个命令生成一个指向toolbox的连接。</p>
+<p><b><font color="#f00000" size="4"><br></font></b></p>
+<p><b><font color="#f00000" size="4">替换toolbox为busybox</font></b><br></p>
+<p>接下来翻译一下网上的一篇文章，借助它，可以把<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>自带的toolbox替换成busybox。</p>
+<p><a title="" href="http://www.linuxidc.com/Linux/2011-03/33464p3.htm" target="_self">Installing Busybox command line tools</a></p>
+<p>在<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>系统中安装busybox命令行工具</p>
+<p>本文简单地介绍了怎么把busybox安装到<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>的文件系统中去。如果你想直接安装，可以从下面的地址下载我已经预编译好并在Android2.1系统上试验成功的busybox，然后直接跳过下面的安装步骤。</p>
+<p>下载在<a title="Linux公社" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2F" target="_blank">Linux公社</a>的1号 FTP服务器里，下载地址：</p>
+<p>FTP地址：<a href="ftp://www.linuxidc.com/" target="_blank">ftp://www.linuxidc.com</a></p>
+<p>用户名：<a href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2FLinux%2F2011-03%2F33464.htm" target="_blank">www.linuxidc.com</a></p>
+<p>密码：<a href="http://blog.chinaunix.net/link.php?url=http://www.muu.cc%2F" target="_blank">www.muu.cc</a></p>
+<p>在 2011年LinuxIDC.com\3月\<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>自带的toolbox分析及扩展</p>
+<p>下载方法见 <a href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.net%2Fthread-1187-1-1.html" target="_blank">http://www.linuxidc.net/thread-1187-1-1.html</a></p>
+<p>一、编译busybox</p>
+<p>1、下载busybox的最新版本，本文写作时最新版本是1.13.3。</p>
+<p>下载地址：http://www.busybox.net/</p>
+<p>2、解压源码：</p>
+<p>tar jxf busybox-1.13.3.tar.bz2</p>
+<p>3、运行menuconfig对busybox进行配置</p>
+<p>cd busybox-1.13.3/</p>
+<p>make menuconfig</p>
+<p>4、在menuconfig中设置以下选项</p>
+<p>Busybox Settings --&gt; Build Options --&gt; Build Busybox as a static binary (no shared libs)&nbsp; -&nbsp; Enable this option by pressing "Y"</p>
+<p>Busybox Settings --&gt; Build Options --&gt; Cross compiler prefix&nbsp; -&nbsp; Set this option equal to "arm-none-linux-gnueabi-"</p>
+<p>Busybox Settings --&gt; Installation Options --&gt; Don't use /usr&nbsp; -&nbsp; Enable this option by pressing "Y"</p>
+<p>5、把交叉编译器的地址导入到环境变量：</p>
+<p>export PATH=/opt/arm/arm-2007q3/bin:$PATH</p>
+<p>6、编译busybox</p>
+<p>make</p>
+<div id="content">
+<p>二、安装busybox</p>
+<p>把busybox安装到<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>系统中去，做这几步：</p>
+<p>1、在<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>系统根目录下创建一个/bin目录。</p>
+<p>mkdir /&lt;path-to-<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>-fs&gt;/bin</p>
+<p>2、把编译出来的busybox复制到/bin目录下</p>
+<p>cp busybox /&lt;path-to-<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>-fs&gt;/bin</p>
+<table width="97%" align="center" border="0">
+<tbody>
+<tr>
+<td colspan="3">
+<div align="center"></div><br></td></tr></tbody></table>
+<p>3、把busybox安装到<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>机器中</p>
+<p>cd /bin</p>
+<p>./busybox --install</p>
+<p>三、把busybox作为默认shell</p>
+<p>需要像下面这样编辑一下init.rc</p>
+<p>1、编辑console服务，让它默认运行busybox</p>
+<p><b><font color="#f00000">service console /system/bin/sh&nbsp; -&gt;&nbsp; service console /bin/sh</font></b></p>
+<p>2、把busybox路径加入到环境变量中</p>
+<p>export PATH /sbin:/system/sbin:/system/bin:/system/xbin&nbsp; --&gt;&nbsp; export PATH /bin:/sbin:/system/sbin:/system/bin:/system/xbin</p>
+<p>注：</p>
+<p>我使用busybox时，只是想简单地增加一些命令，把toolbox一些功能不是很全的命令替换掉，所以操作上没有上面说的那么复杂。下面是我的替代方案，可以试一下：</p>
+<p>1、把busybox复制到/system/bin目录下。</p>
+<p>adb push busybox /system/bin</p>
+<p>2、把要添加的命令通过ln建立到busybox的连接。</p>
+<p>比如，<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>自带的toolbox是没有test这个命令的。我们要添加test命令就可以：</p>
+<p>cd /system/bin</p>
+<p><b><font color="#f00000">ln -s busybox test</font></b><img src="./android安装busybox_files/19916370_3.gif"></p>
+<p>这样，用户通过机器上的shell执行test命令时，就会调用busybox中实现test功能的applet。</p>
+<p>对于一些原有的命令，如ls、chown等，如果不想用toolbox，也可以把它们的连接目标指向toolbox，拿chown来举例。</p>
+<p><b><font color="#f00000">cd /system/bin</font></b></p>
+<p><b><font color="#f00000">rm chown</font></b></p>
+<p><b><font color="#f00000">ln -s busybox chown</font></b></p>
+<p>这样做，最大的好处就是保证对系统的改动最少，又可以最大限度的扩展shell功能。</p>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#0000f0" size="4">===========================================================================</font></b></span></span></font></p>
+<p><font size="5"><b><font color="#800080">英文文档</font></b></font><br></p>
+<div id="content">
+<p>To build busybox</p>
+<p>Download the latest version of busybox from the following website. At the time of writing the latest version was v.1.13.3.</p>
+<p>http://www.busybox.netExtract the busybox source:</p>
+<table width="97%" align="center" border="0">
+<tbody>
+<tr>
+<td colspan="3">
+<div align="center"></div><br></td></tr></tbody></table>
+<p>tar jxf busybox-1.13.3.tar.bz2Configure busybox by running menuconfig</p>
+<p>cd busybox-1.13.3/<br>make menuconfigIn menuconfig set the following options</p>
+<p>Busybox Settings --&gt; Build Options --&gt; Build Busybox as a static binary (no shared libs)&nbsp; -&nbsp; Enable this option by pressing "Y"<br>Busybox Settings --&gt; Build Options --&gt; Cross compiler prefix&nbsp; -&nbsp; Set this option equal to "arm-none-linux-gnueabi-"<br>Busybox Settings --&gt; Installation Options --&gt; Don't use /usr&nbsp; -&nbsp; Enable this option by pressing "Y"Export path to where the cross-compiler is located on the host, for example:</p>
+<p>export PATH=/opt/arm/arm-2007q3/bin:$PATH<br>Build busybox</p>
+<p>make </p>
+<p>Installing Busybox</p>
+<p><br>--------------------------------------------------------------------------------</p>
+<p>To install busybox in the target file-system</p>
+<p>Create a /bin directory in the target file-system. For example:</p>
+<p>mkdir /&lt;path-to-<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>-fs&gt;/binCopy the busybox binary to the /bin directory in the target file-system</p>
+<p>cp busybox /&lt;path-to-<a title="Android" href="http://blog.chinaunix.net/link.php?url=http://www.linuxidc.com%2Ftopicnews.aspx%3Ftid%3D11" target="_blank">Android</a>-fs&gt;/bin Install the busybox command line tools on the target by executing the following commands:</p>
+<p>cd /bin<br>./busybox --install<br>&nbsp;</p>
+<p>Make the Busybox shell the default shell</p>
+<p>&nbsp;</p>
+<p>--------------------------------------------------------------------------------</p>
+<p>To make the busybox shell the default shell, edit the file "init.rc" in the target file-system as follows:</p>
+<p>Edit the console service so that it runs the busybox shell and not the default shell by replacing:</p>
+<p>service console /system/bin/shWith:</p>
+<p>service console /bin/shAdd the path of the busybox command line tools to the system path variable by replacing:</p>
+<p>export PATH /sbin:/system/sbin:/system/bin:/system/xbinWith</p>
+<p>export PATH /bin:/sbin:/system/sbin:/system/bin:/system/xbin</p></div></div></div>
+<p><font color="#000000"><span style="FONT-SIZE: small"><span style="COLOR: rgb(128,0,0)"><b><font color="#0000f0" size="4">=========================================</font></b></span></span></font></p></div></div></div></td></tr></tbody></table>
+                                                        
+                                                   
+                                                     </span>
+
+
+                                                    
+                                                    <table>
+                                                        <tbody><tr>
+                                                            <td>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                                </tr>
+                                                
+                                              
+                                                
+                                                
+                                            
+                                                </tbody>
+                                                </table>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+</td>
+
+
+</tr>
+</tbody>
+</table>
+ </div>
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

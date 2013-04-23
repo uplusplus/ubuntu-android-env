@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0050)http://blog.csdn.net/turui/article/details/6635509 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>S3C6410开发全纪录（三）《UBOOT中添加DM9000AE网卡驱动》 - 涂睿的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="UBOOT中添加DM9000AE网卡驱动">
+<script type="text/javascript" async="" src="./UBOOT中添加DM9000AE网卡驱动_files/ga.js"></script><script src="./UBOOT中添加DM9000AE网卡驱动_files/jquery.js" type="text/javascript"></script><style type="text/css"></style>
+<script src="./UBOOT中添加DM9000AE网卡驱动_files/plugins.js" type="text/javascript"></script>
+<script src="./UBOOT中添加DM9000AE网卡驱动_files/common.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+<link rel="Stylesheet" type="text/css" href="./UBOOT中添加DM9000AE网卡驱动_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/turui/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./UBOOT中添加DM9000AE网卡驱动_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<script src="./UBOOT中添加DM9000AE网卡驱动_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./UBOOT中添加DM9000AE网卡驱动_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./UBOOT中添加DM9000AE网卡驱动_files/UBOOT中添加DM9000AE网卡驱动.htm">
+        S3C6410开发全纪录（三）《UBOOT中添加DM9000AE网卡驱动》
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+<p>&nbsp;我们获得的UBOOT的代码中实际是有DM9000的网口驱动的，位于：driver/dm9000x.c</p><p>在S3C6410的配置中，中并没有将之打开，而其他的芯片中有使用</p><p><strong><span style="color:#ff0000;">特别需要注意的是dm9000的驱动与dm9000AE的驱动还是有区别的，如果直接使用代码中自带的dm9000驱动流程，会出现无法收到数据的情况</span></strong></p><p><strong><span style="color:#ff0000;">一、添加dm9000AE的驱动</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 556px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>修改include/configs/smdk6410.h，参考&nbsp;include/configs/scb9328.h&nbsp;中的定义，添加如下宏定义&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">修改include/configs/smdk6410.h，参考 include/configs/scb9328.h 中的定义，添加如下宏定义</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 625px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#define&nbsp;CONFIG_DRIVER_DM9000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;CONFIG_DM9000_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x18000000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;DM9000_IO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONFIG_DM9000_BASE</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;DM9000_DATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(CONFIG_DM9000_BASE+4)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;CONFIG_DM9000_USE_16BIT</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">#define CONFIG_DRIVER_DM9000                1
+#define CONFIG_DM9000_BASE          0x18000000
+#define DM9000_IO                   CONFIG_DM9000_BASE
+#define DM9000_DATA                 (CONFIG_DM9000_BASE+4)
+#define CONFIG_DM9000_USE_16BIT
+</pre><p><strong><span style="color:#3366ff;">DM9000的基地址（CONFIG_DRIVER_DM9000的值）与硬件设计相关</span></strong></p><p>查看《OK6410底板原理图.pdf》，看到，CS挂在CSN1上</p><p>查看《s3c6410_rev12.pdf》，118页，2.2 DEVICE SPECIFIC ADDRESS SPACE&nbsp;，0x1800_0000&nbsp; 0x1FFF_FFFF&nbsp; 128MB&nbsp; SROMC Bank 1 ，可以确定CONFIG_DM9000_BASE的值</p><p>查看drivers/Makefile，可以看到dm9000x的驱动已经被编译进去</p><p>&nbsp;整个driver/dm9000x.c 的代码时靠CONFIG_DRIVER_DM9000这个宏定义决定其内容的</p><p>配合着我们可以去修改如下可能用到的一些地址</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1036px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#define&nbsp;CONFIG_ETHADDR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00:40:5c:26:0a:5b</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;CONFIG_NETMASK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;255.255.255.0</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;CONFIG_IPADDR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;192.168.30.233</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;CONFIG_SERVERIP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;192.168.30.95</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">#define CONFIG_ETHADDR          00:40:5c:26:0a:5b
+#define CONFIG_NETMASK          255.255.255.0
+#define CONFIG_IPADDR           192.168.30.233
+#define CONFIG_SERVERIP         192.168.30.95</pre><p><strong><span style="color:#ff0000;">二、修改dm9000<strong>AE</strong>的驱动</span></strong></p><p>查看DM9000AE的手册《DM9000AE.pdf》，可以看到，DM9000AE包括了，MAC,PHY,没有带EEPROM，可以通过引脚来控制外部的EEPROM</p><p>看到第11页，5.2 EEPROM Interface，看到操作DM9000的EEPROM的PIN脚为19 20 21这3个</p><p>查看《OK6410底板原理图.pdf》，看到ethernet部分 19 20 21 这3个PIN脚是悬空的，额。。。，这意味着我们无法通过DM9000AE将MAC地址保存在EEPROM中</p><p>查看《DM9000AE.pdf》 6. Vendor Control and Status Register Set 这个章节，看到 PAR Physical Address Register 10H-15H 这部分是用来设置MAC地址的</p><p>也就是说我们必须将<strong><span style="color:#3333ff;">MAC地址写入</span></strong>到这几个<strong><span style="color:#3333ff;">寄存器中</span></strong>，下面我们来完成这个工作，打开driver/dm9000x.c这个文件，看到代码如下</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1507px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>eth_init(bd_t&nbsp;*&nbsp;bd)&nbsp;函数中&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">for</span><span>&nbsp;(i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;6;&nbsp;i++)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((u16&nbsp;*)&nbsp;bd-&gt;bi_enetaddr)[i]&nbsp;=&nbsp;read_srom_word(i);&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">eth_init(bd_t * bd) 函数中
+
+for (i = 0; i &lt; 6; i++)
+                ((u16 *) bd-&gt;bi_enetaddr)[i] = read_srom_word(i);
+</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1630px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">for</span><span>&nbsp;(i&nbsp;=&nbsp;0,&nbsp;oft&nbsp;=&nbsp;0x10;&nbsp;i&nbsp;&lt;&nbsp;6;&nbsp;i++,&nbsp;oft++)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DM9000_iow(oft,&nbsp;bd-&gt;bi_enetaddr[i]);&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">for (i = 0, oft = 0x10; i &lt; 6; i++, oft++)
+                DM9000_iow(oft, bd-&gt;bi_enetaddr[i]);</pre><p>测试可以先做如下处理吧，回头我们再改成从其他地方读取，比如外部的EEPROM，NANDFLASH，等地方好了，毕竟不应该在这个单纯的网卡驱动中增加其他驱动的代码</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1787px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>u16&nbsp;default_enetaddr[6]&nbsp;=&nbsp;{&nbsp;0x00,&nbsp;0x40,&nbsp;0x5c,&nbsp;0x26,&nbsp;0x0a,&nbsp;0x5b&nbsp;};&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">for</span><span>&nbsp;(i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;6;&nbsp;i++)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bd-&gt;bi_enetaddr[i]&nbsp;=&nbsp;default_enetaddr[i];&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">u16 default_enetaddr[6] = { 0x00, 0x40, 0x5c, 0x26, 0x0a, 0x5b }; 
+for (i = 0; i &lt; 6; i++)
+                bd-&gt;bi_enetaddr[i] = default_enetaddr[i];
+</pre><p>如果要修改成从环境变量中读取MAC地址，则可以这样做</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1936px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_7" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_7" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=7&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;*s,&nbsp;*e;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;s&nbsp;=&nbsp;getenv&nbsp;(<span class="string">"ethaddr"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;6;&nbsp;++i)&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bd-&gt;bi_enetaddr[i]&nbsp;=&nbsp;s&nbsp;?&nbsp;simple_strtoul&nbsp;(s,&nbsp;&amp;e,&nbsp;16)&nbsp;:&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(s)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s&nbsp;=&nbsp;(*e)&nbsp;?&nbsp;e&nbsp;+&nbsp;1&nbsp;:&nbsp;e;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">{
+	char *s, *e;
+	s = getenv ("ethaddr");
+	for (i = 0; i &lt; 6; ++i) 
+	{
+		bd-&gt;bi_enetaddr[i] = s ? simple_strtoul (s, &amp;e, 16) : 0;
+		if (s)
+			s = (*e) ? e + 1 : e;
+	}
+}
+</pre><p><strong><span style="color:#3333ff;">修改MAR寄存器（Multicast Address Register）的值，修正第一次收不到数据的错误</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2211px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_8" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_8" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=8&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">for</span><span>&nbsp;(i&nbsp;=&nbsp;0,&nbsp;oft&nbsp;=&nbsp;0x16;&nbsp;i&nbsp;&lt;&nbsp;8;&nbsp;i++,&nbsp;oft++)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;by&nbsp;tr&nbsp;modify</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DM9000_iow(oft,0x00);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//DM9000_iow(oft,&nbsp;0xff);</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="cpp" style="display: none;">        for (i = 0, oft = 0x16; i &lt; 8; i++, oft++)
+                // by tr modify
+                DM9000_iow(oft,0x00);
+                //DM9000_iow(oft, 0xff);
+</pre><p><strong><span style="color:#3333ff;">修改void eth_halt(void) 函数将以下两行注释掉，修正一直无法收到数据的错误</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6635509#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6635509#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2378px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_9" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_9" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=9&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>不要每次调用halt的时候都对PHY进行复位操作，否则会引起无法接受到数据的情况&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//phy_write(0,&nbsp;0x8000);&nbsp;/*&nbsp;PHY&nbsp;RESET&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//DM9000_iow(DM9000_GPR,&nbsp;0x01);&nbsp;/*&nbsp;Power-Down&nbsp;PHY&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">        不要每次调用halt的时候都对PHY进行复位操作，否则会引起无法接受到数据的情况
+        //phy_write(0, 0x8000); /* PHY RESET */
+        //DM9000_iow(DM9000_GPR, 0x01); /* Power-Down PHY */
+</pre><p><br></p><p>查找定位ping不通，数据无法接收的问题还是也让人着实头疼了一番，看到这个结果，可以发现，跟网上的其他描述都不大相同，也是幸亏有一些可以参考的代码，根据这些可以成功运行的代码，一步一步的定位，到底是那些地方出现了问题。</p><p><br></p><p>另外说明一下，DM9000这样的芯片是MAC+PHY，现在有很多SOC都内置MAC，只用外挂PHY就可以了</p><p>一般来说，这种情况下，对PHY的配置，主要还是要根据硬件的设计，找到PHY的ADDR，在OK6410的配置中PHYADDR为1，跟代码一致，这里就没再做任何修改了</p><p>&nbsp;</p><p><strong><span style="color:#ff0000;">三、参考资料</span></strong></p><p>《OK6410底板原理图.pdf》<br>《s3c6410_rev12.pdf》<br>《DM9000AE.pdf》</p><p>移植OK6410'S dm9000ae驱动到u-boot<br></p><p><a href="http://lagignition.blog.163.com/blog/static/12873002320110443341961/">http://lagignition.blog.163.com/blog/static/12873002320110443341961/</a><br></p><p>Linux DM9000网卡驱动程序完全分析</p><p><a href="http://blog.csdn.net/ypoflyer/article/details/6209922">http://blog.csdn.net/ypoflyer/article/details/6209922</a></p><p>dm9000ae 在u-boot上的移植小结</p><p><a href="http://weibing.blogbus.com/logs/12146712.html">http://weibing.blogbus.com/logs/12146712.html</a></p>
+</div>
+<div class="share_buttons" id="sharePanel"><span>分享到：</span> <a name="sina" class="share_sina" title="分享到新浪微博"></a><a name="qq" class="share_qq" title="分享到腾讯微博"></a></div>
+<!--192.168.1.236-->
+
+
+
+            <div id="digg" articleid="6635509">
+            <dl id="btnDigg" class="digg digg_disable">
+                <dt>顶</dt>
+                <dd>0</dd>
+            </dl>
+            <dl id="btnBury" class="digg digg_disable">
+                <dt>踩</dt>
+                <dd>0</dd>
+            </dl>
+        </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<div id="ad_bot"></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+<div id="d-top" style="display: none;">
+<a id="d-top-a" href="http://blog.csdn.net/turui/article/details/6635509#" title="回到顶部">
+<img src="./UBOOT中添加DM9000AE网卡驱动_files/top.png" alt="TOP"></a>
+</div>
+
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

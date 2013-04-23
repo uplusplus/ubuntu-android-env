@@ -1,0 +1,636 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0050)http://blog.csdn.net/turui/article/details/6634461 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>S3C6410开发全纪录（一）《还原SD卡启动的真相》 - 涂睿的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="S3C6410开发全纪录，还原SD卡启动的真相">
+<script type="text/javascript" async="" src="./S3C6410-SD卡-uboot_files/ga.js"></script><script src="./S3C6410-SD卡-uboot_files/jquery.js" type="text/javascript"></script><style type="text/css"></style>
+<script src="./S3C6410-SD卡-uboot_files/plugins.js" type="text/javascript"></script>
+<script src="./S3C6410-SD卡-uboot_files/common.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+<link rel="Stylesheet" type="text/css" href="./S3C6410-SD卡-uboot_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/turui/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./S3C6410-SD卡-uboot_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<script src="./S3C6410-SD卡-uboot_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./S3C6410-SD卡-uboot_files/navtop_2012.css">
+<div class="nav_top_2011"><br></div><div id="container"><div id="body"><div id="main"><div class="main"><br><div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./S3C6410-SD卡-uboot_files/S3C6410-SD卡-uboot.htm">
+        S3C6410开发全纪录（一）《还原SD卡启动的真相》
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage"><br></div>
+
+
+    
+<div id="article_content" class="article_content">
+前章我们也大致分析了SD卡的启动过程，在具体进行问题的定位及解决的过程中，发现还是有很多不明确的地方，网上的文章也多是人云亦云让我们来一步一步搞清楚S3C6410 SD卡启动的步骤及过程（我这里的开发板为OK6410，256M+1G的配置，SD卡为2G，MMC）<p><strong><span style="color:#ff0000;">一、开发板跳线，从SD卡启动</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 502px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>查看《OK6410开发板LINUX2.6用户手册.pdf》&nbsp;将跳线设置为&nbsp;11111000&nbsp;（从左到右为&nbsp;pin8&nbsp;到&nbsp;pin1的设置，别搞反了）&nbsp;&nbsp;</span></span></li><li class=""><span>这些设置可以在s3c6410的datasheet中查到，打开《s3c6410_rev12.pdf》125页&nbsp;&nbsp;</span></li><li class="alt"><span>Table&nbsp;3-1.&nbsp;Device&nbsp;operating&nbsp;mode&nbsp;selection&nbsp;at&nbsp;boot-up&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>从这里可以看到，最后3个位为0，表示从SD/MMC(CH0)启动&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">查看《OK6410开发板LINUX2.6用户手册.pdf》 将跳线设置为 11111000 （从左到右为 pin8 到 pin1的设置，别搞反了）
+这些设置可以在s3c6410的datasheet中查到，打开《s3c6410_rev12.pdf》125页
+Table 3-1. Device operating mode selection at boot-up 
+从这里可以看到，最后3个位为0，表示从SD/MMC(CH0)启动
+</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 643px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>修改UBOOT，让它支持从SD卡读取数据，并将自己自举到内存&nbsp;&nbsp;</span></span></li><li class=""><span>当我们设置完CPU的跳线，CPU已经清楚要从哪里去取第一条指,S3C6410到底是怎么工作的呢&nbsp;&nbsp;</span></li><li class="alt"><span>之前找到过一篇参考文章&nbsp;《S3C2450_IROM_ApplicationNote_Rev003.pdf》&nbsp;&nbsp;</span></li><li class=""><span>这次找到了官方的文档更清楚的说明了这一切《S3C6410_Internal_ROM_Booting.pdf》&nbsp;&nbsp;</span></li><li class="alt"><span>在文档中我们看到CPU上电之后的启动过程如下&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">修改UBOOT，让它支持从SD卡读取数据，并将自己自举到内存
+当我们设置完CPU的跳线，CPU已经清楚要从哪里去取第一条指,S3C6410到底是怎么工作的呢
+之前找到过一篇参考文章 《S3C2450_IROM_ApplicationNote_Rev003.pdf》
+这次找到了官方的文档更清楚的说明了这一切《S3C6410_Internal_ROM_Booting.pdf》
+在文档中我们看到CPU上电之后的启动过程如下
+</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 784px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>①&nbsp;&nbsp;iROM&nbsp;supports&nbsp;initial&nbsp;boot&nbsp;up,initialize&nbsp;system&nbsp;clock,D-TCM,device&nbsp;specific&nbsp;controller&nbsp;and&nbsp;bootin&nbsp;device.&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>②&nbsp;&nbsp;iROM&nbsp;boot&nbsp;codes&nbsp;can&nbsp;load&nbsp;4KB&nbsp;of&nbsp;bootloader&nbsp;to&nbsp;stepping&nbsp;stone.&nbsp;The&nbsp;8KB&nbsp;boot&nbsp;loader&nbsp;is&nbsp;called&nbsp;BL1&nbsp;&nbsp;</span></li><li class="alt"><span>③&nbsp;&nbsp;BL1:&nbsp;BL1&nbsp;can&nbsp;initialize&nbsp;system&nbsp;clock,&nbsp;UART,&nbsp;and&nbsp;SDRAM&nbsp;<span class="keyword">for</span><span>&nbsp;user.&nbsp;After&nbsp;initializing,&nbsp;BL1&nbsp;will&nbsp;load&nbsp;remaining&nbsp;boot&nbsp;loader&nbsp;which&nbsp;is&nbsp;called&nbsp;BL2&nbsp;on&nbsp;the&nbsp;SDRAM&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>④&nbsp;&nbsp;Finally,&nbsp;jump&nbsp;to&nbsp;start&nbsp;address&nbsp;of&nbsp;BL2.&nbsp;That&nbsp;will&nbsp;make&nbsp;good&nbsp;environment&nbsp;to&nbsp;use&nbsp;system.&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">①  iROM supports initial boot up,initialize system clock,D-TCM,device specific controller and bootin device. 
+②  iROM boot codes can load 4KB of bootloader to stepping stone. The 8KB boot loader is called BL1
+③  BL1: BL1 can initialize system clock, UART, and SDRAM for user. After initializing, BL1 will load remaining boot loader which is called BL2 on the SDRAM 
+④  Finally, jump to start address of BL2. That will make good environment to use system. 
+</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 942px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>按照这个启动过程，我们必须准备好8K的引导代码在BL1，&nbsp;&nbsp;</span></span></li><li class=""><span>用来初始化系统，始终，串口，SDRAM等，并且将完整的BootLoader放在BL2上&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>2.7&nbsp;Boot&nbsp;Block&nbsp;Assignment&nbsp;Guide&nbsp;中有详细的描述&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>2G以下&nbsp;SD/MMC&nbsp;的卡的存储结构&nbsp;&nbsp;</span></li><li class="alt"><span>SD/MMC&nbsp;1Block&nbsp;=&nbsp;512&nbsp;Byte&nbsp;&nbsp;</span></li><li class=""><span>=========================================================================================&nbsp;&nbsp;</span></li><li class="alt"><span>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SD/MMC&nbsp;Device&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;</span></li><li class=""><span>=========================================================================================&nbsp;&nbsp;</span></li><li class="alt"><span>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;Recommendation&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mandatory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;</span></li><li class=""><span>|&nbsp;User&nbsp;File&nbsp;System&nbsp;|=====================================================================&nbsp;&nbsp;</span></li><li class="alt"><span>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;Kernel&nbsp;|&nbsp;&nbsp;BL2&nbsp;&nbsp;|&nbsp;BL1(8K)&nbsp;&nbsp;|&nbsp;Signature(512Byte)&nbsp;|&nbsp;Reserved(512Byte)&nbsp;|&nbsp;&nbsp;</span></li><li class=""><span>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;16&nbsp;Block&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;Block&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;Block&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;</span></li><li class="alt"><span>=========================================================================================&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>有了这个大致的印象，我们先放一下，下面我们来修改UBOOT的代码&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">按照这个启动过程，我们必须准备好8K的引导代码在BL1，
+用来初始化系统，始终，串口，SDRAM等，并且将完整的BootLoader放在BL2上
+
+2.7 Boot Block Assignment Guide 中有详细的描述
+
+2G以下 SD/MMC 的卡的存储结构
+SD/MMC 1Block = 512 Byte
+=========================================================================================
+|                                    SD/MMC Device                                      |
+=========================================================================================
+|                  | Recommendation |                    Mandatory                      |
+| User File System |=====================================================================
+|                  | Kernel |  BL2  | BL1(8K)  | Signature(512Byte) | Reserved(512Byte) |
+|                  |        |       | 16 Block |       1 Block      |     1 Block       |
+=========================================================================================
+
+有了这个大致的印象，我们先放一下，下面我们来修改UBOOT的代码
+</pre><p><strong><span style="color:#ff0000;">二、修改UBOOT代码</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1360px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>s3c6410的uboot源码见最后的参考资料&nbsp;&nbsp;</span></span></li><li class=""><span>修改makefile&nbsp;交叉工具链的绝对路径（嘿嘿，这个交叉工具链当然是俺自己做的交叉工具链了，参考前面篇BLOG）&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>ifeq&nbsp;($(ARCH),arm)&nbsp;&nbsp;</span></li><li class="alt"><span>CROSS_COMPILE&nbsp;=&nbsp;arm-none-linux-gnueabi-&nbsp;&nbsp;</span></li><li class=""><span>endif&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>CROSS_COMPILE&nbsp;=&nbsp;/opt/cross_toolchains/arm/4.6.1/bin/arm-none-linux-gnueabi-&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">s3c6410的uboot源码见最后的参考资料
+修改makefile 交叉工具链的绝对路径（嘿嘿，这个交叉工具链当然是俺自己做的交叉工具链了，参考前面篇BLOG）
+
+ifeq ($(ARCH),arm)
+CROSS_COMPILE = arm-none-linux-gnueabi-
+endif
+
+CROSS_COMPILE = /opt/cross_toolchains/arm/4.6.1/bin/arm-none-linux-gnueabi-
+</pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1573px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>修改&nbsp;include/configs/smdk6410.h&nbsp;打开&nbsp;#define&nbsp;CONFIG_BOOT_MOVINAND&nbsp;这个宏，并屏蔽其他的启动选项&nbsp;&nbsp;</span></span></li><li class=""><span>在UBOOT的代码中，将IROM的启动模式称之为MOVINAND&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">修改 include/configs/smdk6410.h 打开 #define CONFIG_BOOT_MOVINAND 这个宏，并屏蔽其他的启动选项
+在UBOOT的代码中，将IROM的启动模式称之为MOVINAND
+</pre><p><strong><span style="color:#ff0000;">这个UBOOT就已经可以从SD卡启动了，S3C6410具体又是怎么工作的呢？</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1722px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_7" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_7" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=7&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>在&nbsp;cpu/s3c64xx/start.S&nbsp;中我们看到如下这段&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#ifdef&nbsp;CONFIG_BOOT_MOVINAND</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ldr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sp,&nbsp;_TEXT_PHY_BASE&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;movi_bl2_copy&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;after_copy&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">在 cpu/s3c64xx/start.S 中我们看到如下这段
+
+#ifdef CONFIG_BOOT_MOVINAND
+        ldr     sp, _TEXT_PHY_BASE
+        bl      movi_bl2_copy
+        b       after_copy
+#endif
+
+</pre><p><strong><span style="color:#3366ff;">分析 movi_bl2_copy 函数</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1943px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_8" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_8" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=8&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>cpu/s3c64xx/movi.c&nbsp;中&nbsp;</span><span class="keyword">void</span><span>&nbsp;movi_bl2_copy(</span><span class="keyword">void</span><span>)&nbsp;中定义如下&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">cpu/s3c64xx/movi.c 中 void movi_bl2_copy(void) 中定义如下
+</pre><p><strong><span style="color:#3366ff;"></span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2012px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_9" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_9" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=9&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#if&nbsp;defined(CONFIG_S3C6400)</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CopyMovitoMem(MOVI_BL2_POS,&nbsp;MOVI_BL2_BLKCNT,&nbsp;(uint&nbsp;*)BL2_BASE,&nbsp;CONFIG_SYS_CLK_FREQ,&nbsp;MOVI_INIT_REQUIRED);&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writel(readl(HM_CONTROL4)&nbsp;|&nbsp;(0x3&nbsp;&lt;&lt;&nbsp;16),&nbsp;HM_CONTROL4);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CopyMovitoMem(HSMMC_CHANNEL,&nbsp;MOVI_BL2_POS,&nbsp;MOVI_BL2_BLKCNT,&nbsp;(uint&nbsp;*)BL2_BASE,&nbsp;MOVI_INIT_REQUIRED);&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">#if defined(CONFIG_S3C6400)
+        CopyMovitoMem(MOVI_BL2_POS, MOVI_BL2_BLKCNT, (uint *)BL2_BASE, CONFIG_SYS_CLK_FREQ, MOVI_INIT_REQUIRED);
+#else
+        writel(readl(HM_CONTROL4) | (0x3 &lt;&lt; 16), HM_CONTROL4);
+        CopyMovitoMem(HSMMC_CHANNEL, MOVI_BL2_POS, MOVI_BL2_BLKCNT, (uint *)BL2_BASE, MOVI_INIT_REQUIRED);
+#endif</pre><p></p><p><strong><span style="color:#3366ff;">确定MOVI_BL2_POS的值</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2232px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_10" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_10" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=10&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>./include/movi.h:#define&nbsp;MOVI_BL2_POS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(MOVI_LAST_BLKPOS&nbsp;-&nbsp;MOVI_BL1_BLKCNT&nbsp;-&nbsp;MOVI_BL2_BLKCNT&nbsp;-&nbsp;MOVI_ENV_BLKCNT)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h:#define&nbsp;MOVI_LAST_BLKPOS&nbsp;(MOVI_TOTAL_BLKCNT&nbsp;-&nbsp;(eFUSE_SIZE&nbsp;/&nbsp;MOVI_BLKSIZE))&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h:#define&nbsp;MOVI_BL1_BLKCNT&nbsp;&nbsp;(SS_SIZE&nbsp;/&nbsp;MOVI_BLKSIZE)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h:#define&nbsp;MOVI_BL2_BLKCNT&nbsp;&nbsp;(((PART_ZIMAGE_OFFSET&nbsp;-&nbsp;PART_UBOOT_OFFSET)&nbsp;/&nbsp;MOVI_BLKSIZE)&nbsp;-&nbsp;MOVI_ENV_BLKCNT)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h:#define&nbsp;MOVI_ENV_BLKCNT&nbsp;&nbsp;(CFG_ENV_SIZE&nbsp;/&nbsp;MOVI_BLKSIZE)&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#ifdef&nbsp;CONFIG_BOOT_MOVINAND</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;MOVI_TOTAL_BLKCNT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*((volatile&nbsp;unsigned&nbsp;int*)(TCM_BASE&nbsp;-&nbsp;0x4))</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;MOVI_HIGH_CAPACITY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*((volatile&nbsp;unsigned&nbsp;int*)(TCM_BASE&nbsp;-&nbsp;0x8))</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;MOVI_TOTAL_BLKCNT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7864320&nbsp;//&nbsp;7864320&nbsp;//&nbsp;3995648&nbsp;//&nbsp;1003520&nbsp;/*&nbsp;static&nbsp;movinand&nbsp;total&nbsp;block&nbsp;count:&nbsp;for&nbsp;writing&nbsp;to&nbsp;movinand&nbsp;when&nbsp;nand&nbsp;boot&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;MOVI_HIGH_CAPACITY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>./include/movi.h:#define&nbsp;MOVI_BLKSIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;512&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>./include/movi.h&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#if&nbsp;defined(CONFIG_S3C6400)&nbsp;||&nbsp;defined(CONFIG_S3C6410)&nbsp;||&nbsp;defined(CONFIG_S3C6430)</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;TCM_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x0C004000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;BL2_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x57E00000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#elif&nbsp;defined(CONFIG_S3C2450)&nbsp;||&nbsp;defined(CONFIG_S3C2416)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;TCM_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x40004000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;BL2_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x33E00000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#&nbsp;error&nbsp;TCM_BASE&nbsp;or&nbsp;BL2_BASE&nbsp;is&nbsp;not&nbsp;defined</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>./include/movi.h&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#if&nbsp;defined(CONFIG_S3C6400)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;SS_SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(4&nbsp;*&nbsp;1024)</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;eFUSE_SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2&nbsp;*&nbsp;1024)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;1.5k&nbsp;eFuse,&nbsp;0.5k&nbsp;reserved</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;SS_SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(8&nbsp;*&nbsp;1024)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;eFUSE_SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1&nbsp;*&nbsp;1024)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;0.5k&nbsp;eFuse,&nbsp;0.5k&nbsp;reserved`</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>./include/movi.h:#define&nbsp;PART_ZIMAGE_OFFSET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x40000&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>./include/movi.h:#define&nbsp;PART_UBOOT_OFFSET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x0&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>./include/configs/smdk6410.h:#define&nbsp;CFG_ENV_SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x4000&nbsp;&nbsp;<span class="comment">/*&nbsp;Total&nbsp;Size&nbsp;of&nbsp;Environment&nbsp;Sector&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">./include/movi.h:#define MOVI_BL2_POS     (MOVI_LAST_BLKPOS - MOVI_BL1_BLKCNT - MOVI_BL2_BLKCNT - MOVI_ENV_BLKCNT)
+
+./include/movi.h:#define MOVI_LAST_BLKPOS (MOVI_TOTAL_BLKCNT - (eFUSE_SIZE / MOVI_BLKSIZE))
+
+./include/movi.h:#define MOVI_BL1_BLKCNT  (SS_SIZE / MOVI_BLKSIZE)
+
+./include/movi.h:#define MOVI_BL2_BLKCNT  (((PART_ZIMAGE_OFFSET - PART_UBOOT_OFFSET) / MOVI_BLKSIZE) - MOVI_ENV_BLKCNT)
+
+./include/movi.h:#define MOVI_ENV_BLKCNT  (CFG_ENV_SIZE / MOVI_BLKSIZE)
+
+./include/movi.h
+#ifdef CONFIG_BOOT_MOVINAND
+#define MOVI_TOTAL_BLKCNT       *((volatile unsigned int*)(TCM_BASE - 0x4))
+#define MOVI_HIGH_CAPACITY      *((volatile unsigned int*)(TCM_BASE - 0x8))
+#else
+#define MOVI_TOTAL_BLKCNT       7864320 // 7864320 // 3995648 // 1003520 /* static movinand total block count: for writing to movinand when nand boot */
+#define MOVI_HIGH_CAPACITY      0
+#endif
+
+./include/movi.h:#define MOVI_BLKSIZE           512
+
+./include/movi.h
+#if defined(CONFIG_S3C6400) || defined(CONFIG_S3C6410) || defined(CONFIG_S3C6430)
+#define TCM_BASE                0x0C004000
+#define BL2_BASE                0x57E00000
+#elif defined(CONFIG_S3C2450) || defined(CONFIG_S3C2416)
+#define TCM_BASE                0x40004000
+#define BL2_BASE                0x33E00000
+#else
+# error TCM_BASE or BL2_BASE is not defined
+#endif
+
+./include/movi.h
+#if defined(CONFIG_S3C6400)
+#define SS_SIZE                 (4 * 1024)
+#define eFUSE_SIZE              (2 * 1024)      // 1.5k eFuse, 0.5k reserved
+#else
+#define SS_SIZE                 (8 * 1024)
+#define eFUSE_SIZE              (1 * 1024)      // 0.5k eFuse, 0.5k reserved`
+#endif
+
+./include/movi.h:#define PART_ZIMAGE_OFFSET     0x40000
+
+./include/movi.h:#define PART_UBOOT_OFFSET      0x0
+
+./include/configs/smdk6410.h:#define CFG_ENV_SIZE               0x4000  /* Total Size of Environment Sector */
+</pre><p><strong><span style="color:#3366ff;">确定BL2_BASE的值</span></strong></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 3172px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_11" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_11" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=11&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>./include/movi.h&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#if&nbsp;defined(CONFIG_S3C6400)&nbsp;||&nbsp;defined(CONFIG_S3C6410)&nbsp;||&nbsp;defined(CONFIG_S3C6430)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;TCM_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x0C004000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;BL2_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x57E00000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#elif&nbsp;defined(CONFIG_S3C2450)&nbsp;||&nbsp;defined(CONFIG_S3C2416)</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;TCM_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x40004000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;BL2_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x33E00000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#else</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#&nbsp;error&nbsp;TCM_BASE&nbsp;or&nbsp;BL2_BASE&nbsp;is&nbsp;not&nbsp;defined</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">./include/movi.h
+#if defined(CONFIG_S3C6400) || defined(CONFIG_S3C6410) || defined(CONFIG_S3C6430)
+#define TCM_BASE                0x0C004000
+#define BL2_BASE                0x57E00000
+#elif defined(CONFIG_S3C2450) || defined(CONFIG_S3C2416)
+#define TCM_BASE                0x40004000
+#define BL2_BASE                0x33E00000
+#else
+# error TCM_BASE or BL2_BASE is not defined
+#endif
+
+</pre><p><strong><span style="color:#ff0000;">经过计算我们可以看出，这里决定CopyMovitoMem的功能，是TCM_BASE - 0x4，这个地址的寄存器的值（隐含的也告诉我们UBOOT编译出来之后不得大于256k）</span></strong></p><p>《S3C6410_Internal_ROM_Booting.pdf》中看到</p><p>0x0C003FFC globalBlockSizeHide Total block count of the MMC device </p><p>这个值，具体的为，256K（根据打印可以得出，没找到具体的说明）</p><p>MOVI_BL2_BLKCNT 的值为 ( (0x40000-0)/512 - (0x4000/512) ) = 512 -32 （个扇区）</p><p><strong><span style="color:#3366ff;">网上大多数资料写到CopyMovitoMem是<span style="color:#ff0000;">将256k的数据搬运到内存中，</span></span><span style="color:#3366ff;">从这个计算上我们可以看出</span><span style="color:#3366ff;"><span style="color:#ff0000;">实际这个结论是错的</span></span></strong></p><p><strong><span style="color:#3366ff;">在这里只搬运了 256k-16k的数据到内存</span></strong></p><p><strong><span style="color:#3366ff;">在MOVI_BL2_POS的定义中做了相应的处理，以保证位置的正确性</span></strong></p><p>编译uboot，生成u-boot.bin</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 3819px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_12" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_12" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=12&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>make&nbsp;smdk6410_config&nbsp;&nbsp;</span></span></li><li class=""><span>make&nbsp;-j4&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">make smdk6410_config
+make -j4</pre><p><strong><span style="color:#ff0000;">三、将修改好的UBOOT烧录到SD卡中</span></strong></p><p>生成的uboot-bin是不是直接可以烧录到SD卡中呢？</p><p>有现成的工具IROM_Fusing_Tool.exe（开源的，可以找到源代码），但这个工具烧录的是nb0文件</p><p>实际上nb0文件的结构是：256k+8k 这样的一个形式，在Linux系统可以通过下面这个脚本来生成nb0文件</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 4070px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_13" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_13" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=13&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#!/bin/sh</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>rm&nbsp;-rf&nbsp;temp&nbsp;x*&nbsp;u-boot_256k.bin&nbsp;u-boot_8k.bin&nbsp;u-boot_mmc.nb0&nbsp;&nbsp;</span></li><li class="alt"><span>cat&nbsp;u-boot.bin&nbsp;&gt;&gt;&nbsp;temp&nbsp;&nbsp;</span></li><li class=""><span>cat&nbsp;u-boot.bin&nbsp;&gt;&gt;&nbsp;temp&nbsp;&nbsp;</span></li><li class="alt"><span>split&nbsp;-b&nbsp;256k&nbsp;temp&nbsp;&nbsp;</span></li><li class=""><span>mv&nbsp;xaa&nbsp;u-boot_256k.bin&nbsp;&nbsp;</span></li><li class="alt"><span>split&nbsp;-b&nbsp;8k&nbsp;u-boot.bin&nbsp;&nbsp;</span></li><li class=""><span>mv&nbsp;xaa&nbsp;u-boot_8k.bin&nbsp;&nbsp;</span></li><li class="alt"><span>cat&nbsp;u-boot_256k.bin&nbsp;&gt;&nbsp;u-boot_mmc.nb0&nbsp;&nbsp;</span></li><li class=""><span>cat&nbsp;u-boot_8k.bin&nbsp;&gt;&gt;&nbsp;u-boot_mmc.nb0&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">#!/bin/sh
+rm -rf temp x* u-boot_256k.bin u-boot_8k.bin u-boot_mmc.nb0
+cat u-boot.bin &gt;&gt; temp
+cat u-boot.bin &gt;&gt; temp
+split -b 256k temp
+mv xaa u-boot_256k.bin
+split -b 8k u-boot.bin
+mv xaa u-boot_8k.bin
+cat u-boot_256k.bin &gt; u-boot_mmc.nb0
+cat u-boot_8k.bin &gt;&gt; u-boot_mmc.nb0</pre><p>我想直接将uboot-bin烧录到SD卡中，使用脚本太麻烦，于是我打算自己写一个烧录工具，关键代码如下</p><p>需要说明的是，我这里使用的是VC6，WINDOWS XP，VC6对磁盘IO的操作本身支持并不是非常好，有很多扩展的定义，功能都无法使用，这里很多都我手工添加进去的</p><p>如果使用的是VC2003及以上版本，会简单一些</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 4451px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_14" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_14" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=14&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">DWORD</span><span>&nbsp;CSC6410BootLoaderWriterDlg::BlockDataRead(</span><span class="datatypes">char</span><span>&nbsp;cPart,</span><span class="datatypes">DWORD</span><span>&nbsp;dwBlockIndex,</span><span class="datatypes">DWORD</span><span>&nbsp;dwReadCount,</span><span class="datatypes">BYTE</span><span>*&nbsp;pBuffer)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;devName;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;devName.Format(<span class="string">"\\\\.\\%c:"</span><span>,cPart);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">HANDLE</span><span>&nbsp;hDevice&nbsp;=&nbsp;CreateFile(devName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,0,NULL);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwFilePointer&nbsp;=&nbsp;SetFilePointer(hDevice,dwBlockIndex*512,&nbsp;0,FILE_BEGIN);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwBytesRead&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">BOOL</span><span>&nbsp;bRead&nbsp;=&nbsp;ReadFile(hDevice,pBuffer,dwReadCount,&amp;dwBytesRead,NULL);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(bRead&nbsp;==&nbsp;FALSE)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwError&nbsp;=&nbsp;GetLastError();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;CloseHandle(hDevice);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;dwBytesRead;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">DWORD CSC6410BootLoaderWriterDlg::BlockDataRead(char cPart,DWORD dwBlockIndex,DWORD dwReadCount,BYTE* pBuffer)
+{
+ 	CString devName;
+	devName.Format("\\\\.\\%c:",cPart);
+	HANDLE hDevice = CreateFile(devName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,0,NULL);
+	DWORD dwFilePointer = SetFilePointer(hDevice,dwBlockIndex*512, 0,FILE_BEGIN);
+	DWORD dwBytesRead = 0;
+	BOOL bRead = ReadFile(hDevice,pBuffer,dwReadCount,&amp;dwBytesRead,NULL);
+	if(bRead == FALSE)
+	{
+		DWORD dwError = GetLastError();
+	}
+	CloseHandle(hDevice);
+	return dwBytesRead;
+} </pre><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 4789px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_15" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_15" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=15&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">DWORD</span><span>&nbsp;CSC6410BootLoaderWriterDlg::BlockDataWrite(</span><span class="datatypes">ULONG</span><span>&nbsp;nPhysicalDriveNumber,</span><span class="datatypes">DWORD</span><span>&nbsp;dwBlockIndex,</span><span class="datatypes">BYTE</span><span>*&nbsp;pData,</span><span class="datatypes">DWORD</span><span>&nbsp;dwDataLen)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(&nbsp;(dwDataLen&nbsp;%&nbsp;512)&nbsp;!=&nbsp;0&nbsp;)&nbsp;dwDataLen&nbsp;=&nbsp;(&nbsp;(dwDataLen&nbsp;/&nbsp;512)&nbsp;+&nbsp;1&nbsp;)&nbsp;*&nbsp;512;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;devName;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;devName.Format(<span class="string">"\\\\.\\PhysicalDrive%d"</span><span>,nPhysicalDriveNumber);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">HANDLE</span><span>&nbsp;hDevice&nbsp;=&nbsp;CreateFile(devName,GENERIC_WRITE,FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwFilePointer&nbsp;=&nbsp;SetFilePointer(hDevice,dwBlockIndex*512,&nbsp;0,FILE_BEGIN);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwBytesWrite&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">BOOL</span><span>&nbsp;bWrite&nbsp;=&nbsp;WriteFile(hDevice,pData,dwDataLen,&amp;dwBytesWrite,NULL);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(bWrite&nbsp;==&nbsp;FALSE)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwError&nbsp;=&nbsp;GetLastError();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;CloseHandle(hDevice);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;dwBytesWrite;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">DWORD CSC6410BootLoaderWriterDlg::BlockDataWrite(ULONG nPhysicalDriveNumber,DWORD dwBlockIndex,BYTE* pData,DWORD dwDataLen)
+{
+	if( (dwDataLen % 512) != 0 ) dwDataLen = ( (dwDataLen / 512) + 1 ) * 512;
+	CString devName;
+	devName.Format("\\\\.\\PhysicalDrive%d",nPhysicalDriveNumber);
+	HANDLE hDevice = CreateFile(devName,GENERIC_WRITE,FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+	DWORD dwFilePointer = SetFilePointer(hDevice,dwBlockIndex*512, 0,FILE_BEGIN);
+
+	DWORD dwBytesWrite = 0;
+	BOOL bWrite = WriteFile(hDevice,pData,dwDataLen,&amp;dwBytesWrite,NULL);	
+	if(bWrite == FALSE)
+	{
+		DWORD dwError = GetLastError();
+	}
+
+	CloseHandle(hDevice);
+	return dwBytesWrite;
+}
+</pre><p>看到区别了吗？<strong><span style="color:#ff0000;">这里要非常非常注意！</span></strong></p><p>Write函数中devName的构建形式与Read函数中的不一样，这个问题让我调试了很久，如果在Write函数中使用Read函数的构建形式，则会遇到WriteFile工作不正常的现象</p><p>具体为：在操作最后若干个扇区时，bWrite 等于 TRUE，dwBytesWrite却为0（为什么？还没能深究下去）</p><p>另外，如果要写入的数据长度不是512的整数倍，一定要进行处理，否则会引起GetLastError是87，参数错误</p><p>因为所有的FLASH，最小的扇区时512字节，则最少要以512个字节作为一次操作单位</p><p>（文件系统帮我们解决了这些问题，我们现在是对磁盘裸的操作，所以不能按照有文件系统的想法来考虑这个问题）</p><p>下面是Write函数构造devName时需要用到的函数</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 5517px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_16" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_16" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=16&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">ULONG</span><span>&nbsp;CSC6410BootLoaderWriterDlg::GetPhysicalDriveNumber(</span><span class="datatypes">char</span><span>&nbsp;cPart)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">typedef</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;_DISK_EXTENT&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">ULONG</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DiskNumber;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LARGE_INTEGER&nbsp;StartingOffset;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LARGE_INTEGER&nbsp;ExtentLength;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;DISK_EXTENT,&nbsp;*PDISK_EXTENT;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">typedef</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;_VOLUME_DISK_EXTENTS&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">ULONG</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NumberOfDiskExtents;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DISK_EXTENT&nbsp;Extents[ANYSIZE_ARRAY];&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;VOLUME_DISK_EXTENTS,&nbsp;*PVOLUME_DISK_EXTENTS;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;VOLUMEDISKSIZE&nbsp;(sizeof(VOLUME_DISK_EXTENTS))</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS&nbsp;5636096</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;devName;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;devName.Format(<span class="string">"\\\\.\\%c:"</span><span>,cPart);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">HANDLE</span><span>&nbsp;hDevice&nbsp;=&nbsp;CreateFile(devName,&nbsp;GENERIC_READ,&nbsp;FILE_SHARE_READ&nbsp;|&nbsp;FILE_SHARE_WRITE,&nbsp;NULL,&nbsp;OPEN_EXISTING,&nbsp;0,&nbsp;NULL&nbsp;);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;VOLUME_DISK_EXTENTS&nbsp;volumeData;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwOut&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;DeviceIoControl(&nbsp;hDevice,&nbsp;IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,NULL,&nbsp;0,&nbsp;&amp;volumeData,&nbsp;VOLUMEDISKSIZE,&nbsp;&amp;dwOut,&nbsp;NULL&nbsp;);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;CloseHandle(&nbsp;hDevice&nbsp;);&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;volumeData.Extents[0].DiskNumber;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">ULONG CSC6410BootLoaderWriterDlg::GetPhysicalDriveNumber(char cPart)
+{
+	typedef struct _DISK_EXTENT {
+	  ULONG         DiskNumber;
+	  LARGE_INTEGER StartingOffset;
+	  LARGE_INTEGER ExtentLength;
+	} DISK_EXTENT, *PDISK_EXTENT;
+
+
+	typedef struct _VOLUME_DISK_EXTENTS {
+	  ULONG       NumberOfDiskExtents;
+	  DISK_EXTENT Extents[ANYSIZE_ARRAY];
+	} VOLUME_DISK_EXTENTS, *PVOLUME_DISK_EXTENTS;
+
+	#define VOLUMEDISKSIZE (sizeof(VOLUME_DISK_EXTENTS))
+
+	#define IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS 5636096
+
+ 	CString devName;
+	devName.Format("\\\\.\\%c:",cPart);
+	HANDLE hDevice = CreateFile(devName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
+
+	VOLUME_DISK_EXTENTS volumeData;
+	DWORD dwOut = 0;
+    DeviceIoControl( hDevice, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,NULL, 0, &amp;volumeData, VOLUMEDISKSIZE, &amp;dwOut, NULL );
+    CloseHandle( hDevice ); 
+
+    return volumeData.Extents[0].DiskNumber;
+}
+</pre><p>下面这段代码是用来获得，所有插入的U盘（可移动磁盘,注意下面的判断）的盘符</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 6151px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_17" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_17" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=17&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">void</span><span>&nbsp;CSC6410BootLoaderWriterDlg::OnButtonGetdriverinfo()&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO:&nbsp;Add&nbsp;your&nbsp;control&nbsp;notification&nbsp;handler&nbsp;code&nbsp;here</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获取所有的盘符</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;m_cbList.ResetContent();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwStrLen&nbsp;=&nbsp;GetLogicalDriveStrings(0,NULL);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pString&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;</span><span class="datatypes">char</span><span>[dwStrLen+1];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(pString,0,dwStrLen+1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;GetLogicalDriveStrings(dwStrLen+1,pString);&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;*pNow&nbsp;=&nbsp;pString;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>(TRUE)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(pNow&nbsp;&gt;=&nbsp;(pString+dwStrLen-1))&nbsp;</span><span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwRet&nbsp;=&nbsp;GetDriveType(pNow);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(dwRet&nbsp;==&nbsp;DRIVE_REMOVABLE)&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m_cbList.InsertString(0,pNow);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pNow&nbsp;+=&nbsp;strlen(pNow);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pNow&nbsp;++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">delete</span><span>[]&nbsp;pString;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;m_cbList.SetCurSel(0);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;m_cbList.SetFocus();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;WriteLog(<span class="string">"U盘检查完成"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">void CSC6410BootLoaderWriterDlg::OnButtonGetdriverinfo() 
+{
+	// TODO: Add your control notification handler code here
+	// 获取所有的盘符
+	m_cbList.ResetContent();
+	DWORD dwStrLen = GetLogicalDriveStrings(0,NULL);  
+	char* pString = new char[dwStrLen+1];
+	memset(pString,0,dwStrLen+1);
+	GetLogicalDriveStrings(dwStrLen+1,pString); 
+
+	char *pNow = pString;
+	while(TRUE)
+	{
+		if(pNow &gt;= (pString+dwStrLen-1)) break;
+		DWORD dwRet = GetDriveType(pNow);
+		if(dwRet == DRIVE_REMOVABLE) 
+		{
+			m_cbList.InsertString(0,pNow);
+		}
+		pNow += strlen(pNow);
+		pNow ++;
+	}
+
+	delete[] pString;
+
+	m_cbList.SetCurSel(0);
+	m_cbList.SetFocus();
+
+	WriteLog("U盘检查完成");
+}
+</pre><p>最后是写入代码，在这里我们会要求SD卡首先会被各式化成FAT32各式，以便我们能去读取FTA32文件分配表中MBR的部分</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/6634461#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/6634461#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 6812px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_18" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_18" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=18&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">void</span><span>&nbsp;CSC6410BootLoaderWriterDlg::OnButtonOp()&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO:&nbsp;Add&nbsp;your&nbsp;control&nbsp;notification&nbsp;handler&nbsp;code&nbsp;here</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nCurSel&nbsp;=&nbsp;m_cbList.GetCurSel();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCurSel&nbsp;==&nbsp;-1)&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"探测磁盘信息"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;strBootFilePath;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;m_eBootFilePath.GetWindowText(strBootFilePath);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(strBootFilePath&nbsp;==&nbsp;</span><span class="string">""</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"请先选择需要烧录的引导文件"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获得驱动器盘符</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;strText;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;m_cbList.GetLBText(m_cbList.GetCurSel(),strText);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;cPart&nbsp;=&nbsp;strText[0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获得&nbsp;PhysicalDriveNumber</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">ULONG</span><span>&nbsp;nPhysicalDriveNumber&nbsp;=&nbsp;GetPhysicalDriveNumber(cPart);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;读取&nbsp;0&nbsp;扇区&nbsp;mbr</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">BYTE</span><span>&nbsp;szMbr[512];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(szMbr,0,<span class="keyword">sizeof</span><span>(szMbr));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwReturn&nbsp;=&nbsp;BlockDataRead(cPart,0,</span><span class="keyword">sizeof</span><span>(szMbr),szMbr);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(dwReturn&nbsp;!=&nbsp;</span><span class="keyword">sizeof</span><span>(szMbr))&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"Read&nbsp;MBR&nbsp;error."</span><span>,</span><span class="string">"错误"</span><span>,MB_OK|MB_ICONERROR);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;strLog;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strLog.Format(<span class="string">"读取MBR成功"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteLog(strLog);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;判断是否为&nbsp;fat32</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;FAT16&nbsp;为&nbsp;0x36&nbsp;0x37&nbsp;0x38&nbsp;0x39&nbsp;0x3a&nbsp;0x3b</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szFs[6];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[0]&nbsp;=&nbsp;szMbr[0x52];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[1]&nbsp;=&nbsp;szMbr[0x53];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[2]&nbsp;=&nbsp;szMbr[0x54];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[3]&nbsp;=&nbsp;szMbr[0x55];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[4]&nbsp;=&nbsp;szMbr[0x56];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;szFs[5]&nbsp;=&nbsp;<span class="string">'\0'</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;strcmp(szFs,</span><span class="string">"FAT32"</span><span>)&nbsp;!=&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"请将SD卡格式化为FAT32文件系统"</span><span>,</span><span class="string">"错误"</span><span>,MB_OK|MB_ICONINFORMATION);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获得磁盘的扇区总数</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//1CH-1FH&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;本分区隐含扇区数&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//20H-23H&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;该盘实际使用扇区数（不包括隐含扇区）&nbsp;&nbsp;&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;count_block_hidden&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;count_block_hidden,&amp;szMbr[0x1c],<span class="keyword">sizeof</span><span>(count_block_hidden));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;count_block&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;count_block,&amp;szMbr[0x20],<span class="keyword">sizeof</span><span>(count_block));&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;count_block_total&nbsp;=&nbsp;count_block_hidden&nbsp;+&nbsp;count_block;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;另一种方法&nbsp;获得&nbsp;扇区总数</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;#define&nbsp;IOCTL_DISK_GET_DRIVE_GEOMETRY_EX&nbsp;458912</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;&nbsp;struct&nbsp;_DISK_GEOMETRY_EX&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;DISK_GEOMETRY&nbsp;&nbsp;Geometry;&nbsp;&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;&nbsp;LARGE_INTEGER&nbsp;&nbsp;DiskSize;&nbsp;&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;&nbsp;UCHAR&nbsp;&nbsp;Data[1];</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;}&nbsp;DiskEX;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;DeviceIoControl(hDevice,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,NULL,0,(LPVOID)&amp;DiskEX,sizeof(DiskEX),(LPDWORD)&amp;bytesReturned,NULL);</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;读取&nbsp;u-boot.bin&nbsp;文件</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;最大&nbsp;256k</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MOVI_TOTAL_BLKCNT&nbsp;0x40000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">BYTE</span><span>&nbsp;buffer_utoot[MOVI_TOTAL_BLKCNT];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(buffer_utoot,0,<span class="keyword">sizeof</span><span>(buffer_utoot));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;CFile&nbsp;cf;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;cf.Open(strBootFilePath,CFile::modeRead);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;uboot_size&nbsp;=&nbsp;min(MOVI_TOTAL_BLKCNT,cf.GetLength());&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;cf.Read(buffer_utoot,uboot_size);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;cf.Close();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;将引导程序&nbsp;uboot-bin&nbsp;写入相应的位置</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;bl2_begin&nbsp;=&nbsp;count_block_total-1-1-16-512;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;bl1_begin&nbsp;=&nbsp;count_block_total-1-1-16;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dwReturn&nbsp;=&nbsp;BlockDataWrite(nPhysicalDriveNumber,bl1_begin,buffer_utoot,8192);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(dwReturn&nbsp;!=&nbsp;8192)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"写入引导8k字节失败"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;strLog;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strLog.Format(<span class="string">"写入引导8k字节成功"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteLog(strLog);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dwReturn&nbsp;=&nbsp;BlockDataWrite(nPhysicalDriveNumber,bl2_begin,buffer_utoot,uboot_size);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(dwReturn&nbsp;&lt;&nbsp;uboot_size)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MessageBox(<span class="string">"写入引导失败"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CString&nbsp;strLog;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strLog.Format(<span class="string">"引导文件写入完成，磁盘总扇区数：%d"</span><span>,count_block_total);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteLog(strLog);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">void CSC6410BootLoaderWriterDlg::OnButtonOp() 
+{
+	// TODO: Add your control notification handler code here
+
+	int nCurSel = m_cbList.GetCurSel();
+	if(nCurSel == -1) 
+	{
+		MessageBox("探测磁盘信息");	
+		return;
+	}
+
+	CString strBootFilePath;
+	m_eBootFilePath.GetWindowText(strBootFilePath);
+	if(strBootFilePath == "")
+	{
+		MessageBox("请先选择需要烧录的引导文件");	
+		return;	
+	}
+
+	// 获得驱动器盘符
+	CString strText;
+	m_cbList.GetLBText(m_cbList.GetCurSel(),strText);
+	char cPart = strText[0];
+
+	// 获得 PhysicalDriveNumber
+	ULONG nPhysicalDriveNumber = GetPhysicalDriveNumber(cPart);
+
+	// 读取 0 扇区 mbr
+	BYTE szMbr[512];
+	memset(szMbr,0,sizeof(szMbr));
+	DWORD dwReturn = BlockDataRead(cPart,0,sizeof(szMbr),szMbr);
+	if(dwReturn != sizeof(szMbr))
+	{
+		MessageBox("Read MBR error.","错误",MB_OK|MB_ICONERROR);
+		return;
+	}
+	{
+		CString strLog;
+		strLog.Format("读取MBR成功");
+		WriteLog(strLog);	
+	}
+
+	// 判断是否为 fat32
+	// FAT16 为 0x36 0x37 0x38 0x39 0x3a 0x3b
+	char szFs[6];
+	szFs[0] = szMbr[0x52];   
+    szFs[1] = szMbr[0x53];   
+    szFs[2] = szMbr[0x54];   
+    szFs[3] = szMbr[0x55];   
+    szFs[4] = szMbr[0x56];   
+    szFs[5] = '\0';   
+
+	if ( strcmp(szFs,"FAT32") != 0)
+    {   
+        MessageBox("请将SD卡格式化为FAT32文件系统","错误",MB_OK|MB_ICONINFORMATION);   
+		return;
+    }
+	
+	// 获得磁盘的扇区总数
+	//1CH-1FH   4  本分区隐含扇区数 
+	//20H-23H   4  该盘实际使用扇区数（不包括隐含扇区） 	
+
+	DWORD count_block_hidden = 0;
+	memcpy(&amp;count_block_hidden,&amp;szMbr[0x1c],sizeof(count_block_hidden));
+
+	DWORD count_block = 0;
+	memcpy(&amp;count_block,&amp;szMbr[0x20],sizeof(count_block));
+
+	DWORD count_block_total = count_block_hidden + count_block;
+
+	// 另一种方法 获得 扇区总数
+	// #define IOCTL_DISK_GET_DRIVE_GEOMETRY_EX 458912
+	// 	struct _DISK_GEOMETRY_EX 
+	// {	DISK_GEOMETRY  Geometry;  
+	// 	LARGE_INTEGER  DiskSize;  
+	// 	UCHAR  Data[1];
+	// } DiskEX;
+	// DeviceIoControl(hDevice,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,NULL,0,(LPVOID)&amp;DiskEX,sizeof(DiskEX),(LPDWORD)&amp;bytesReturned,NULL);
+
+	// 读取 u-boot.bin 文件
+	// 最大 256k
+	#define MOVI_TOTAL_BLKCNT 0x40000
+	BYTE buffer_utoot[MOVI_TOTAL_BLKCNT];
+	memset(buffer_utoot,0,sizeof(buffer_utoot));
+	
+	CFile cf;
+	cf.Open(strBootFilePath,CFile::modeRead);
+
+	DWORD uboot_size = min(MOVI_TOTAL_BLKCNT,cf.GetLength());
+	
+	cf.Read(buffer_utoot,uboot_size);
+	cf.Close();
+	
+	// 将引导程序 uboot-bin 写入相应的位置
+	DWORD bl2_begin = count_block_total-1-1-16-512;
+	DWORD bl1_begin = count_block_total-1-1-16;
+
+	dwReturn = BlockDataWrite(nPhysicalDriveNumber,bl1_begin,buffer_utoot,8192);
+	if(dwReturn != 8192)
+	{
+		MessageBox("写入引导8k字节失败");
+		return;
+	}
+	{
+		CString strLog;
+		strLog.Format("写入引导8k字节成功");
+		WriteLog(strLog);	
+	}
+	dwReturn = BlockDataWrite(nPhysicalDriveNumber,bl2_begin,buffer_utoot,uboot_size);
+
+	if(dwReturn &lt; uboot_size)
+	{
+		MessageBox("写入引导失败");
+		return;
+	}
+	{
+		CString strLog;
+		strLog.Format("引导文件写入完成，磁盘总扇区数：%d",count_block_total);
+		WriteLog(strLog);	
+	}
+}</pre><p>到这里，我们就可以完全分析清楚，并可以自主的制作一个S3C6410的启动SD卡了，附后为一些参考资料，这里没办法贴附件，问题给我留言吧</p><p>后面的内容中，我们将进入UBOOT，对UBOOT进行修改，请关注下一节《如何计算内存大小，并在UBOOT中调整内存大小》</p><p><strong><span style="color:#ff0000;">四、参考资料</span></strong></p><p>下载 uboot1.1.6 （支持 movinand）</p><p><a href="http://www.rayfile.com/zh-cn/files/7ac4e133-0e58-11de-bd70-0014221b798a/">http://www.rayfile.com/zh-cn/files/7ac4e133-0e58-11de-bd70-0014221b798a/</a></p><p>使uboot支持S3C6410的SD启动 </p><p><a href="http://blog.csdn.net/zwj0403/article/details/6420245">http://blog.csdn.net/zwj0403/article/details/6420245</a></p><p>《S3C6410_Internal_ROM_Booting.pdf》</p><p>《s3c6410_rev12.pdf》</p><p>《smdk6410_users_manual_rev1.0.pdf》</p><p>《K4X51163PC.pdf》</p><p>《OK6410开发板LINUX2.6用户手册.pdf》</p><p>《OK6410开发板硬件手册2.1.pdf》</p>
+</div>
+<div class="article_next_prev"><li class="prev_article"><br><br></li></div></div><div id="comment_list"><dl class="comment_item comment_topic" id="comment_item_1998248"><dt class="comment_head" floor="1"><span class="user"><span class="comment_manage" style="display: none;" commentid="1998248" username="lovehappystudy"></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/lovehappystudy" target="_blank"><img src="./S3C6410-SD卡-uboot_files/3_lovehappystudy.jpg" width="40" height="40"></a></dd><dd class="comment_body">S3C6410 SD卡的启动原理我也找了很久了。特别是那个官方文档，非常感谢。顺便纠正一点。你的ReadFile函数读的是逻辑分区，所以BlockDataRead（0）读出来的不是MBR，而是BootSector，当然其中也有分区类型的信息。MBR是在物理磁盘的第0个扇区上。</dd></dl></div>
+<script type="text/javascript">
+    var fileName = '6634461';
+    var commentscount = 2;
+    var islock = false
+</script>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/comment.js"></script>
+<div id="ad_bot"></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+<div id="d-top" style="display: none;">
+<a id="d-top-a" href="http://blog.csdn.net/turui/article/details/6634461#" title="回到顶部">
+<img src="./S3C6410-SD卡-uboot_files/top.png" alt="TOP"></a>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var d_top=$('#d-top');
+        document.onscroll=function(){
+            var scrTop=(document.body.scrollTop||document.documentElement.scrollTop);
+            if(scrTop>500){
+                d_top.show();
+            }else{
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function(){
+            scrollTo(0,0);
+            this.blur();
+            return false;
+        });
+    });
+</script>
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+<br>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/shCore-src.js"></script>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/ZeroClipboard.js"></script>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/article_code.js"></script>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/cnick.js"></script>
+
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/show.js"></script>
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/showblogmedal.ashx"></script>
+
+<script type="text/javascript" src="./S3C6410-SD卡-uboot_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./S3C6410-SD卡-uboot_files/pub_footer_2012.css"><div class="pub_footerall"><dl><dt><br></dt></dl></div><script type="text/javascript" charset="utf-8" src="./S3C6410-SD卡-uboot_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="http://counter.csdn.net/pv.aspx?id=24" border="0" width="0" height="0" style="display: none !important; visibility: hidden !important; opacity: 0 !important; background-position: 0px 0px;">
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+
+<!--ad.csdn.net-->
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

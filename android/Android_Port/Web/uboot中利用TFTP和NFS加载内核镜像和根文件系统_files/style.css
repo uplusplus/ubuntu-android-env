@@ -1,0 +1,522 @@
+/* CLEARSCREEN .TEXT SKIN by Miguel Jimenez @ http://blogs.clearscreen.com/migs */
+/* This is linkware, you are free to use it if you keep the link to the skin download at the footer section */
+
+/* Links of all the skin */
+a:link, a:active {color : #3468A4;}
+a:visited {color : #3468A4;}
+a:hover {color : gray;}
+
+
+/* Main Body Properties */
+body {
+	margin:0px;
+	padding:0px;
+	background: #fff url(images/bg.gif)  fixed top left;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size:13px; /*small*/
+	line-height:1.6;
+}
+
+
+/* 	FONT-SIZE: 12px; 
+	COLOR: #454545; */
+td {
+
+	FONT-FAMILY: Verdana,Helvetica,Arial;
+	word-break:break-all;
+	line-height:1.5;
+	font-size:12px;
+}
+
+/* Header */
+.header {
+	height:120px;
+	background: #fff url(images/banner.jpg) repeat fixed top center;
+	border-bottom:0px solid #000000;
+	padding-left:30px;
+	padding-top:30px;
+	color:#ffffff;
+}
+
+a.headermaintitle:visited,a.headermaintitle:active,a.headermaintitle:link {
+	color:#ffffff;
+	font-size:16px;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+a.headermaintitle:hover {
+	color:gray;
+}
+
+/* Floating Left Menu */
+#leftcontent {
+	position : absolute;
+	top : 160px;
+	left : 10px;	
+	width : 200px;
+	background-color : ;	
+	border : 0px solid #000000;
+	border-top: 0px solid #000000;
+	border-right:1px solid #DDDDDD;
+	font-family:Arial;
+	font-size:12px;	
+}
+
+#leftcontentcontainer  {
+	padding:10px;
+	/*background-image:url(images/bg_leftcontent.jpg);*/
+	background-repeat:no-repeat
+}
+
+li
+{
+	font-size: 12px;
+}
+
+#centercontent {
+   	padding-top:20px;
+   	padding-right:10px;
+   	padding-left:240px;
+}
+
+#mytopmenu {
+	border:0px solid #5E5E5E;
+   	background-color:;
+	/*background-image:url(images/bg_menu.jpg);*/
+   	padding:0px;
+   	padding-left:10px;
+   	padding-right:10px;
+	margin-top:5px;
+	margin-right:0px;
+   	margin-left:0px;
+   	text-align:right;
+	font-size:12px;
+}	
+
+#mystats {
+	margin-top:24px
+}
+
+a.menu:link,a.menu:visited,a.menu:active {
+	color:#3468A4;
+}
+a.menu:hover {
+	color:gray;
+}
+
+#rightcontent {
+	position: absolute;
+	right:10px;
+	top:70px;
+	width:200px;
+	background:#fffFFF;
+}
+
+#mylinks {
+	font-size:12px;
+	position:absolute;
+   	padding:0px;
+   	padding-left:12px;
+   	padding-right:12px;
+    padding-top:5px;
+   	left:0px;
+}
+		
+.footer {
+	background-image:url(images/bg_footer.gif);
+	background-repeat:repeat;
+	color:#ffffff;
+   	padding:12px;
+   	padding-left:10px;
+	margin-top:0px;
+	margin-right:10px;
+   	margin-left:0px;
+   	text-align:center;
+   	line-height:40px;
+}
+
+a.footerlink:link,a.footerlink:visited,a.footerlink:active {
+	color:white;
+}
+
+a.footerlink:hover {
+	color:#DDDDDD;
+}
+
+
+/* End Layout and Formatting */
+
+.day {
+	border-bottom:1px solid #DDDDDD;
+    background-image:url(images/day_bg.gif);
+	background-repeat:no-repeat;
+	background-position:right top;
+   	padding:20px;
+	color:#4B4B4B;
+	margin-bottom:20px;
+	margin-left:2px;
+}
+
+.dayTitle {
+    background-image:url(images/day.gif);
+	background-repeat:no-repeat;
+	background-position:left middle;
+	font-size:13px;
+	text-transform:uppercase;
+	font-weight:bold;
+	margin-bottom:20px;
+	padding-left:25px;
+	height:20px;
+}
+
+.postSeparator {
+    background: url(images/line.gif) no-repeat top center;
+	height:15;
+	border-top:0px dotted #000000;
+	margin-top:20px;
+	margin-bottom:20px;
+}
+
+.news {
+	font-family:Verdana;
+	font-size:11px;
+	font-weight:bold;
+}
+
+.newsItem {
+	margin-top:2px;
+	margin-bottom:20px;
+	text-align:center;
+}
+
+.blogstats {
+    padding-top:5px;
+	font-size:11px;
+}
+
+.entrylist {
+	border:1px dotted #000000;
+   	background-color:White;
+   	padding:20px;
+   	padding-bottom:8px;
+	color:#7B7D62;
+}
+
+.listtitle {
+    background: url(images/title.gif) no-repeat fixed top left;
+	font-family:verdana;
+	font-size:14.7px;
+	font-weight:bold;
+	color:#666666;
+	margin-bottom:10px;
+	padding-top:12px;
+	padding-left:30px;
+	height:40;
+}
+
+.entrylistTitle {
+	font-family:verdana;
+	font-size:16px;
+	font-weight:bold;
+	color:Black;
+}
+
+.entrylistDescription {
+	margin-bottom:20px;
+}
+
+.entrylistItemTitle {
+	font-size:13px;
+	text-decoration:none;
+	font-weight:bold;
+}
+
+.entrylistItemPostDesc {
+	font-size:12px;
+}
+
+.gallery {
+	border:1px dotted #000000;
+   	background-color:White;
+   	padding:20px;
+	color:#7B7D62;
+}
+
+.galleryTitle {
+	font-family:verdana;
+	font-size:16px;
+	font-weight:bold;
+	color:Black;
+}
+
+.galleryDescription {
+	margin-bottom:20px;	
+}
+
+.galleryThumbnail {
+	padding:20px;
+	padding-left:0px;
+}
+.post {
+    background-image:url(images/day_bg.gif);
+	background-repeat:no-repeat;
+	background-position:right top;
+	border:1px solid #DDDDDD;
+   	padding:20px;
+	color:#4B4B4B;
+	font-size:13px;
+}
+
+.postTitle {
+	font-size:14.7px;
+	font-weight:bold;
+	margin-bottom:10px;
+}
+
+.postTitle h1{
+	font-size:14.7px;
+	font-weight:bold;
+	margin-bottom:10px;
+}
+
+.postTitle2 {
+	text-decoration:none;
+}
+
+.postDesc {
+	color:#303030;
+	margin-top:10px;
+	text-align:right
+}
+
+.contact {
+	border:1px dotted #000000;
+   	background-color:White;
+   	padding:20px;
+   	padding-left:22px;
+	font-family:Verdana;
+	font-weight:bold;
+	font-size:11px;   	
+}
+
+.comments {
+	border:1px solid #DDDDDD;
+	border-top:0px;	
+   	padding:20px;
+   	padding-left:22px;
+   	padding-top:0px;
+	font-family:Verdana;
+	font-weight:bold;
+	font-size:11px;   	
+}
+
+.commentsTable {
+	font-family:Verdana;
+	font-size:11px;  
+	margin-top:15px; 
+}
+
+.feedback {
+	border:1px solid #DDDDDD;
+	border-top:0px;	
+   	margin-top:20px;
+   	margin-bottom:0px;
+   	padding:20px;
+   	padding-bottom:30px;
+}
+
+.feedbackTitle {
+	font-family:Verdana;
+	font-weight:bold;
+	font-size:11px;
+}
+
+.feedbackItem, .feedbackNoItems {
+	margin-bottom:0px;
+	margin-top:20px;
+	line-height:2;
+}
+
+.feedbackList {
+	list-style: none;
+	margin-left:0px;
+	margin-right:0px; 
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.feedbacktitle
+{
+	border-bottom :1px solid #DDDDDD;
+	font-size:12px;
+	font-weight:normal;
+}
+
+.feedbackListTitle {
+	padding-bottom:6px;
+	/*position:absolute;*/
+	font-size:9px;
+	padding:5px;
+	padding-left:7px;
+	color:#000000;
+}
+
+.feedbackListSubtitle {
+	color:#000000;
+	padding:5px;
+	padding-right:7px;
+	border:1px solid #DDDDDD;	
+	font-size:9px;
+	margin-bottom:8px;
+}
+
+.catListTitle {
+	background: url(images/title.gif) no-repeat fixed top left;
+	font-family:verdana;
+	font-size:14.7px;
+	font-weight:bold;
+	color:#666666;
+	margin-bottom:10px;
+	padding-top:12px;
+	padding-left:30px;
+	height:40;
+}
+
+h3 {
+	background: url(images/title.gif) no-repeat fixed top left;
+	font-family:verdana;
+	font-size:14px;
+	font-weight:bold;
+	color:#666666;
+	margin-bottom:10px;
+	padding-top:12px;
+	padding-left:30px;
+	height:40;
+}
+
+.catList {
+	list-style: none;
+	border-top: 0px;
+	margin: 0px;
+	padding-left: 10px;
+	margin-bottom:20px;
+}
+
+catListItem { 
+	padding 1px 0px 1 px 0px;
+	margin-left: 5px;
+	text-align: left;
+}
+
+ul {
+	list-style: none;
+	margin : 0px;
+	padding-left : 5px;
+	margin-left : 5px;
+	margin-bottom : 10px;
+	font-size : 11px;
+}
+
+.Cal
+{
+	border-color:transparent;
+	width:95%;
+	font-family:Arial;
+	font-size: 12px;
+	margin-top:10px;
+	margin-bottom:10px;
+	height:180px;
+	border:0px;
+}
+
+.CalTitle
+{
+	background-color :transparent;
+	font-family:verdana;
+	font-size: 12px;
+	margin-left : 0px;
+	padding : 0px;
+	height:100%;
+	font-weight:bold;
+	color:#747474
+
+}
+
+.CalOtherMonthDay
+{
+	color:#808080;
+	
+}
+
+.CalSelector
+{
+	background-color:#FFFFFF;
+	
+}
+
+a.CalNextPrev,a.CalNextPrev:link, a.CalNextPrev:visited, a.CalNextPrev:active
+{
+	color:#FFF;
+}
+
+.CalNextPrev
+{
+	color:#FFF;
+}
+
+
+.CalDayHeader
+{
+	background-color:transparent;
+	font-weight:bold;
+	color:#747474
+	
+}
+
+.CalSelectedDay
+{
+    background-color:#CCCCCC;
+     
+}
+
+.CalWeekendDay
+{
+	background-color:transparent;
+}
+
+.CalTodayDay
+{
+	background-color:#555555;
+	color:white
+	
+    
+}
+
+h1 {
+	margin : 0px;
+	margin-top : 10px;
+	margin-bottom : 5px;
+	font-size : 14.7px;
+	color:#666666;
+	text-align:left;
+}
+
+/* section comment style */
+.feedbackListTitle{
+  font-size: 12px;
+  color:black
+}
+
+.feedbackListSubtitle{
+  font-size: 12px;
+  color:black
+}
+
+html * { 
+-moz-box-sizing: border-box; 
+box-sizing: border-box; 
+} 
+
+#comment_form{margin-left:10px;}
+.commentform{margin-left:10px;}

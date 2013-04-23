@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0067)http://zengyi2008.blog.163.com/blog/static/12142064201032694127329/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh" version="g42dymwpi--nx">
+<body onload="prettyPrint()" id="blog-163-com" class="nb-body nb-inr nb-prv">
+  
+    
+
+
+
+  <div class="nb-wrap wsy" id="blog-163-com-main">  
+  <div class="nb-are nb-cnt">
+    <div class="wkg">
+      <div class="c wc h clearfix " id="blog-163-com-container">
+  <div class="nb-mdl lcr m-3 " id="-3">
+  
+    <div class="nb-mc lcr">
+      <div class="c cc lcr nb-jsc">
+<div class="nbw-ryt ztag clearfix ">
+  
+  <div class="left">
+     <div class="lcnt bdwr bds0 bdc0 ">
+      
+     <div class="mcnt ztag">
+      <div class="nbw-bitm bdwb bds2 bdc0 ">
+        <div class="multicntwrap">
+	      <div class="multicnt">
+	      	<div>
+		      <h3 class="title pre fs1"><span class="tcnt">Windows下运行linux程序(合集)</span>&nbsp;&nbsp;<span class="bgc0 fc07 fw0 fs0"></span></h3>
+		      
+		    </div>
+	      </div>
+        </div>
+
+        <div>
+        
+        </div>
+
+        <div class="nbw-blog-start"></div>
+        <div class="bct fc05 fc11 nbw-blog ztag js-fs2"><p style="TEXT-INDENT: 2em;">最近在做linux鱼Windows的无缝程序运行，在网上收集到了一些Windows平台运行linux程序的方式，供大家参考。</p>  <p style="TEXT-INDENT: 2em;">一、 windows下xmanager远程linux桌面</p>  <p style="TEXT-INDENT: 2em;">XManager是个简单易用的高性能的运行在Windows平台上的X Server软件。他能把远端Unix/Linux的桌面无缝地带到您的Windows上，甚至当您的电脑是在内网或防火墙后，您也能通过SSH协议安全 的运行远端的X应用程式。特点包括： -可通过Xcongfig工具配置多个Xmanager配置； -支持多用户的Windows终端环境； -支持多个IP地址； -支持本地资源数据库； -通过热键转换键盘映射； -支持多窗口下的Windows打印功能等。能够到网上搜索到Xmanager 1.3.9,界面很简单,安装一下就能够了.</p>  <p style="TEXT-INDENT: 2em;">假如使用的是gnome </p>  <p style="TEXT-INDENT: 2em;">1。vi /etc/inittab </p>  <p style="TEXT-INDENT: 2em;">修改 id:5:initdefault: </p>  <p style="TEXT-INDENT: 2em;">x:5:respawn:/usr/bin/gdm </p>  <p style="TEXT-INDENT: 2em;">2.修改/etc/X11/gdm/gdm.conf，找到下面的信息： </p>  <p style="TEXT-INDENT: 2em;">[xdmcp] </p>  <p style="TEXT-INDENT: 2em;">Enable=0 或Enable=false </p>  <p style="TEXT-INDENT: 2em;">修改为： </p>  <p style="TEXT-INDENT: 2em;">[xdmcp] </p>  <p style="TEXT-INDENT: 2em;">Enable=1 或Enable=true </p>  <p style="TEXT-INDENT: 2em;">并确保以下信息存在： </p>  <p style="TEXT-INDENT: 2em;">Port=177 </p>  <p style="TEXT-INDENT: 2em;">3.配置iptables打开UDP 177端口，iptables -A input -p udp -s 0/0 -d 0/0 -dport 177 -j ACCEPT,确保/etc/X11/xdm/Xservers的属性为444，/etc/X11/xdm/Xsetup_0的属性为755。 </p>  <p style="TEXT-INDENT: 2em;">重启机器 ok </p>  <p style="TEXT-INDENT: 2em;">假如使用的是kde </p>  <p style="TEXT-INDENT: 2em;">1.更改 /etc/X11/xdm/xdm-config . </p>  <p style="TEXT-INDENT: 2em;">DisplayManager.requestPort: 0 ==&gt; !DisplayManager.requestPort: 0 </p>  <p style="TEXT-INDENT: 2em;">此项配置未被注释(最前面没有!字符)，假如注释将XDMCP将不侦听， </p>  <p style="TEXT-INDENT: 2em;">2. 更改 /etc/X11/xdm/Xaccess </p>  <p style="TEXT-INDENT: 2em;">#* #any host can get a login window ==&gt;; * #any host can get a login window </p>  <p style="TEXT-INDENT: 2em;">3。vi /etc/X11/xdm/kdmrc,更改enable配置为true。 </p>  <p style="TEXT-INDENT: 2em;">重启机器</p>  <p style="TEXT-INDENT: 2em;">XManager2连接Linux的配置方法：</p>  <p style="TEXT-INDENT: 2em;">第一步，我们在Linux系统下，修改/etc/X11/xdm/Xaccess文件，找到下面的语句：# * #any host can get a login window去掉最前面的#号，成为* #any host can get a login window</p>  <p style="TEXT-INDENT: 2em;">第二步，我们修改/etc/X11/gdm/gdm.conf文件，找到下面的语句：</p>  <p style="TEXT-INDENT: 2em;">[xdmcp]Enable＝false将其中的Enable＝false 改为Enable＝true 或 Enable＝1。同时我们要确保存在下面的语句，因为177端口是我们要配置的xdmcp服务的监听端口，我们在后面配置xmanager将看。Port=177</p>  <p style="TEXT-INDENT: 2em;">第三步，我们要修改/etc/inittab文件，将下面的语句id:3:initdefault改为如下，如果原来就是id:5:initdefault就不用更改。同时，找到如下图文字所在的地方x:5:respawn:/etc/X11/prefdm -nodaemon将它修改为x:5:respawn:/usr/bin/gdm</p>  <p style="TEXT-INDENT: 2em;">第四步，我们修改/etc/X11/xdm/xdm-config的最后一行，在displayManager.requestPort:0前面加上一个！号，结果如下:!DisplayManager.requestPort: 0</p>  <p style="TEXT-INDENT: 2em;">第五步，我们修改确保/etc/X11/xdm/Xservers的属性为444，/etc/X11/xdm/Xsetup_0的属性为755.最后，如果我们的Linux机器配置有防火墙，为防止防火墙将通过177端口（即xdmcp服务）的数据过虑，我们必须加上如下的规则：iptables -A INPUT -p udp -s 0/0 -d 0/0 –dport 177 -j ACCEPT</p>  <p style="TEXT-INDENT: 2em;">至此为止，我们在Linux下的配置xdm已经基本完成,在xbrowser的address栏中输入Linux服务器的IP地址就可以登录了。</p>  <p style="TEXT-INDENT: 2em;">====================================================================</p>  <p style="TEXT-INDENT: 2em;">随着互联网的高速发展以及Linux企业应用的成熟，Linux被广泛应用于服务器领域，如何实现Linux的远程管理成为网络管理员的首要任务。我们经常见到的几种最为常用的windows下远程管理L inux服务器的方法，基本上都是利用SecureCRT,F-Secure SSH 抑或是PUTTY等客户端工具通过ssh服务来实现Windows下管理Linux服务器的，这些客户端工具几乎不需要什么配置，使用简单，但是它们都无法启动窗口服务的程序或进程，也无法达到远程桌面控制。本文将介绍通过xmanager远程桌面控制Linux的方法和技巧。本文中所指的Linux系统，如无特别说明都以RedHat 9.0为例。&nbsp; 有两种方法可以实现远程管理Linux桌面窗口，其中一个就是是我们所选择的X显示管理器（X display manager）或者说xdm，另一个流行的解决方案是vnc。我选择xdm而不是vnc出于两点原因。第一，vnc要有个服务端的守护进程，为每个共享的桌面运行。第二，我已经有X服务器的软件安装在所有的工作站上，不想再添加额外的客户端软件了。我们先来了解一些X系统方面的知识，X是用在大多数UNIX系统中的图形支持系统。如果你在你的Linux机器上使用GNOME或者KDE的话，你就正在使用X系统。它由X联盟(<a rel="nofollow" href="http://www.jysls.com/olink.php?t=47012&p=681082&u=aHR0cDovL3d3dy5YLm9yZyk=&s=1309e1a11c84b58c1ca850867a6b9cf1">www.X.org)</a>定义并维护。大多数的Linux用户使用的都是由XFree86 项目 (<a rel="nofollow" href="http://www.jysls.com/olink.php?t=47012&p=681082&u=aHR0cDovL3d3dy54ZnJlZTg2Lm9yZyk=&s=5691510ff3596ca6245b06f038465c92">www.xfree86.org)</a>提供的X Window系统的实现。xdm 是一个显示管理器，提供了灵活的任务管理功能。然而xdm通常被认为是“GUI的登陆屏幕，可以自动启动我的X任务”，我们会看到实际上它要更为强大。&nbsp; xdm 使用X联盟的X显示管理控制协议，即XDMCP，来和X服务器通信。它允许X服务器从运行xdm服务的服务器上获得会话服务。&nbsp; 当使用xdm管理这些X任务的时候在设置上有些复杂。但设置xdm 可以得到本地的和其他服务器上的桌面了。我们下面将介绍服务器上配置xdm的方法和步骤，这里描述的配置允许任何的 XDMCP 客户访问 Linux 服务器桌面环境（当然了影响了X的安全）。&nbsp; 第一步，我们在Linux系统下，修改/etc/X11/xdm/Xaccess文件，找到下面的语句：# * #any&nbsp; host&nbsp; can&nbsp; get&nbsp; a&nbsp; login&nbsp; window</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906100711736.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">去掉最前面的#号，成为</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906100804950.jpg" border="0">650) {this.resized=true; this.width=650; this.alt='Click here to open new window\nCTRL+Mouse wheel to zoom in/out';}" border=0&gt;</p>  <p style="TEXT-INDENT: 2em;">&nbsp;&nbsp; </p>  <p style="TEXT-INDENT: 2em;">第二步，我们修改/etc/X11/gdm/gdm.conf文件，找到下面的语句：</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906100910861.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 将其中的Enable＝false 改为Enable＝true 或 Enable＝1。</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 同时我们要确保存在下面的语句，因为177端口是我们要配置的xdmcp服务的监听端口，我们在后面配置xmanager将看到。</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101013930.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp;&nbsp; 第三步，我们要修改/etc/inittab文件，将下面的语句</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101126696.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 改为如下，如果原来就是id:5:initdefault:就不用更改。</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101214364.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 同时，找到如下图文字所在的地方，</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101255302.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 将它修改为x:5:respawn:/usr/bin/gdm，即如下图所示，</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101342628.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp;&nbsp; 第四步，我们修改/etc/X11/xdm/xdm-config的最后一行，在displayManager.requestPort:0前面加上一个！号，结果如下</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101453118.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp; 第五步，我们修改确保/etc/X11/xdm/Xservers的属性为444，/etc/X11/xdm/Xsetup_0的属性为755，在RedHat 9.0中，我们可以看到这两个文件默认的属性就是444和775，因此不用修改。</p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101647407.jpg" border="0"></p>  <p style="TEXT-INDENT: 2em;">最后，如果我们的Linux机器配置有防火墙，为防止防火墙将通过177端口（即xdmcp服务）的数据过虑，我们必须加上如下的规则：</p>  <p style="TEXT-INDENT: 2em;">&nbsp;&nbsp; iptables&nbsp; -A&nbsp; INPUT&nbsp; -p udp -s 0/0 -d 0/0 --dport 177 -j ACCEPT</p>  <p style="TEXT-INDENT: 2em;">&nbsp; </p>  <p style="TEXT-INDENT: 2em;">至此为止，我们在Linux下的配置xdm已经基本完成。但上面这些配置还只是x服务器端的配置，我们要想实现在Windows远程桌面控制Linux，还必须要</p>  <p style="TEXT-INDENT: 2em;">有Windows下的客户端工具，xmanager正是这样的一个工具，它是一个简单易用的高性能的运行在Windows平台上的 X Server 软件。我们现在来介绍xmanager的在Windows下的安装和配置技巧，这里我使用的机器是windows xp。我们先下载xmanager的安装文件，我下载的是xmanager1.3.9，安装后，在安装目录下，我们点击xconfig，选择xdm，如下图，选择”XDM Indirect”,在 host：后面填上我们已经配置好的Linux系统的ip，注意下面的XDMCP Port:177, 这就是我们在配置Linux服务器时必须保证 port＝177的原因。</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101822661.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">然后我们双击xmanager安装目录里的xmanager,出现下面的画面，</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906101958797.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">选择图中的linux机器，然后点击“连接”即可以连接到我们的redhat登陆桌面了。</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906102012270.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">输入用户名，确定后系统会提示让你输入密码，验证成功后就可以使用我们的redhat桌面了，效果如下：</p>  <p style="TEXT-INDENT: 2em;"><img alt="Windows下运行linux程序(合集) - free - 漫步者" src="./Windows下运行linux程序_files/20050906102116399.jpg" border="0">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">本文介绍了windows下通过xmanager来远程桌面控制Linux的方法，并具体介绍了xdm和xmanager的配置和使用方法，希望给大家带来一定的帮助。</p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">二、<a rel="nofollow" href="http://www.appbeta.com/50226711/windows_aeceelinuxcie_139364.php">Windows 上无缝运行Linux程序？</a></p>  <p style="TEXT-INDENT: 2em;">记得以前玩Linux时，要使用Windows程序需要使用Wine环境。其实，Linux下也有许多优秀的程序，我们如何在Windows下使用Linux的程序呢？<a rel="nofollow" href="http://www.andlinux.org/">andLinux.org</a>给我们带来一款这样的"软件"-andLinux，其实它并非是一款真正意义上的工具，而是一个完整版的Ubuntu Linux系统，只是与众不同的是它可以在Windows 2000, XP, 2003, Vista [32位]上运行。</p>  <p style="TEXT-INDENT: 2em;"><a rel="nofollow" href="http://www.andlinux.org/downloads.php">andLinux有两个版本</a>：</p>  <p style="TEXT-INDENT: 2em;">- minimal / XFCE 版：143 MB</p>  <p style="TEXT-INDENT: 2em;">- KDE 版：665 MB</p>  <p style="TEXT-INDENT: 2em;">使用andLinux的同时，也可以在Windows下体验Linux，感觉应该也很新颖，有兴趣的朋友可以玩玩。&nbsp;</p>  <p style="TEXT-INDENT: 2em;">&nbsp;</p>  <p style="TEXT-INDENT: 2em;">三、 Ulteo Virtual Desktop：Windows运行原生的Linux程序 </p>  <p style="TEXT-INDENT: 2em;">用过Linux的朋友都知道 ，在Linux下我们也可以运行Windows程序，比如使用著名的Wine程序就能模拟Windows环境。反过来，在Windows下运行Linux程序呢？之前没有听说此类程序，是不是必要性不足呢？让Windows用户使用Linux可能不太习惯吧……</p>  <p style="TEXT-INDENT: 2em;">但是，今天我们就发现了这样一款程序：<a rel="nofollow" href="http://www.ulteo.com/home/en/virtualdesktop">Ulteo Virtual Desktop</a>，通过它我们就可以在Windows中运行原生的Linux程序。它是一套完整的系统程序，可以无缝运行在Windows下，提供了大量Linux程序作为选择，如Firefox、Thunderbird、OpenOffice.org以及多种IM程序，等等。另外，它还可以与<a rel="nofollow" href="http://www.ulteo.com/home/applicationsystem/?autolang=en">Ulteo Application System</a>结合，完成系统及程序更新，以及文档的同步等功能。</p>  <p style="TEXT-INDENT: 2em;">这是一个替代Windows的可安装liveCD。它是一个带有很多程序及创新功能的完整的操作系统。它必须安装到你的电脑。 </p></div>
+        
+
+        
+
+        
+
+		
+
+        
+		
+        
+
+
+        
+      </div>
+      
+      
+    </div>
+   </div>
+  </div>
+</div>
+
+
+
+
+</div>
+      
+      
+    </div>
+    
+  </div>
+
+</div>
+      
+      
+      
+      
+      
+      
+    </div>
+  </div>
+  
+</div>
+    
+  
+  
+  
+
+    
+    
+  
+  
+
+
+
+    
+
+
+</body></html>

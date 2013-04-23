@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://blog.csdn.net/luoshengyang/article/details/6575988 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/Luoshengyang/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口_files/default.css">
+<style type="text/css"></style><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+<link rel="stylesheet" type="text/css" href="./在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口_files/在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口.htm">
+        在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;在上两篇文章中，我们介绍了如何为Android系统的硬件编写驱动程序，包括如何在Linux内核空间实现内核驱动程序和在用户空间实现硬件抽象层接口。实现这两者的目的是为了向更上一层提供硬件访问接口，即为Android的Application Frameworks层提供硬件服务。我们知道，Android系统的应用程序是用Java语言编写的，而硬件驱动程序是用C语言来实现的，那么，Java接口如何去访问C接口呢？众所周知，Java提供了JNI方法调用，同样，在Android系统中，Java应用程序通过JNI来调用硬件抽象层接口。在这一篇文章中，我们将介绍如何为Android硬件抽象层接口编写JNI方法，以便使得上层的Java应用程序能够使用下层提供的硬件服务。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;一. 参照<a href="http://blog.csdn.net/luoshengyang/article/details/6573809">在Ubuntu上为Android增加硬件抽象层（HAL）模块访问Linux内核驱动程序</a>一文，准备好硬件抽象层模块，确保Android系统镜像文件system.img已经包含hello.default模块。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;二. 进入到frameworks/base/services/jni目录，新建com_android_server_HelloService.cpp文件：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ cd&nbsp;frameworks/base/services/jni</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;USER-NAME@MACHINE-NAME:~/Android/frameworks/base/services/jni$ vi&nbsp;com_android_server_HelloService.cpp</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>在com_android_server_HelloService.cpp文件中，实现JNI方法。注意文件的命令方法，com_android_server前缀表示的是包名，表示硬件服务HelloService是放在frameworks/base/services/java目录下的com/android/server目录的，即存在一个命令为com.android.server.HelloService的类。这里，我们暂时略去HelloService类的描述，在下一篇文章中，我们将回到HelloService类来。简单地说，HelloService是一个提供Java接口的硬件访问服务类。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;首先是包含相应的头文件：</p><p></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 998px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#define&nbsp;LOG_TAG&nbsp;"HelloService"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"jni.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"JNIHelp.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"android_runtime/AndroidRuntime.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;utils/misc.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;utils/Log.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;hardware/hardware.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;hardware/hello.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;stdio.h&gt;</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="cpp" style="display: none;">#define LOG_TAG "HelloService"
+#include "jni.h"
+#include "JNIHelp.h"
+#include "android_runtime/AndroidRuntime.h"
+#include &lt;utils/misc.h&gt;
+#include &lt;utils/Log.h&gt;
+#include &lt;hardware/hardware.h&gt;
+#include &lt;hardware/hello.h&gt;
+#include &lt;stdio.h&gt;</pre><p></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>接着定义hello_init、hello_getVal和hello_setVal三个JNI方法：</p><p></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6575988#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1255px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">namespace</span><span>&nbsp;android&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*在硬件抽象层中定义的硬件访问结构体，参考&lt;hardware/hello.h&gt;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;hello_device&nbsp;=&nbsp;NULL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*通过硬件抽象层定义的硬件访问接口设置硬件寄存器val的值*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;hello_setVal(JNIEnv*&nbsp;env,&nbsp;jobject&nbsp;clazz,&nbsp;jint&nbsp;value)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;val&nbsp;=&nbsp;value;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;set&nbsp;value&nbsp;%d&nbsp;to&nbsp;device."</span><span>,&nbsp;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!hello_device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;device&nbsp;is&nbsp;not&nbsp;open."</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hello_device-&gt;set_val(hello_device,&nbsp;val);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*通过硬件抽象层定义的硬件访问接口读取硬件寄存器val的值*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;jint&nbsp;hello_getVal(JNIEnv*&nbsp;env,&nbsp;jobject&nbsp;clazz)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;val&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!hello_device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;device&nbsp;is&nbsp;not&nbsp;open."</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;val;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hello_device-&gt;get_val(hello_device,&nbsp;&amp;val);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;get&nbsp;value&nbsp;%d&nbsp;from&nbsp;device."</span><span>,&nbsp;val);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;val;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*通过硬件抽象层定义的硬件模块打开接口打开硬件设备*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;</span><span class="keyword">inline</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_device_open(</span><span class="keyword">const</span><span>&nbsp;hw_module_t*&nbsp;module,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hello_device_t**&nbsp;device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;module-&gt;methods-&gt;open(module,&nbsp;HELLO_HARDWARE_MODULE_ID,&nbsp;(</span><span class="keyword">struct</span><span>&nbsp;hw_device_t**)device);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*通过硬件模块ID来加载指定的硬件抽象层模块并打开硬件*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;jboolean&nbsp;hello_init(JNIEnv*&nbsp;env,&nbsp;jclass&nbsp;clazz)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hello_module_t*&nbsp;module;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;initializing......"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(hw_get_module(HELLO_HARDWARE_MODULE_ID,&nbsp;(</span><span class="keyword">const</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_module_t**)&amp;module)&nbsp;==&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;hello&nbsp;Stub&nbsp;found."</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(hello_device_open(&amp;(module-&gt;common),&nbsp;&amp;hello_device)&nbsp;==&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;JNI:&nbsp;hello&nbsp;device&nbsp;is&nbsp;open."</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE(<span class="string">"Hello&nbsp;JNI:&nbsp;failed&nbsp;to&nbsp;open&nbsp;hello&nbsp;device."</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-1;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE(<span class="string">"Hello&nbsp;JNI:&nbsp;failed&nbsp;to&nbsp;get&nbsp;hello&nbsp;stub&nbsp;module."</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*JNI方法表*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;</span><span class="keyword">const</span><span>&nbsp;JNINativeMethod&nbsp;method_table[]&nbsp;=&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="string">"init_native"</span><span>,&nbsp;</span><span class="string">"()Z"</span><span>,&nbsp;(</span><span class="keyword">void</span><span>*)hello_init},&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="string">"setVal_native"</span><span>,&nbsp;</span><span class="string">"(I)V"</span><span>,&nbsp;(</span><span class="keyword">void</span><span>*)hello_setVal},&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="string">"getVal_native"</span><span>,&nbsp;</span><span class="string">"()I"</span><span>,&nbsp;(</span><span class="keyword">void</span><span>*)hello_getVal},&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*注册JNI方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;register_android_server_HelloService(JNIEnv&nbsp;*env)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;jniRegisterNativeMethods(env,&nbsp;</span><span class="string">"com/android/server/HelloService"</span><span>,&nbsp;method_table,&nbsp;NELEM(method_table));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>};&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">namespace android
+{
+	/*在硬件抽象层中定义的硬件访问结构体，参考&lt;hardware/hello.h&gt;*/
+        struct hello_device_t* hello_device = NULL;
+	/*通过硬件抽象层定义的硬件访问接口设置硬件寄存器val的值*/
+        static void hello_setVal(JNIEnv* env, jobject clazz, jint value) {
+		int val = value;
+		LOGI("Hello JNI: set value %d to device.", val);
+		if(!hello_device) {
+			LOGI("Hello JNI: device is not open.");
+			return;
+		}
+		
+		hello_device-&gt;set_val(hello_device, val);
+	}
+        /*通过硬件抽象层定义的硬件访问接口读取硬件寄存器val的值*/
+	static jint hello_getVal(JNIEnv* env, jobject clazz) {
+		int val = 0;
+		if(!hello_device) {
+			LOGI("Hello JNI: device is not open.");
+			return val;
+		}
+		hello_device-&gt;get_val(hello_device, &amp;val);
+		
+		LOGI("Hello JNI: get value %d from device.", val);
+	
+		return val;
+	}
+        /*通过硬件抽象层定义的硬件模块打开接口打开硬件设备*/
+	static inline int hello_device_open(const hw_module_t* module, struct hello_device_t** device) {
+		return module-&gt;methods-&gt;open(module, HELLO_HARDWARE_MODULE_ID, (struct hw_device_t**)device);
+	}
+        /*通过硬件模块ID来加载指定的硬件抽象层模块并打开硬件*/
+	static jboolean hello_init(JNIEnv* env, jclass clazz) {
+		hello_module_t* module;
+		
+		LOGI("Hello JNI: initializing......");
+		if(hw_get_module(HELLO_HARDWARE_MODULE_ID, (const struct hw_module_t**)&amp;module) == 0) {
+			LOGI("Hello JNI: hello Stub found.");
+			if(hello_device_open(&amp;(module-&gt;common), &amp;hello_device) == 0) {
+				LOGI("Hello JNI: hello device is open.");
+				return 0;
+			}
+			LOGE("Hello JNI: failed to open hello device.");
+			return -1;
+		}
+		LOGE("Hello JNI: failed to get hello stub module.");
+		return -1;		
+	}
+        /*JNI方法表*/
+	static const JNINativeMethod method_table[] = {
+		{"init_native", "()Z", (void*)hello_init},
+		{"setVal_native", "(I)V", (void*)hello_setVal},
+		{"getVal_native", "()I", (void*)hello_getVal},
+	};
+        /*注册JNI方法*/
+	int register_android_server_HelloService(JNIEnv *env) {
+    		return jniRegisterNativeMethods(env, "com/android/server/HelloService", method_table, NELEM(method_table));
+	}
+};</pre><p></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>注意，在hello_init函数中，通过Android硬件抽象层提供的hw_get_module方法来加载模块ID为HELLO_HARDWARE_MODULE_ID的硬件抽象层模块，其中，<span>HELLO_HARDWARE_MODULE_ID是在&lt;hardware/hello.h&gt;中定义的。</span><span>Android硬件抽象层会根据</span><span>HELLO_HARDWARE_MODULE_ID的值在Android系统的/system/lib/hw目录中找到相应的模块，然后加载起来，并且返回hw_module_t接口给调用者使用。在jniRegisterNativeMethods函数中，第二个参数的值必须对应HelloService所在的包的路径，即com.android.server.HelloService。</span></p><p><span>&nbsp;&nbsp; &nbsp; &nbsp;三.&nbsp;修改同目录下的onload.cpp文件，首先</span>在namespace android增加register_android_server_HelloService函数声明：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;namespace android {</p><p>&nbsp;&nbsp; &nbsp; &nbsp;..............................................................................................</p><p>&nbsp;&nbsp; &nbsp; &nbsp;<strong>int register_android_server_HelloService(JNIEnv *env);</strong></p><p>&nbsp;&nbsp; &nbsp; &nbsp;};</p><div>&nbsp;&nbsp; &nbsp; &nbsp;在JNI_onLoad增加register_android_server_HelloService函数调用：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;extern "C" jint JNI_onLoad(JavaVM* vm, void* reserved)</div><div>&nbsp;&nbsp; &nbsp; &nbsp;{</div><div>&nbsp;&nbsp; &nbsp; &nbsp; .................................................................................................</div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; register_android_server_HelloService(env);</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; </strong>.................................................................................................</div><div>&nbsp;&nbsp; &nbsp; &nbsp;}</div><div>&nbsp;&nbsp; &nbsp; &nbsp;这样，在Android系统初始化时，就会自动加载该JNI方法调用表。</div><div>&nbsp;&nbsp; &nbsp; &nbsp;四.&nbsp;修改同目录下的Android.mk文件，在LOCAL_SRC_FILES变量中增加一行：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_SRC_FILES:= \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_AlarmManagerService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_BatteryService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_InputManager.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_LightsService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_PowerManagerService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_SystemServer.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_UsbService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_VibratorService.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;com_android_server_location_GpsLocationProvider.cpp \</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>com_android_server_HelloService.cpp /</strong></div><div>&nbsp;&nbsp; &nbsp; &nbsp;onload.cpp</div><div>&nbsp;&nbsp; &nbsp; &nbsp;五. 编译和重新找亿system.img：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ mmm&nbsp;frameworks/base/services/jni</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;USER-NAME@MACHINE-NAME:~/Android$ make snod</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>这样，重新打包的system.img镜像文件就包含我们刚才编写的JNI方法了，也就是我们可以通过Android系统的Application Frameworks层提供的硬件服务HelloService来调用这些JNI方法，进而调用低层的硬件抽象层接口去访问硬件了。前面提到，在这篇文章中，我们暂时忽略了HelloService类的实现，在下一篇文章中，我们将描述如何实现硬件服务HelloService，敬请关注。</div>
+</div>
+
+
+
+
+
+            
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+<div class="clear"></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

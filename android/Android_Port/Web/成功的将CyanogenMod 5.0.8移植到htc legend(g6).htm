@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0054)http://blog.chinaunix.net/uid-23599723-id-2395376.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+<div class="box">
+  
+  
+  
+  
+  
+    
+  
+  	 
+
+
+
+
+
+  <div class="Blog_contain"> 
+    
+	
+
+    
+    <div class="Blog_right1">
+      <div class="Blog_right1_1 Blog_right1_11">
+        <div class="Blog_right1_2 ">
+			
+          <div class="Blog_tit4 Blog_tit5">
+                        
+            <a href="./成功的将CyanogenMod 5.0.8移植到htc legend(g6)_files/成功的将CyanogenMod 5.0.8移植到htc legend(g6).htm">成功的将CyanogenMod 5.0.8移植到htc legend(g6)!</a>
+            
+          </div>
+          <div class="Blog_con2">
+            
+           <div class="Blog_wz1" style="word-wrap: break-word;">
+			
+		&nbsp;&nbsp; 这几天一直在尝试将CyanogenMod 6.0.0和CyanogenMod 5.0.8移植到htc legend(g6)，其中6.0.0是android2.2的源码，而5.0.8是android2.1源码，考虑到htc legend(g6)本身就是android2.1的，移植起来可能更容易处理一些。经过一个星期的调试，现在终于将CyanogenMod 5.0.8成功移植到了htc legend(g6)上。接下来尝试将source.android.com官方网站上的源码移植到htc legend(g6)上。<div>&nbsp;&nbsp; 由于android的源码不涉及到各个手机的驱动程序，所以在移植之前，需要将htc legend(g6)的一些驱动程序以及驱动程序的配置文件通过usb调试工具adb以命令行的形式从手机上PUSH出来，然后在源代码编译打包的时候，需要将这些驱动程序以及配置文件一起打包到目标文件夹，这个脚本文件在CyanogenMod5.0.8的各个vendor中都提供了的。下面是移植步骤，供参考：</div><div>&nbsp;&nbsp; 一，首先需要下载CyanogenMod 5.0.8的源码：</div><div>&nbsp;&nbsp; &nbsp;<span class="Apple-style-span" style="font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; color: rgb(68, 68, 68); line-height: 16px; white-space: pre; ">$ mkdir android-cm5</span></div><span class="Apple-style-span" style="font-family: helvetica, arial, freesans, clean, sans-serif; font-size: 13px; line-height: 18px; "><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">   $ cd android-cm5</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  &nbsp;$ repo init -u git://github.com/CyanogenMod/android.git -b eclair</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">   $ repo sync</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  二，下载<span class="Apple-style-span" style="color: rgb(0, 0, 0); font-family: &#39;Courier New&#39;, Courier, 宋体; line-height: normal; white-space: normal; ">CyanogenMod需要的一些共同文件，如果想最终版本中不需要这些APK，也可以通过配置/vendor/cyanogen/cyanogen.mk文件将这些需要的APK COPY命令注释掉。</span></pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); "><span class="Apple-style-span" style="color: rgb(0, 0, 0); font-family: &#39;Courier New&#39;, Courier, 宋体; line-height: normal; white-space: normal; ">&nbsp;&nbsp;<span class="Apple-style-span" style="font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; color: rgb(68, 68, 68); line-height: 16px; white-space: pre; ">$ cd vendor/cyanogen/</span></span></pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  $ ./get-rommanager   #下载一个RomManager.apk包，主要是刷ROM用的。我没用过。
+  $ ./get-google-files #其它的一些google开发的android apk包</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  三，下载针对htc legend(g6)的vendor.</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); "><span class="Apple-style-span" style="color: rgb(0, 0, 0); font-family: helvetica, arial, freesans, clean, sans-serif; line-height: 18px; white-space: normal; font-size: 13px; "><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  $ cd ../../vendor/htc
+  $ git clone git://github.com/aleho/android_vendor_htc_legend.git
+  $ mv android_vendor_htc_legend/ legend</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  $ cd legend</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  $&nbsp;./extract-files.sh  #确保这个命令执行将你的手机连接好电脑并且开了手机USB调试，adb命令可以连接手机。这个过程主要是下载htc legend(g6)驱动程序以及配置文件。 </pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">  四，针对CyanogenMod 5.0.8源码打上htc legend(g6)的补丁包，这个补丁包主要是wifi和触摸屏的，如果不做，触摸屏将无法触摸以及wifi功能无法启动。可参数地址：</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">   http://forum.xda-developers.com/archive/index.php/t-702776.html</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); "> 五，好了，根据自己的爱好，定制自己的一些vendor参数。然后make otapackage便可编译recovery方式的htc legend(g6)包。</pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">   </pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">    </pre><pre style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; font: normal normal normal 12px/normal Monaco, &#39;Courier New&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, monospace; line-height: 1.4em; font-family: &#39;Bitstream Vera Sans Mono&#39;, Courier, monospace; font-size: 12px; color: rgb(68, 68, 68); ">   </pre></span></pre></span>
+		
+		
+		           </div>
+            
+            
+            
+          </div>
+          
+		  
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+
+
+<!--该部分应该放在输出代码块的后面才起作用 -->
+
+  
+  
+</div>
+
+
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0050)http://blog.csdn.net/qwjzh/article/details/4949731 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./SkyEye-1.2.9_rc1版本测试_files/SkyEye-1.2.9_rc1版本测试.htm">
+        SkyEye-1.2.9_rc1版本测试
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+<div class="t_msgfont">&nbsp;&nbsp;&nbsp; 原文地址：</div>
+<div class="t_msgfont">&nbsp;&nbsp;&nbsp; <a href="http://www.linuxidc.com/Linux/2009-09/21860.htm">http://www.linuxidc.com/Linux/2009-09/21860.htm</a>
+</div>
+<div class="t_msgfont">&nbsp;&nbsp;&nbsp; 经4个月的开发，skyeye-1.2.9_rc1版本发布。skyeye-1.2.9采用了全新的模块化架构，希望SkyEye不但是一个硬件仿真工具，也能够提供一个二次开发平台，供用户进行各种各样的定制和开发。SkyEye-1.2.9_rc1版本是一个非稳定版本，目前还有一些testcases不能通过。这些遗留问题会在skyeye-1.3.0版本中修复。<br>
+<br>
+1. skyeye-1.2.9包含的新特性<br>
+1.1 模块化、插件式的架构，提供了二次开发的API给用户。更多信息请阅读skyeye 的programming<br>
+manual，即附件的skyeye_api_v3.pdf。<br>
+1.2 增解了独立的xterm终端为串口显示。<br>
+1.3 增加了CLI界面，实现了基本的调试命令，如显示内存，反汇编，单步等等。更多命令请查看skyeye的user<br>
+manual文档的第三章，文档为附件的skyeyev3_usermanual-v3.pdf。<br>
+<br>
+2. 编译安装<br>
+2.1 rpm 包安装<br>
+skyeye-1.2.9_rc1的发布了32位和64位的二进制的rpm包，可以在SkyEye的sourceforge上下载：<br>
+<a href="https://sourceforge.net/projects/skyeye/files/" target="_blank">https://sourceforge.net/projects/skyeye/files/</a>
+<br>
+文件名称为：skyeye-1.2.9-rc1.i386.rpm ， 由olina制作。安装命令为<br>
+rpm -ivh&nbsp;&nbsp;skyeye-1.2.9-rc1.i386.rpm<br>
+已经在suse11和ubuntu 9.0.4上测试，可以安装并运行。<br>
+<br>
+2.2 源码编译安装<br>
+另外也可以在下面的链接中下载skyeye的源码包skyeye-1.2.9_rc1.tar.gz：<br>
+<a href="https://sourceforge.net/projects/skyeye/files/skyeye/skyeye-1.2.9_rc1" target="_blank">https://sourceforge.net/projects ... ye/skyeye-1.2.9_rc1</a>
+<br>
+解压缩：tar xzvf skyeye-1.2.9_rc1.tar.gz<br>
+其编译步骤为 ./configure ; make lib; make ; make install ; make install_lib<br>
+<br>
+3. 测试方法<br>
+附件skyeye_testing_proc-v2.pdf为skyeye-1.2.9的测试文档，其中的测试过程可以在suse11和Ubuntu-9.0.4下运行。测试用例来自于skyeye-testsuite-1.2.9.tar.gz<br>
+,&nbsp;&nbsp;可以在SkyEye的sourceforge站点上下载。<br>
+当前大部分的测试用例已经能够基本运行，但是还没有经过严格的测试。<br>
+<br>
+4. 相关文档<br>
+附件中包含了三个手册，这些手册目前还不是很完善，后续会进一步补充。手册描述如下：<br>
+skyeye user manual : skyeye的用户手册，描述安装使用，相关命令和配置文件等等<br>
+skyeye programming manual ： 描述skyeye提供的API，数据类型，模块编写等内容<br>
+skyeye internals manual: skyeye的内部实现机制和模拟器的运行流程。<br>
+上面所提到的文档请到如下链接下载：<br>
+<a href="http://groups.google.com/group/skyeye-simulator/t/d5f31fe5c11b2909?hl=zh-CN" target="_blank">http://groups.google.com/group/s ... e5c11b2909?hl=zh-CN</a>
+<br>
+<br>
+5. 已知的问题<br>
+目前coldfire的测试用例不能运行，涉及到 网卡，Flash和touchscreen的测试用例运行失败。预计在skyeye-1.3.0中解决这些问题。<br>
+<br>
+Thanks<br>
+MK<br>
+<br>
+--<br>
+<a href="http://www.skyeye.org/" target="_blank">www.skyeye.org</a>
+</div>
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

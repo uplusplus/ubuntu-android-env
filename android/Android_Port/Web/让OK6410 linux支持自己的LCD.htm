@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0051)http://blog.csdn.net/cp1300/article/details/7901512 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="./让OK6410 linux支持自己的LCD_files/default.css">
+<style type="text/css"></style><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./让OK6410 linux支持自己的LCD_files/让OK6410 linux支持自己的LCD.htm">
+        让OK6410 linux支持自己的LCD
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+<p><br>
+OK6410自带的那块LCD分辨率太低了,我自己在淘宝上面淘了一块5寸的LCD,分辨率800*480,与飞凌驱动里面7寸屏分辨率一样,我就改动了一下时序参数,能用了,但是有部分不大清晰,最终发现时由于时钟边沿有效设置错了,<br>
+<br>
+</p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/cp1300/article/details/7901512#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/cp1300/article/details/7901512#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/cp1300/article/details/7901512#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/cp1300/article/details/7901512#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 372px; top: 550px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#include&nbsp;"s3cfb.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_HFP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;41&nbsp;&nbsp;/*&nbsp;front&nbsp;porch&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_HSW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;175&nbsp;/*&nbsp;hsync&nbsp;width&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_HBP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;41&nbsp;&nbsp;/*&nbsp;back&nbsp;porch&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_VFP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14&nbsp;&nbsp;/*&nbsp;front&nbsp;porch&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_VSW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;/*&nbsp;vsync&nbsp;width&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_VBP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30&nbsp;&nbsp;/*&nbsp;back&nbsp;porch&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_HRES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;800&nbsp;/*&nbsp;horizon&nbsp;pixel&nbsp;&nbsp;x&nbsp;resolition&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_VRES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;480&nbsp;/*&nbsp;line&nbsp;cnt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;resolution&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_HRES_VIRTUAL&nbsp;&nbsp;800&nbsp;/*&nbsp;horizon&nbsp;pixel&nbsp;&nbsp;x&nbsp;resolition&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_VRES_VIRTUAL&nbsp;&nbsp;960&nbsp;/*&nbsp;line&nbsp;cnt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;resolution&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;S3CFB_HRES_OSD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;800&nbsp;/*&nbsp;horizon&nbsp;pixel&nbsp;&nbsp;x&nbsp;resolition&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_VRES_OSD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;480&nbsp;/*&nbsp;line&nbsp;cnt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;resolution&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_VFRAME_FREQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;60&nbsp;&nbsp;/*&nbsp;frame&nbsp;rate&nbsp;freq&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#define&nbsp;S3CFB_PIXEL_CLOCK&nbsp;&nbsp;&nbsp;(S3CFB_VFRAME_FREQ&nbsp;*&nbsp;(S3CFB_HFP&nbsp;+&nbsp;S3CFB_HSW&nbsp;+&nbsp;S3CFB_HBP&nbsp;+&nbsp;S3CFB_HRES)&nbsp;*&nbsp;(S3CFB_VFP&nbsp;+&nbsp;S3CFB_VSW&nbsp;+&nbsp;S3CFB_VBP&nbsp;+&nbsp;S3CFB_VRES))</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;s3cfb_set_fimd_info(</span><span class="keyword">void</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;s3cfb_fimd.vidcon1&nbsp;=&nbsp;S3C_VIDCON1_IVCLK_RISE_EDGE&nbsp;|&nbsp;S3C_VIDCON1_IHSYNC_INVERT&nbsp;|&nbsp;S3C_VIDCON1_IVSYNC_INVERT&nbsp;|&nbsp;S3C_VIDCON1_IVDEN_NORMAL;<span class="comment">//S3C_VIDCON1_IVCLK_RISE_EDGE自己添加的</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="cpp" style="display: none;">#include "s3cfb.h"
+
+#define S3CFB_HFP		41	/* front porch */
+#define S3CFB_HSW		175	/* hsync width */
+#define S3CFB_HBP		41	/* back porch */
+
+#define S3CFB_VFP		14	/* front porch */
+#define S3CFB_VSW		5	/* vsync width */
+#define S3CFB_VBP		30	/* back porch */
+
+#define S3CFB_HRES		800	/* horizon pixel  x resolition */
+#define S3CFB_VRES		480	/* line cnt       y resolution */
+
+#define S3CFB_HRES_VIRTUAL	800	/* horizon pixel  x resolition */
+#define S3CFB_VRES_VIRTUAL	960	/* line cnt       y resolution */
+
+#define S3CFB_HRES_OSD		800	/* horizon pixel  x resolition */
+#define S3CFB_VRES_OSD		480	/* line cnt       y resolution */
+
+#define S3CFB_VFRAME_FREQ     	60	/* frame rate freq */
+
+#define S3CFB_PIXEL_CLOCK	(S3CFB_VFRAME_FREQ * (S3CFB_HFP + S3CFB_HSW + S3CFB_HBP + S3CFB_HRES) * (S3CFB_VFP + S3CFB_VSW + S3CFB_VBP + S3CFB_VRES))
+
+static void s3cfb_set_fimd_info(void)
+{
+	s3cfb_fimd.vidcon1 = S3C_VIDCON1_IVCLK_RISE_EDGE | S3C_VIDCON1_IHSYNC_INVERT | S3C_VIDCON1_IVSYNC_INVERT | S3C_VIDCON1_IVDEN_NORMAL;//S3C_VIDCON1_IVCLK_RISE_EDGE自己添加的</pre><br>
+通过裸机程序驱动这块LCD知道了时序参数,根据自己的屏稍作修改就可以了.<br>
+<br>
+<img src="./让OK6410 linux支持自己的LCD_files/1345728943_6670.png" alt=""><br>
+<p><br>
+<br>
+LCD驱动文件路径:/drivers/video/samsung &nbsp;修改后编译内核,按照飞凌手册上面的方法更改LCD分辨率就行了.<br>
+<br>
+</p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

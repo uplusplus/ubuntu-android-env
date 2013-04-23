@@ -1,0 +1,77 @@
+为Android加入busybox工具
+
+
+我们可以通过两种方式进入Android的console：
+
+1. 直接执行命令emulator -shell;
+
+2. 在启动emulator后，通过命令adb shell进入。
+
+之后我们就可以使用一些linux下常用的命令了，如ls，cat等。然而Android自带的toolbox(位于/system/bin中)也太简略了点，有些命令如find，Android并不支持或者支持得不好。下面将介绍如何为Android加入busybox工具，通过编译得到一个可以在Android里面运行的busybox工具，我们就可以使用众多常见的linux命令了，如find，touch等。
+
+步骤如下：
+
+1. 首先去busybox主页http://www.busybox.net/下载最新版本的busybox源代码.
+
+2. 下载交叉编译工具: GNU Toolchain for ARM Processors
+
+下载地址：http://www.codesourcery.com/gnu_toolchains/arm/download.html
+
+其中第一项选择ARM EABI或ARM GNU/Linux，第二项选择IA32 GNU/Linux TAR即可。
+
+最后得到一个arm-2007q3-51-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2文件
+
+将压缩包解压到linux下某个目录, 并设置好环境变量, 使之能找到前缀为"arm-none-linux-gnueabi-"的交叉编译工具.
+
+3. 进入busybox源码目录.
+
+先执行make menuconfig命令对编译过程进行配置. 过程如下:
+
+Busybox Settings -> Build Options ->
+
+[*] Build BusyBox as a static binary (no shared libs) 这个要选上，因上这样子编译出来的busyBox才是可以独立运行的。
+(/home/jo/tool/arm-2008q3/bin/arm-none-linux-gnueabi-) Cross Compiler prefex 这是交叉编译器的"路径+前缀"，要根据具体的情况来设置。
+Busybox Settings -> Installation Options->
+[*] Don’t use /usr 这样子编译出来的busybox才不会安装到你主机的/usr目录下。一定要选上。
+
+4 执行make编译源码. 如果编译过程中产生无法找到头文件的错误, 可指定交叉编译器用到的头文件所在路径. 如
+
+$make -I./home/jo/tool/arm-2008q3/arm-none-linux-gnueabi/libc/usr/include/
+
+5 编译成功后将得到一个名为busybox的可执行文件.
+
+6 在Android的console下建立目录/data/busybox, 并使用下面的命令将文件busybox复制该目录中:
+
+adb push busybox /data/busybox
+
+7 从Android的console进入/data/busybox目录, 为可执行文件busybox加上可执行属性: chmod +x busybox
+
+8 这时我们就可以使用busybox工具了, 如果希望在任何目录下都可以直接使用bosybox,则需要将路径/data/busybox export到path环境变量中:
+
+export PATH=$PATH:/data/busybox
+
+9 设置环境变量之后, 在命令行输入busybox, 即可看到其用法, 如:
+
+在当前目录及其子目录中查找名为init.rc的文件可使用以下命令:
+
+$busybox find . -name init.rc
+
+10 安装busybox。
+
+通过执行./busybox --install -s 我们会看到出现一些错误, 原因是因为Android系统的根目录和/sbin目录是只读的. 因此我们无法把一些常用命令安装到/bin目录下, 也不能修改/init.rc文件来设置PATH环境变量.
+
+对于如何执行命令busybox --install -s 的默认安装路径, 这里我还不太清楚, 或许跟Makefile和编译busybox的相关设置有关.
+
+尽管我们不可以在Android里面通过执行busybox --install -s 命令来安装常用命令, 我们却可以通过另外一个方法来把常用命令安装到Android里面.
+
+方法很简单, 可以先在外面的linux系统中执行make install命令把相关的命令提取出来. 然后再通过命令adb push ./_install/bin /data/busybox/bin 把这些常用命令复制进Android系统中. 注意: make install安装命令的所在路径可通过执行make menuconfig进行设置, 默认为./_install目录下面.
+
+这样,我们就不用每次使用busybox提供的一个命令时, 都要在前面加上busybox了.
+
+11 修改/init.rc文件设置环境变量.
+
+请参考帖子: 对Android启动过程的进一步研究
+
+要提醒的是, 修改PATH环境变量的时候, 应该把busybox常用命令的路径"/data/busybox/bin"放在Android的常用命令路径"/system/bin"的前面, 否则, 先查找得到的将不是busybox的命令, 可以这样设置:
+
+export PATH /data/busybox/bin:/sbin:/system/sbin:/system/bin:/system/xbin

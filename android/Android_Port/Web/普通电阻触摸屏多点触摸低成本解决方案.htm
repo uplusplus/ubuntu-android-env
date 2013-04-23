@@ -1,0 +1,202 @@
+
+<!-- saved from url=(0059)http://sjdai.spaces.eepw.com.cn/articles/article/item/74419 -->
+<html version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="description" content="">
+<meta name="keywords" content="">
+<meta name="author" content="edw.com.cn">
+<meta name="robots" content="all">
+<link rel="alternate" type="application/rss+xml" title="订阅该空间的博客文章" href="http://sjdai.spaces.eepw.com.cn/space/rss">
+<link rel="shortcut icon" href="http://sjdai.spaces.eepw.com.cn/favicon.ico">
+<link rel="icon" href="http://sjdai.spaces.eepw.com.cn/animated_favicon1.gif" type="image/gif">
+<title>普通电阻触摸屏多点触摸低成本解决方案</title>
+<script type="text/javascript">
+function highlight(itemid)
+{
+	document.getElementById('m'+itemid).className = "on";
+}
+</script>
+<style type="text/css">
+#layout{table-layout:fixed}
+#layout td.c2t1{padding-left:10px}
+#layout td.c2t2{width:20px}
+#layout td.c2t3{padding-right:10px;width:24%}
+</style>
+<link rel="stylesheet" type="text/css" href="./普通电阻触摸屏多点触摸低成本解决方案_files/0d557fdba5fd5266d0164efa.css">
+<link rel="stylesheet" type="text/css" href="./普通电阻触摸屏多点触摸低成本解决方案_files/space.css">
+<style type="text/css"></style><script src="./普通电阻触摸屏多点触摸低成本解决方案_files/logger.js"></script><link href="./普通电阻触摸屏多点触摸低成本解决方案_files/bdsstyle.css" rel="stylesheet" type="text/css"><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+<center>
+
+
+
+
+
+
+
+<div id="main" align="left">
+	
+
+	<div class="stage">
+
+
+
+<style type="text/css">
+.img_sina_share{display:none; position:absolute; cursor:pointer;}
+#usrbar{padding:4px 10px 3px 0;font-size:12px;height:19px;line-height:19px;color:#000000;font-family:Arial;text-align:right;background:#ffffff;filter:alpha(opacity=65);-moz-opacity:0.5;width:auto !important;width:100%;letter-spacing:normal}
+#usrbar a,#usrbar a:link,#usrbar a:visited{color:#0000CC;text-decoration:underline}
+#ft{clear:both;height:20px;line-height:20px;color:#666666;font-size:12px;font-family:Arial;text-align:center}
+#ft a,#ft a:link,#ft a:visited{color:#7777CC;text-decoration:underline}
+#usrbar,#usrbar a,#usrbar a:link,#usrbar a:visited,#ft,#ft a,#ft a:link,#ft a:visited{letter-spacing:normal}
+</style>
+<div class="stage">
+<div class="stagepad">
+<div style="width:100%">
+
+	
+
+<div id="m_blog" class="modbox">
+<div class="tit">普通电阻触摸屏多点触摸低成本解决方案</div>
+
+<table style="table-layout:fixed"><tbody><tr><td><div class="cnt"><p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">苹果公司iPhone的成功将多点触摸技术推到了一个前所未有的高度，经典的弹钢琴应用程序可以支持超过5点的同时触摸，虽然这一性能并不见得有太多的实用价值，但绝对带给了用户技术无限领先的震撼感。苹果公司的iPhone采用电容屏和他们的专利技术来实现对多点触摸的支持，价格自然不菲，但一点可以肯定，在支持的点数和性能稳定方面，目前还少有公司能在这方面挑战苹果的权威。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">对于消费电子产品来说，流行就是硬道理，在iPhone大行其道的同时，一时间但凡是有触摸屏的产品，都想让自己通过多点触摸等特性与iPhone攀上亲戚关系，尤其是手机、MP4、GPS等产品，仿苹果的心理更是急切。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">苹果公司的技术虽然在性能方面无可挑剔，但过高的成本使得这项技术只适合iPhone之类的奢侈品，对于更多的触摸屏产品显然无法承受这一成本。正是这个原因，寻找一种更为便宜的多点触摸解决方案，成为众多技术人员的期望，本文在不增加其它硬件成本的前提下，基于普通四线电阻屏，提出一种低成本解决方案，能够在一定限制条件下可实现两点触摸的识别。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><strong style="mso-bidi-font-weight: normal"><font size="2">几种现有的多点触摸方案</font></strong></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">1.硬件采用电容屏，通过软件实现多点触摸。优点是灵敏度高，性能稳定，支持的点数可满足绝对大部分应用需求；缺点是成本高，而且苹果有专利保护。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">2.硬件采用数字电阻屏，实际上是用电阻屏的材料做成一个透明键盘矩阵，通过行列扫描判断所按下的点。优点是价格便宜，性能可靠，可支持的点数最多；不足是需要比较多的行列连线接口，不能实现手写功能。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">3.硬件采用模拟电阻屏，在专用芯片中通过软件计算出多点触摸。优点是既能支持多点触摸，又保持手写功能，另外成本增加不多；缺点是支持的点数最少，方案商在实现细节上大都语焉不详，性能和稳定性尚待验证。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">4.采用红外、表面超声波等方式实现触摸检测，实际应用比较少，这里不做探讨。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><strong style="mso-bidi-font-weight: normal"><font size="2">低成本多点触摸方案</font></strong></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">毫无疑问，四线模拟电阻屏是触摸屏中成本最低的一种，如果我们能在这种屏的基础上找到一种实现多点触摸的方法，只要控制额外增加的硬件成本，成本上考虑能够有所突破的可能性最大。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">虽然现在有不少MCU带有触摸屏接口，因为我们需要识别多点触摸，所以这类MCU的触摸屏接口并不适用，实际上方案的要求更简单，只需要选用MCU能提供4路ADC口使用，另外再用4条双向IO进行控制。来看一下这种低成本方案的构成细节，图（一）中(d)部分为方案示意图，并不需要对电阻屏做出过多改动，只是在外围增加了两个电阻，这几乎是可以忽略不计的成本。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><img src="./普通电阻触摸屏多点触摸低成本解决方案_files/e8045429d2d09a646a1abef189b8ee4e.JPG"></p>
+<p style="margin: 0cm 0cm 0pt; text-align: center">&nbsp;</p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-align: center"><font size="2">图（一） 低成本电阻触摸屏原理及方案示意图</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">图（一）中(a)(b)(c)三部分对电阻触摸屏的原理做了简单示意，对单点触摸位置的识别方法这里不做详述，不清楚的朋友请自行查阅相关资料进行了解。单点触摸的识别只需要4条双向IO就可以实现，其中2条需要支持ADC功能，从图（一）中(d)部分可以看出方案做了一点修改，使用的IO口数量增加了一倍，另外还有两个电阻。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">为便于分析，我们需要建立一个触摸屏工作的等效电路模型。因为触摸屏X和Y方向对触摸检测方法是一样的，所以我们只建立一个电路模型，图（二）展示了触摸屏按下一个点和两个点的状态。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-align: center"><img height="196" width="438" src="./普通电阻触摸屏多点触摸低成本解决方案_files/6d0a2174259801c367f0f366b366334c.JPG">&nbsp;</p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-align: center"><font size="2">图（二） 触摸屏等效电路模型示意图</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">图（二）标号说明：</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">R1、R2为IO口的输出电阻，只要知道它的存在，不用管具体大小；R3、R4、R5、R6为4路ADC口的输入电阻，阻值远大于其它电阻；R7、R8、R9为触摸屏的分段等效电阻，阻值总和为几百欧；R12、R13、R14为触摸屏另外一层的分段等效电阻，阻值总和为几百欧；R10、R11为按下触摸屏时的接触电阻，阻值动态变化； K1、K2表示按下触摸屏的位置。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">R15为限流电阻，因为触摸屏的电阻通常为几百欧，普通IO驱动能力可能不够，所以用R15对IO输出进行限流，R15对应图（一）中(d)部分R1和R2。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">假定IO1输出高电平，IO2输出低电平， V1~V4为4路ADC口测量到的电压。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">触摸屏没有按下时，测量ADC1和ADC2得到V1_0和V2_0；触摸屏按下一点时，假设此时按下位置为K1，4路ADC测量的电压为Vn_1；触摸屏按下两点时，4路ADC测量的电压为Vn_2。忽略ADC口输入电阻的影响，这些电压会满足下面的关系。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">V1_0=V1_1，V2_0=V2_1</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">V3_1=V4_1=(V1_1-V2_1)*(R8+R9)/(R7+R8+R9)</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">(V1_1-V2_1)≥(V1_2-V2_2)</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">后一种关系式因为两点按下后会让与R1、R2、R15串联的触摸屏等效电阻变小，从而使得分在触摸屏两端的电压也变小。现在引入三个新参数L7、L8、L9，分别表示同标号电阻等效的触摸屏宽度，三者的总和等于触摸屏宽。另外还根据实际引入一个限制条件，当有两点被按下时，只要程序检测速度够快，对于程序来说就不会有同时按下的情况，始终都是依次按下或松开，这一点非常重要。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">对于单点位置的检测不存在任何问题，现在我们来处理两点的情况，结合前面引入的限制条件，程序可以检测到中间有一小段时间是单点按下，也就是程序先检测到K1按下，经过一小段时间才检测到K2按下。这个中间过程可以准确得到K1位置，如果我们利用前后变化的比例关系，就可以计算出后面K2按下的位置。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">K1单独按下：</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">L7=(L7+L8+L9)*(V1_1-V3_1) /(V1_1-V2_1)</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">K1和K2同时按下(忽略R10和R11的影响)：</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">(V1_2-V3_2)/L7=(V4_2-V2_2)/L9</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">因为L7+L8+L9为已知条件触摸屏的宽度L，所以有：</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">L7=L*(V1_1-V3_1)/(V1_1-V2_1)</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">L9=(V4_2-V2_2)*L7/(V1_2-V3_2)</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">L9=L*(V4_2-V2_2)*(V1_1-V3_1)/((V1_1-V2_1)*(V1_2-V3_2))</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">到这里我们已经得到所按两点的具体位置，只要我们依照此方法对触摸屏的X和Y轴分别处理，就可以在普通电阻屏上实现两点触摸位置的检测。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">&nbsp;</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><strong style="mso-bidi-font-weight: normal"><font size="2">方案的其它说明</font></strong></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">前面的公式推导过程忽略了接触电阻R10和R11的影响，这两个电阻的大小并不固定，主要由使用者按下的力度决定，按的力越大，其阻值越小。当只按下一个点时，所按力度的大小对K1位置的计算影响可以不用考虑，但对于两点的计算则要考虑其影响，按的力度越小，计算出来的K2位置误差就越大。这样在按下的过程中，会存在一个误差从大变小的过程，不过只要用力足够，最后还是保证误差在允许范围内。另外触摸屏并不是完全线性，这里是简化为线性关系。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">该方案在两点按下时最好保持先按下的点位置不变动，这样可以保证计算结果更为精准。如果两点按下后需要移动，虽然通过比例关系也可以计算出运动轨迹，但误差会随之加大，这里也不做过多分析。松开的过程与按下相反，由两点按下变为一点按下，最后全松开。如果在精度上适度降低要求，在此方案的基础还可以利用三角形重心的原理进行第三点的判断，笔者进行的验证实验发现难点是需要考虑的组合情况偏多，从而导致判断程序复杂。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">实际应用中还需要进行触摸屏是否按下的检测，这里不详述具体的检测方法，只是要留意为了防止触摸屏悬空状态的影响，可以在两端接一个比较大的电阻到地，建议用470k或510k的阻值。</font></p>
+<p style="margin: 0cm 0cm 0pt; text-indent: 21pt"><font size="2">使用该方案除了具备普通电阻屏的基本功能，还可以实现对屏幕的拖动，用手指合分动作实现图像的缩放，对两个游戏功能键的同时控制。从成本上看除了需要另外增加4条IO口外并无其它硬件开销，主要是通过软件计算来实现多点检测。该方案虽然性能上相较电容屏存在明显差距，但成本上占有绝对优势，对于一些对精度要求不高的应用还是具有一定的实用价值。</font></p>
+<p><font size="2">&nbsp;</font></p></div></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+<img id="imgSinaShare" class="img_sina_share" title="将选中内容分享到新浪微博" src="./普通电阻触摸屏多点触摸低成本解决方案_files/share.gif" style="display: inline; left: 158px; top: 55px;">
+</div>
+<script> 
+var eleImgShare = document.getElementById("imgSinaShare");
+ 
+var $sinaMiniBlogShare = function(eleShare, eleContainer) {
+	var eleTitle = document.getElementsByTagName("title")[0];
+	eleContainer = eleContainer || document;
+	var funGetSelectTxt = function() {
+		var txt = "";
+		if(document.selection) {
+			txt = document.selection.createRange().text;	// IE
+		} else {
+			txt = document.getSelection();
+		}
+		return txt.toString();
+	};
+	eleContainer.onmouseup = function(e) {
+		e = e || window.event;
+		var txt = funGetSelectTxt(), sh = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+		var left = (e.clientX - 40 < 0) ? e.clientX + 20 : e.clientX - 40, top = (e.clientY - 40 < 0) ? e.clientY + sh + 20 : e.clientY + sh - 40;
+		if (txt) {
+			eleShare.style.display = "inline";
+			eleShare.style.left = left + "px";
+			eleShare.style.top = top + "px";
+		} else {
+			eleShare.style.display = "none";
+		}
+	};
+	eleShare.onclick = function() {
+		var txt = funGetSelectTxt(), title = (eleTitle && eleTitle.innerHTML)? eleTitle.innerHTML : "未命名页面";
+		if (txt) {
+			window.open('http://v.t.sina.com.cn/share/share.php?title=' + txt + '→来自页面"' + title + '"的文字片段&url=' + window.location.href);	
+		}
+	};
+}(eleImgShare);
+</script>
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=slide&amp;img=5&amp;pos=right&amp;uid=6574432" src="./普通电阻触摸屏多点触摸低成本解决方案_files/bds_s_v2.js"></script>
+<script type="text/javascript" id="bdshell_js" src="./普通电阻触摸屏多点触摸低成本解决方案_files/shell_v2.js"></script>
+<script type="text/javascript">
+document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000);
+</script>
+<!-- Baidu Button END -->
+
+</div>
+
+
+
+</center>
+
+
+
+
+
+
+
+
+</body></html>

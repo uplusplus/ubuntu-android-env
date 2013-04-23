@@ -1,0 +1,102 @@
+以下来自于RTL8188SU USB网卡的文档:
+Part 1: make 8712 USB Linux driver
+
+(1) step1: uncompress the “rtl8712_8188_8191_8192SU_usb_linux_v2.6.x.x.2010xxxx.tar.gz” file. (in “driver” directory)
+> tar zxvf rtl8712_8188_8191_8192SU_usb_linux_v2.6.6.0.20100625.tar.gz
+(2) step2: make 8712 USB driver module
+> make
+(3) step3: clean the operation environment
+> ./clean
+(4) step4: insert 8712 USB modules 
+> insmod 8712u.ko
+(5) step5: enable wlan0 interface
+> ifconfig wlan0 up
+(6) step6: setup IP address
+> ifconfig wlan0 192.168.1.100
+Part 2: Site Survey & connect to AP without security 
+
+step1: Site Survey
+> iwlist wlan0 scan
+
+(2) step2: Connect to AP
+> iwconfig wlan0 essid “xxx”
+
+
+我的作法:
+1 解压驱动文件到Android Kernel内核树的驱动目录:
+	k_android2.3_kernel_v1.01/drivers/net/wireless/rtl818x/rtl8712
+  因为驱动文件复杂,为了避免污染原本的rtl818x目录,在其下新建子目录存放新驱动.
+
+2 修改驱动配置文件:
+	修改rtl8712/config:
+	#
+	# Automatically generated make config: don't edit
+	#
+	CONFIG_RTL8711=n
+	CONFIG_RTL8712=y
+	CONFIG_USB_HCI=y
+	CONFIG_SDIO_HCI= n
+	CONFIG_MP_INCLUDED=y
+	CONFIG_PLATFORM_I386_PC=n
+	CONFIG_PLATFORM_ARM_S3C= y
+	CONFIG_PLATFORM_ARM_PXA= n
+	CONFIG_PLATFORM_MIPS_RMI= n
+	CONFIG_PLATFORM_RTK_DMP= n
+	CONFIG_PLATFORM_MIPS_PLM= n
+	CONFIG_PLATFORM_RTD2880B=n
+	CONFIG_PLATFORM_MSTAR389=n
+	CONFIG_MLME_EXT= n
+	CONFIG_DRVEXT_MODULE= n
+	
+	主要是切换编译目标为arm_s3c,是我的开发板的类型.
+	
+3 添加Kconfig
+	内容基本参照rtl818x目录下的Kconfig中对rtl8187定义的内容,添加对rtl8712su的定义:
+	config RTL8712SU
+		tristate "Realtek 8712/8188/8191/8192SU USB Support"
+		depends on MAC80211 && USB
+		select EEPROM_93CX6
+		---help---  
+			This is a driver for Realtek 8712/8188/8191/8192SU based cards.  
+			These are USB based chips found in devices such as:  Netgear WG111v2  
+			Level 1 WNC-0301USB  Micronet SP907GK V5  Encore ENUWI-G2  Trendnet 
+			TEW-424UB  ASUS P5B Deluxe/P5K Premium motherboards  Toshiba Satellite 
+			Pro series of laptops  Asus Wireless Link  Linksys WUSB54GC-EU v2    
+			(v1 = rt73usb; v3 is rt2070-based,     use staging/rt3070 or try rt2800usb)  
+			Thanks to Realtek for their support!
+			
+	#下面的可以不要
+	if RTL8712SU
+		menu "RTL8712SU Feature"
+			config RTL8712SU_LEDS
+			bool "RTL8712SU_LEDS"
+			depends on RTL8712SU
+			default y
+			config CONFIG_MLME_EXT
+			bool "use mlme ext"
+			depends on RTL8712SU
+			default y
+			config CONFIG_MP_INCLUDED
+			bool "use mp"
+			depends on RTL8712SU
+			default y
+		endmenu
+	endif
+ 
+	然后修改rtl818x/Kconfig添加对新Kconfig的引用:
+	source "drivers/net/wireless/rtl818x/rtl8712/Kconfig"
+
+4 修改Makefile
+	修改rtl8712/Makefile:
+	CONFIG_BUILT_IN = y
+	否则会报找不到config文件.
+
+5 配置内核并编译
+	make menuconfig
+	添加对device drivers->Network device support->wirless lan->realtek 8712/8188/8191/8192SU USB support的选择
+	
+	编译:
+	make
+
+6 重新刷写内核,启动android,即可开启wifi了.
+	

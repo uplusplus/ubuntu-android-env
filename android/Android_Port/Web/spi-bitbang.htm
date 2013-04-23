@@ -1,0 +1,390 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0058)http://blog.csdn.net/xiaohe2009007/article/details/7387993 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./spi-bitbang_files/spi-bitbang.htm">
+        spi bitbang实现原理分析
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+最近研究spi的bit bang,学自网络，不敢独享,特做此文档。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+此文档是关于SPI的，读者对象为对linux 驱动如SPI作为platform有一定基础的programer。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+个人只见，难免有误，欢迎大家批评指正。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+此文档基于linux2.6.32内核</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+SPI bit bang是什么？我把他理解成用GPIO模拟SPI口，跟普通单片机没什么大的区别，下面我们将一步一步掀开bit bang的面纱.</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<span style="font-size:24px; line-height:1.5">一. SPI接口时序详细解</span></div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+关于这部分，可以参考如下资料 ，<a href="http://blog.chinaunix.net/link.php?url=http://www.52rd.com%2FBlog%2FDetail_RD.Blog_yuwenxin_21678.html%3F%23Flag_Comment" target="_blank" style="text-decoration:none; color:rgb(99,64,27)">http://www.52rd.com/Blog/Detail_RD.Blog_yuwenxin_21678.html?#Flag_Comment</a></div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+如下也摘抄于此，感谢博主 yuwenxin 分享如此好的一片文档</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+SPI接口有四种不同的数据传输时序，取决于CPOL和CPHL这两位的组合。图1中表现了这四种时序，<br>
+时序与CPOL、CPHL的关系也可以从图中看出。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<a href="http://blog.chinaunix.net/link.php?url=http://blog.chinaunix.net%2Fattachment%2F201110%2F28%2F24345573_1319791847aqNK.jpg" target="_blank" style="text-decoration:none; color:rgb(99,64,27)"><img border="0" src="./spi-bitbang_files/24345573_1319791847aqNK.jpg" alt="" style="border-top-width:0px; border-right-width:0px; border-bottom-width:0px; border-left-width:0px; border-style:initial; border-color:initial; max-width:650px"></a></div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+图1<br>
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+注意:</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<span style="color:#f00000; line-height:1.5">CPOL</span>是用来决定SCK时钟信号空闲时的电平，CPOL＝0，空闲电平为低电平，CPOL＝1时，<br>
+&nbsp;<br>
+空闲电平为高电平。CPHA是用来决定采样时刻的，CPHA=0，在每个周期的第一个时钟沿采样，<br>
+&nbsp;<br>
+<span style="color:#f00000; line-height:1.5">CPHA</span>＝1，在每个周期的第二个时钟沿采样。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+二, linux中的spi驱动模型</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+linux的SPI模型中重要的有如下几个结构体,位置include/linux/spi/spi.h</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+struct spi_device {} &nbsp;//Master side proxy for an SPI slave device</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+struct spi_driver {} &nbsp;//Host side "protocol" driver</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+struct spi_master {} &nbsp;//interface to SPI master controller</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+struct spi_transfer{} &nbsp;//a read/write buffer pair</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+在这几个结构体中，我们只注意一下device结构体</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)">struct spi_device<br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_CPHA 0x01&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;clock phase 同步<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_CPOL 0x02&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;clock polarity&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_MODE_0&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>0<span style="line-height:1.5; color:rgb(0,0,204)">|</span>0<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>original
+ MicroWire<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_MODE_1&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>0<span style="line-height:1.5; color:rgb(0,0,204)">|</span>SPI_CPHA<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_MODE_2&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>SPI_CPOL<span style="line-height:1.5; color:rgb(0,0,204)">|</span>0<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+#define SPI_MODE_3&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>SPI_CPOL<span style="line-height:1.5; color:rgb(0,0,204)">|</span>SPI_CPHA<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">}</span></li></ol>
+</div>
+注意如上定义的 SPI_CPHA和SPI_CPOL</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+这个和一中的CPHA,以及<span style="color:#000000; line-height:1.5">CPOL是对应的，</span></div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+然后在次基础上定义了MODE?,到此，你是否能相像出SPI接口的数据传输过程？</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+接着卖我吗继续研究</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+spi bitbang，也有一个重要的结构体位置为inlcud/linux/spi/spi_bitbang.h</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)">struct spi_bitbang&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;struct workqueue_struct&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>workqueue<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;struct work_struct work<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(255,0,0)">int</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>txrx_bufs<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct
+ spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;struct spi_transfer&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>t<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;u32&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">[</span>4<span style="line-height:1.5; color:rgb(0,0,204)">]</span><span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct
+ spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>unsigned nsecs<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;u32 word<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;u8
+ bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">}</span></li></ol>
+</div>
+</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+我们只对上面四个东西感兴趣</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+struct work_struct&nbsp;work;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+这个让我们想入菲菲--bit bang是按照workqueue队列的形式来工作的吗？</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+worqueue这个是什么？简单地说，他就是一个队列，里面的每一个work节点代表着一个需要调度的工作。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+具体可以百度，这个和tasklist有点相似的。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+既然是worqueue，那么我们可以猜想，spi是在每一个work中实现bit bang的。</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+事实上确实如此，在/driver/spi/spi_bitbang.c#L267中，我们可以看到如下函数</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+static void bitbang_work(struct work_struct *work){},</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+在/driver/spi/spi_bitbang.c中，我们可以发现</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+int spi_bitbang_start(struct spi_bitbang *bitbang);</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+这个函数的主要工作是完成如下工作</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+workqueue的初始化INIT_WORK(&amp;bitbang-&gt;work, bitbang_work);</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+类寄存器的赋值</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+数据发送方法的初始化</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+bitbang-&gt;setup_transfer =spi_bitbang_setup_transfer;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+注意这个函数(L=/driver/spi/spi_bitbang.c)</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)"><span style="line-height:1.5; color:rgb(255,0,0)">int</span>&nbsp;spi_bitbang_setup_transfer<span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;struct
+ spi_transfer&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>t<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;<span style="color:#0000cc; line-height:1.5">.............</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;spi_transfer level calls that work per<span style="line-height:1.5; color:rgb(0,0,204)">-</span>word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">if</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span><span style="line-height:1.5; color:rgb(0,0,204)">!</span>bits_per_word<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bits_per_word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bits_per_word<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">if</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>bits_per_word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;8<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cs<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>txrx_bufs&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;bitbang_txrx_8<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">else</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">if</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>bits_per_word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;16<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cs<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>txrx_bufs&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;bitbang_txrx_16<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">else</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">if</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>bits_per_word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;32<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cs<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>txrx_bufs&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;bitbang_txrx_32<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">else</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">-</span>EINVAL<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;&nbsp;<span style="color:#0000cc; line-height:1.5">.....</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="color:#0000cc; line-height:1.5">}</span></li></ol>
+</div>
+</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+追踪这个函数bitbang_txrx_xx，以为bitbang_txrx_16为例(L=ver/spi/spi_bitbang.c)</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)">static unsigned bitbang_txrx_16<span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span><br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;u32&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;unsigned
+ nsecs<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;u32 word<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;u8 bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">,</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;unsigned ns<span style="line-height:1.5; color:rgb(0,0,204)">,</span>struct spi_transfer&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>t<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">(</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;ns<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;word<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span>&nbsp;<br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;return t<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span><span style="line-height:1.5; color:rgb(255,0,0)">len</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">-</span>&nbsp;count<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+｝</li></ol>
+</div>
+</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+那么txrx_word这个东西在哪里实现的呢？</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+/driver/spi/spi_gpio.c中的spi_gpio_probe函数中实现的！</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)">static&nbsp;<span style="line-height:1.5; color:rgb(255,0,0)">int</span>&nbsp;__init spi_gpio_probe<span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct platform_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>pdev<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+spi_gpio<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bitbang<span style="line-height:1.5; color:rgb(0,0,204)">.</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">[</span>SPI_MODE_0<span style="line-height:1.5; color:rgb(0,0,204)">]</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi_gpio_txrx_word_mode0<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+spi_gpio<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bitbang<span style="line-height:1.5; color:rgb(0,0,204)">.</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">[</span>SPI_MODE_1<span style="line-height:1.5; color:rgb(0,0,204)">]</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi_gpio_txrx_word_mode1<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;spi_gpio<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bitbang<span style="line-height:1.5; color:rgb(0,0,204)">.</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">[</span>SPI_MODE_2<span style="line-height:1.5; color:rgb(0,0,204)">]</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi_gpio_txrx_word_mode2<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;spi_gpio<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bitbang<span style="line-height:1.5; color:rgb(0,0,204)">.</span>txrx_word<span style="line-height:1.5; color:rgb(0,0,204)">[</span>SPI_MODE_3<span style="line-height:1.5; color:rgb(0,0,204)">]</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi_gpio_txrx_word_mode3<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;spi_gpio<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">&gt;</span>bitbang<span style="line-height:1.5; color:rgb(0,0,204)">.</span>setup_transfer&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;spi_bitbang_setup_transfer<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><span style="line-height:1.5; color:rgb(0,0,204)">.</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">}</span></li></ol>
+</div>
+</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+止于此，我们渐渐明朗：</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+spi_gpio_txrx_word_modex就是实现bitbang的基本，x对应上面定义的SPI的哥哥模式</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+以spi_gpio_txrx_word_mode0为例研究这个函数<br>
+spi_gpio_txrx_word_mode0()调用了bitbang_txrx_be_cpha0&nbsp;该函数位inlcude/linux/spi/spi_bitbang.h</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+<div id="codeText" class="codeText" style="margin-top:0px; margin-right:0px; margin-bottom:1.1em; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-left-width:1px; border-top-style:solid; border-right-style:solid; border-bottom-style:solid; border-left-style:solid; border-top-color:rgb(221,221,221); border-right-color:rgb(221,221,221); border-bottom-color:rgb(221,221,221); border-left-color:rgb(221,221,221); width:658px; overflow-x:auto; overflow-y:auto; word-break:break-all; letter-spacing:0.1px; background-color:rgb(255,255,255); font-family:Consolas,monospace; line-height:1.5">
+<ol class="dp-css" style="margin-top:0px; margin-right:1px; margin-bottom:0px; margin-left:0px; padding-top:5px; padding-right:0px; padding-bottom:5px; padding-left:0px; list-style-position:outside; line-height:1.3; color:rgb(92,92,92)">
+<li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,0)">static inline u32<br>
+</span></li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+bitbang_txrx_be_cpha0<span style="line-height:1.5; color:rgb(0,0,204)">(</span>struct spi_device&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>unsigned nsecs<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;unsigned
+ cpol<span style="line-height:1.5; color:rgb(0,0,204)">,</span>u32 word<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;u8 bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">if</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>cpol&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">=</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;0<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;this&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">is</span>&nbsp;SPI_MODE_0<span style="line-height:1.5; color:rgb(0,0,204)">;</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">else</span>&nbsp;this&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">is</span>&nbsp;SPI_MODE_2&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;clock starts at inactive polarity&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">for</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>32&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">-</span>&nbsp;bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span>&nbsp;likely<span style="line-height:1.5; color:rgb(0,0,204)">(</span>bits<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span>&nbsp;bits<span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">-</span><span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">{</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;setup MSB&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span><span style="line-height:1.5; color:rgb(0,0,255)">to</span>&nbsp;slave<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">on</span>&nbsp;trailing
+ edge&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;setmosi<span style="line-height:1.5; color:rgb(0,0,204)">(</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&amp;</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>1&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span>&nbsp;31<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;spidelay<span style="line-height:1.5; color:rgb(0,0,204)">(</span>nsecs<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;T<span style="line-height:1.5; color:rgb(0,0,204)">(</span>setup<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;setsck<span style="line-height:1.5; color:rgb(0,0,204)">(</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">!</span>cpol<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;spidelay<span style="line-height:1.5; color:rgb(0,0,204)">(</span>nsecs<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">/</span><span style="line-height:1.5; color:rgb(0,0,204)">*</span>&nbsp;sample MSB&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">(</span>from slave<span style="line-height:1.5; color:rgb(0,0,204)">)</span>&nbsp;<span style="line-height:1.5; color:rgb(0,0,255)">on</span>&nbsp;leading
+ edge&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">*</span><span style="line-height:1.5; color:rgb(0,0,204)">/</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">&lt;</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;1<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;word&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">|</span><span style="line-height:1.5; color:rgb(0,0,204)">=</span>&nbsp;getmiso<span style="line-height:1.5; color:rgb(0,0,204)">(</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;&nbsp;setsck<span style="line-height:1.5; color:rgb(0,0,204)">(</span>spi<span style="line-height:1.5; color:rgb(0,0,204)">,</span>&nbsp;cpol<span style="line-height:1.5; color:rgb(0,0,204)">)</span><span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;<span style="line-height:1.5; color:rgb(0,0,204)">}</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+&nbsp;return word<span style="line-height:1.5; color:rgb(0,0,204)">;</span><br>
+</li><li style="margin-top:1px; margin-right:1px; margin-bottom:1px; margin-left:1px; padding-top:1px; padding-right:1px; padding-bottom:1px; padding-left:10px; list-style-type:decimal; list-style-position:outside; line-height:1.5">
+<span style="line-height:1.5; color:rgb(0,0,204)">}</span></li></ol>
+</div>
+</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+注意其中的for循环，是不是单片机下的串口模拟SPI时序？</div>
+<div style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; line-height:1.5; font-family:宋体,Arial; background-color:rgb(245,247,248)">
+&nbsp;</div>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0060)http://mba.shengwushibie.com/itbook/BookChapter.asp?id=38366 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+<title>20.3.4  USB骨架程序(1)</title>
+<meta name="keywords" content="20.3.4  USB骨架程序(1)">
+<meta name="description" content="20.3.4  USB骨架程序(1)">
+<link rel="stylesheet" href="http://mba.shengwushibie.com/itbook/Inc/css.css">
+<style type="text/css"></style><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head><body style="margin:10px;">
+	<h1 style="margin-left:100px;">20.3.4  USB骨架程序(1)</h1>
+	<script type="text/javascript"><!--
+google_ad_client = "pub-1829051424982561";
+/* 728x90, 创建于 10-6-16 */
+google_ad_slot = "9351913404";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+        <p></p><p><strong>20.3.4&nbsp; USB骨架程序(1)</strong></p><p>Linux内核源代码中的driver/usb/usb-skeleton.c文件为我们提供了一个最基础的USB驱动程序，即USB骨架程序，可被看做一个最简单的USB设备驱动实例。尽管具体USB设备驱动千差万别，但其骨架则万变不离其宗。</p><p>首先看看USB骨架程序的usb_driver结构体定义，如代码清单20.16所示。</p><p>代码清单20.16&nbsp; USB骨架程序的usb_driver结构体</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1 static struct usb_driver skel_driver = <br>2 {<br>3.name =&nbsp;&nbsp;'skeleton',<br>4.probe =&nbsp;skel_probe,<br>5.disconnect =&nbsp;skel_disconnect,<br>6.id_table =&nbsp;skel_table,<br>7 };</pre></td></tr></tbody></table><p>从上述代码第6行可以看出，它所支持的USB设备的列表数组为skel_table[]，其定义如代码清单20.17所示。</p><p>代码清单20.17&nbsp; USB骨架程序的id_table</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1&nbsp; /* 本驱动支持的USB设备列表 */<br>2&nbsp; static struct usb_device_id skel_table [] = {<br>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { USB_DEVICE(USB_SKEL_VENDOR_ID,<br>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USB_SKEL_PRODUCT_ID) },<br>5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>6&nbsp; };<br>7&nbsp; MODULE_DEVICE_TABLE (usb, skel_table);</pre></td></tr></tbody></table><p>对上述usb_driver的注册和注销发生在USB骨架程序的模块加载与卸载函数内，如代码清单20.18所示，其分别调用了usb_register()和usb_deregister()。</p><p>代码清单20.18&nbsp; USB骨架程序的模块加载与卸载函数</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1&nbsp; static int __init usb_skel_init(void)<br>2&nbsp; {<br>3 int result;<br>4&nbsp; <br>5 /* 注册USB驱动 */<br>6 result = usb_register(&amp;skel_driver);<br>7 if (result)<br>8 &nbsp;err('usb_register failed. Error number %d', result);<br>9&nbsp; <br>10return result;<br>11 }<br>12 static void __exit usb_skel_exit(void)<br>13 {<br>14&nbsp;&nbsp;&nbsp; /* 注销USB驱动 */<br>15&nbsp;&nbsp;&nbsp; usb_deregister(&amp;skel_driver);<br>16 }</pre></td></tr></tbody></table><p>usb_driver的probe()成员函数中，会根据usb_interface的成员寻找第一个批量输入和输出端点，将端点地址、缓冲区等信息存入为USB骨架程序定义的usb_skel结构体，并将usb_skel实例的指针传入usb_set_intfdata()作为USB接口的私有数据，最后，它会注册USB设备，如代码清单20.19所示。</p><p>代码清单20.19&nbsp; USB骨架程序的探测函数</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1&nbsp; static int skel_probe(struct usb_interface *interface, const struct usb_device_id *id)<br>2&nbsp; {<br>3 struct usb_skel *dev = NULL;<br>4 struct usb_host_interface *iface_desc;<br>5 struct usb_endpoint_descriptor *endpoint;<br>6 size_t buffer_size;<br>7 int i;<br>8 int retval = -ENOMEM;<br>9&nbsp; <br>10/* 分配设备状态的内存并初始化 */<br>11dev = kzalloc(sizeof(*dev), GFP_KERNEL);<br>12if (dev == NULL) {<br>13&nbsp;err('Out of memory');<br>14&nbsp;goto error;<br>15}<br>16kref_init(&amp;dev-&gt;kref);<br>17sema_init(&amp;dev-&gt;limit_sem, WRITES_IN_FLIGHT);<br>18 <br>19dev-&gt;udev = usb_get_dev(interface_to_usbdev(interface));<br>20dev-&gt;interface = interface;<br>21 <br>22/* 设置端点信息 */<br>23/* 仅使用第一个bulk-in和bulk-out */<br>24iface_desc = interface-&gt;cur_altsetting;<br>25for (i = 0; i &lt; iface_desc-&gt;desc.bNumEndpoints; ++i) {<br>26&nbsp;endpoint = &amp;iface_desc-&gt;endpoint[i].desc;<br>27 <br>28&nbsp;if (!dev-&gt;bulk_in_endpointAddr &amp;&amp;<br>29&nbsp;&nbsp;&nbsp;&nbsp; ((endpoint-&gt;bEndpointAddress &amp; USB_ENDPOINT_DIR_MASK)<br>30&nbsp;&nbsp;&nbsp;&nbsp;== USB_DIR_IN) &amp;&amp;<br>31&nbsp;&nbsp;&nbsp;&nbsp; ((endpoint-&gt;bmAttributes &amp; USB_ENDPOINT_XFERTYPE_MASK)<br>32&nbsp;&nbsp;&nbsp;&nbsp;== USB_ENDPOINT_XFER_BULK)) {<br>33&nbsp;&nbsp;/* 找到了一个批量IN端点 */<br>34&nbsp;&nbsp;buffer_size = le16_to_cpu(endpoint-&gt;wMaxPacketSize);<br>35&nbsp;&nbsp;dev-&gt;bulk_in_size = buffer_size;<br>36&nbsp;&nbsp;dev-&gt;bulk_in_endpointAddr = endpoint-&gt;bEndpointAddress;<br>37&nbsp;&nbsp;dev-&gt;bulk_in_buffer = kmalloc(buffer_size, GFP_KERNEL);<br>38&nbsp;&nbsp;if (!dev-&gt;bulk_in_buffer) {<br>39&nbsp;&nbsp;&nbsp;err('Could not allocate bulk_in_buffer');<br>40&nbsp;&nbsp;&nbsp;goto error;<br>41&nbsp;&nbsp;}<br>42&nbsp;}<br>43 <br>44&nbsp;if (!dev-&gt;bulk_out_endpointAddr &amp;&amp;<br>45&nbsp;&nbsp;&nbsp;&nbsp; ((endpoint-&gt;bEndpointAddress &amp; USB_ENDPOINT_DIR_MASK)<br>46&nbsp;&nbsp;&nbsp;&nbsp;== USB_DIR_OUT) &amp;&amp;<br>47&nbsp;&nbsp;&nbsp;&nbsp; ((endpoint-&gt;bmAttributes &amp; USB_ENDPOINT_XFERTYPE_MASK)<br>48&nbsp;&nbsp;&nbsp;&nbsp;== USB_ENDPOINT_XFER_BULK)) {<br>49&nbsp;&nbsp;/* 找到了一个批量OUT端点 */<br>50&nbsp;&nbsp;dev-&gt;bulk_out_endpointAddr = endpoint-&gt;bEndpointAddress;<br>51&nbsp;}<br>52}<br>53if (!(dev-&gt;bulk_in_endpointAddr &amp;&amp; dev-&gt;bulk_out_endpointAddr)) {<br>54&nbsp;err('Could not find both bulk-in and bulk-out endpoints');<br>55&nbsp;goto error;<br>56}<br>57 <br>58/* 在设备结构中保存数据指针 */<br>59usb_set_intfdata(interface, dev);<br>60 <br>61/* 注册USB设备 */<br>62retval = usb_register_dev(interface, &amp;skel_class);<br>63if (retval) {<br>64&nbsp;/* something prevented us from registering this driver */<br>65&nbsp;err('Not able to get a minor for this device.');<br>66&nbsp;usb_set_intfdata(interface, NULL);<br>67&nbsp;goto error;<br>68}<br>69 <br>70/* 告知用户设备依附于什么node */<br>71info('USB Skeleton device now attached to USBSkel-%d', interface-&gt;minor);<br>72return 0;<br>73 <br>74 error:<br>75if (dev)<br>76&nbsp;kref_put(&amp;dev-&gt;kref, skel_delete);<br>77return retval;<br>78 }</pre></td></tr></tbody></table><p>usb_skel结构体可以被看作一个私有数据结构体，其定义如代码清单20.20所示，应该根据具体的设备量身定制。</p><p>代码清单20.20&nbsp; USB骨架程序的自定义数据结构usb_skel</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1&nbsp; struct usb_skel <br>2&nbsp; {<br>3 struct usb_device *&nbsp;udev;&nbsp;&nbsp;&nbsp;&nbsp;/* 该设备的usb_device指针 */<br>4 struct usb_interface *&nbsp;interface;&nbsp;&nbsp;/* 该设备的usb_interface指针 */<br>5 struct semaphore&nbsp;limit_sem;&nbsp;&nbsp;&nbsp;&nbsp;/* 限制进程写的数量 */<br>6 unsigned char *&nbsp;&nbsp;bulk_in_buffer;&nbsp;&nbsp;/* 接收数据的缓冲区 */<br>7 size_t&nbsp;&nbsp;&nbsp;bulk_in_size;&nbsp;&nbsp;&nbsp;&nbsp;/* 接收缓冲区大小 */<br>8 _ _u8&nbsp;&nbsp;bulk_in_endpointAddr;&nbsp;&nbsp;&nbsp;/*批量IN端点的地址 */<br>9 _ _u8&nbsp;&nbsp;bulk_out_endpointAddr;&nbsp;&nbsp;/* 批量OUT端点的地址 */<br>10struct kref&nbsp;&nbsp;kref;<br>11 };</pre></td></tr></tbody></table><p>USB骨架程序的断开函数会完成探测函数相反的工作，即设置接口数据为NULL，注销USB设备，如代码清单20.21所示。</p><p>代码清单20.21&nbsp; USB骨架程序的断开函数</p><table cellspacing="0" bordercolordark="#ffffff" cellpadding="2" width="400" align="center" bordercolorlight="black" border="1"><tbody><tr><td class="code" bgcolor="#e6e6e6"><pre>1&nbsp; static void skel_disconnect(struct usb_interface *interface)<br>2&nbsp; {<br>3 struct usb_skel *dev;<br>4 int minor = interface-&gt;minor;<br>5&nbsp; <br>6 /* 阻止skel_open()与skel_disconnect()的竞争 */<br>7 lock_kernel();<br>8&nbsp; <br>9 dev = usb_get_intfdata(interface);<br>10usb_set_intfdata(interface, NULL);<br>11 <br>12/* 注销usb设备，释放次设备号 */<br>13usb_deregister_dev(interface, &amp;skel_class);<br>14 <br>15unlock_kernel();<br>16 <br>17/* 减少引用计数 */<br>18kref_put(&amp;dev-&gt;kref, skel_delete);<br>19 <br>20info('USB Skeleton #%d now disconnected', minor);<br>21 }</pre></td></tr></tbody></table>
+<br><br>
+<script type="text/javascript"><!--
+google_ad_client = "pub-1829051424982561";
+/* 728x90, 创建于 10-6-16 */
+google_ad_slot = "9351913404";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0232)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/OK6410%E4%B9%8Btftp%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%EF%BC%8Cnfs%E6%8C%82%E8%BD%BD%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%85%A8%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/default.css">
+<style type="text/css"></style><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<link rel="stylesheet" type="text/css" href="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/navtop_2012.css">
+
+<link rel="stylesheet" type="text/css" href="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/navtop_2012(1).css">
+<div id="container"><div id="body"><div id="main"><div class="main"><div id="article_details" class="details"><div class="article_title"><span class="ico ico_type_Original"><br></span>
+    <h3><span class="link_title"><a href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/OK6410%E4%B9%8Btftp%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%EF%BC%8Cnfs%E6%8C%82%E8%BD%BD%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%85%A8%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3_files/OK6410%E4%B9%8Btftp%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%EF%BC%8Cnfs%E6%8C%82%E8%BD%BD%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%85%A8%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3.htm">OK6410之tftp下载内核，nfs挂载文件系统全过程详解
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage"><br></div>
+
+
+    
+<div id="article_content" class="article_content">
+
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp; &nbsp; &nbsp;</span></span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">ftp</span><span style="font-size: 18px;">下载内核。</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">ok6410</span><span style="font-size: 18px;">的</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">uboot</span><span style="font-size: 18px;">里面的网卡驱动是</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">cs8900</span><span style="font-size: 18px;">的，而实际网卡是</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">dm9000</span><span style="font-size: 18px;">的，所以导致进入</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">uboot</span><span style="font-size: 18px;">后就没有办法用</span><span style="font-size: 18px; font-family: &#39;Times New Roman&#39;;">tftp</span><span style="font-size: 18px;">来下载内核了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>一、<span style="font-family:Times New Roman">uboot</span>的修改编译</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 通过修改<span style="font-family:Times New Roman">uboot</span>可以实现，修改<span style="font-family:Times New Roman">include/configs/smdk6410</span>如下：</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;<img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830407_9490.png"></span></p><p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 20px;">DM9000的基址0x18000000是从</span><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 20px;">内核源码中的arch/arm/mach-s3c6410/mach-smdk6410.c第160行。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着是<span style="font-family:Times New Roman">drivers/dm9000x.c</span>下了</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;<img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830421_4831.png"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好了，之后在下面几条命令就可以生成新的<span style="font-family:Times New Roman">uboot</span>了</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;<img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830434_9779.png"></span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span>
+<p><span style="font-family:Times New Roman; font-size:18px"></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 1713px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>make&nbsp;clean&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>make&nbsp;smdk6410_config&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>make&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">make clean
+
+make smdk6410_config
+
+make
+
+</pre>
+<p><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>二、<span style="font-family:Times New Roman">uboot</span>的下载</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着就是下载那个<span style="font-family:Times New Roman">uboot</span>了，用<span style="font-family:Times New Roman">usb</span>可以很快解决，还是贴一下下载过程吧，虽然文档有的，至于那个<span style="font-family:Times New Roman">usb</span>下载的驱动安装什么的，那就不多说了。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 好了，现在假设都好了，出来下面这个图了。</span></p>
+<p><img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830449_3763.png"><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">1</span>、把<span style="font-family:Times New Roman">mmc.bin</span>通过<span style="font-family:Times New Roman">usb port</span>下的<span style="font-family:Times New Roman">transmit</span>下载好，这里地址是<span style="font-family:Times New Roman">0x57e00000</span>。在下载的时候，要一直按空格键，要不然过了之后，就去起内核了。</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">2</span>、接着进入<span style="font-family:Times New Roman">U-boot</span>命令行后，输入‘<span style="font-family:Times New Roman">#dnw 50008000</span>’，并回车</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">3</span>、然后将<span style="font-family:Times New Roman">U-boot</span>映像文件下载到内存：点击<span style="font-family:Times New Roman">DNW</span>菜单“<span style="font-family:Times New Roman">USBPort--&gt;Transmit--&gt;Transmit</span>”</span></p>
+<p><span style="font-size:18px">在弹出的文件浏览窗口中选择<span style="font-family:Times New Roman">u-boot.bin</span>。</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">4</span>、擦除<span style="font-family:Times New Roman">Nandflash</span>，输入命令：</span></p>
+<span style="font-size:18px"><span style="font-family:Times New Roman"></span></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 2716px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#nand&nbsp;erase&nbsp;0&nbsp;100000&nbsp;擦除Nandflash从0开始的1MB大小的区域。&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#nand erase 0 100000 擦除Nandflash从0开始的1MB大小的区域。
+
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Times New Roman">5</span>、将程序写入到<span style="font-family:Times New Roman">Nandflash</span>，输入命令：</span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 2855px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#nand&nbsp;write.uboot&nbsp;50008000&nbsp;0&nbsp;100000&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#nand write.uboot 50008000 0 100000
+
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+这样<span style="font-family:Times New Roman">uboot</span>就算下载成功了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>三、虚拟机安装<span style="font-family:Times New Roman">tftp</span></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 3098px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>1.&nbsp;&nbsp;sudo&nbsp;apt-get&nbsp;install&nbsp;tftp-hpa&nbsp;tftpd-hpa&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;.&nbsp;&nbsp;mkdir&nbsp;/tftproot&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chmod&nbsp;777&nbsp;tftproot&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;&nbsp;sudo&nbsp;vim&nbsp;/etc/default/tftpd-hpa&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">  1.  sudo apt-get install tftp-hpa tftpd-hpa 
+
+       2 .  mkdir /tftproot 
+
+            chmod 777 tftproot 
+
+       3.  sudo vim /etc/default/tftpd-hpa 
+
+</pre>
+<p><br>
+<span style="font-size:18px">修改如下</span></p>
+<p><span style="font-size:18px"></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;<img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830466_6768.png"></span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">4.</span>然后就可以启动这个服务了<span style="font-family:Times New Roman">&nbsp;&nbsp;</span></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 3533px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>sudo&nbsp;service&nbsp;tftpd-hpa&nbsp;restart&nbsp;&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;"> sudo service tftpd-hpa restart 
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Times New Roman">5 </span>检测<span style="font-family:Times New Roman"> tftp</span></span></p>
+<span style="font-size:18px"><span style="font-family:Times New Roman"></span></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 3672px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>1）</span><span class="tag">&gt;</span><span>&nbsp;echo&nbsp;hello&nbsp;world&nbsp;</span><span class="tag">&gt;</span><span>&nbsp;~/a.txt&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>2）<span class="tag">&gt;</span><span>&nbsp;echo&nbsp;tftp&nbsp;test&nbsp;</span><span class="tag">&gt;</span><span>&nbsp;/tftproot/b.txt&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>3）<span class="tag">&gt;</span><span>&nbsp;cd&nbsp;~&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>4）<span class="tag">&gt;</span><span>&nbsp;sudo&nbsp;tftp&nbsp;127.0.0.1&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>5）<span class="tag">&gt;</span><span>&nbsp;tftp</span><span class="tag">&gt;</span><span>&nbsp;put&nbsp;a.txt&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>6）<span class="tag">&gt;</span><span>&nbsp;tftp</span><span class="tag">&gt;</span><span>&nbsp;get&nbsp;b.txt&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>7）<span class="tag">&gt;</span><span>&nbsp;tftp</span><span class="tag">&gt;</span><span>&nbsp;q&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">       1）&gt; echo hello world &gt; ~/a.txt 
+
+       2）&gt; echo tftp test &gt; /tftproot/b.txt 
+
+       3）&gt; cd ~ 
+
+       4）&gt; sudo tftp 127.0.0.1 
+
+       5）&gt; tftp&gt; put a.txt 
+
+       6）&gt; tftp&gt; get b.txt
+
+       7）&gt; tftp&gt; q
+
+</pre>
+<p><br>
+<span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 看<span style="font-family:Times New Roman">tftpboot</span>目录下是否有相应的文件就可以判断了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px"></span>&nbsp;</p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</span>四、<span style="font-family:Times New Roman">tftp</span>下载内核</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先要准备好内核<span style="font-family:Times New Roman">zImage</span>，在<span style="font-family:Times New Roman">kernel</span>下面</span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 4157px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_7" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_7" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=7&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>make&nbsp;zImage&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>cp&nbsp;arch/arm/boot/zImage&nbsp;/tftpboot&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">make zImage
+
+cp arch/arm/boot/zImage /tftpboot
+
+</pre>
+<p><br>
+<span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 准备内核之后，那边是要去下载了，拨码开关拨到<span style="font-family:Times New Roman">nandflash</span>启动，<span style="font-family:Times New Roman">uboot</span>是烧到<span style="font-family:Times New Roman">nandflash</span>中的，然后就是进入<span style="font-family:Times New Roman">smdk6410</span>的<span style="font-family:Times New Roman">uboot</span>了。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接着</span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 4384px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_8" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_8" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=8&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>setenv&nbsp;bootcmd&nbsp;tftp&nbsp;0xc0008000&nbsp;zImage;&nbsp;bootm&nbsp;0xc0008000&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>saveenv&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">setenv bootcmd tftp 0xc0008000 zImage; bootm 0xc0008000
+
+saveenv
+
+</pre>
+<p><br>
+<span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后复位之后，就会通过<span style="font-family:Times New Roman">tftp</span>下载内核了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>五、虚拟机安装<span style="font-family:Times New Roman">nfs</span></span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 4637px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_9" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_9" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=9&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#sudo&nbsp;apt-get&nbsp;install&nbsp;portmap&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#sudo&nbsp;apt-get&nbsp;install&nbsp;nfs-kernel-server&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>#sudo&nbsp;vi&nbsp;/etc/exports&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">#sudo apt-get install portmap
+
+#sudo apt-get install nfs-kernel-server
+
+#sudo vi /etc/exports 
+
+</pre>
+<p><br>
+<span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 加上你的<span style="font-family:Times New Roman">rootfs</span>的路径</span></p>
+<p><img alt="" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/1345830487_5740.png"><span style="font-size:18px"></span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 添加的内容意思是：允许<span style="font-family:Times New Roman"> ip</span>地址范围在<span style="font-family:Times New Roman">192.168.5.*</span>的计算机以读写的权限来访问<span style="font-family:Times New Roman">/home/eastmoon/ok6410/rootfs</span>目录，<span style="font-family:Times New Roman">/home/eastmoon/ok6410/rootfs</span>也称为服务器输出共享目录。具体要根据不同的环境来定。</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后就是启动服务了</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">1)</span></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 5198px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_10" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_10" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=10&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#sudo&nbsp;exportfs&nbsp;-rv&nbsp;&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#sudo exportfs -rv </pre>
+<p>&nbsp; 使<span style="font-family:Times New Roman">/etc/exports </span>文件生效</p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">2</span>）接着执行如下命令，启动端口映射：<span style="font-family:Times New Roman"></span></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 5337px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_11" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_11" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=11&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#/etc/init.d/portmap&nbsp;start（或：#sudo&nbsp;service&nbsp;portmap&nbsp;start）&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#/etc/init.d/portmap start（或：#sudo service portmap start）
+</pre>
+<p><br>
+<span style="font-size:18px"><span style="font-family:Times New Roman">3</span>）最后启动<span style="font-family:Times New Roman"> NFS</span>服务，此时<span style="font-family:Times New Roman"> NFS</span>会激活守护进程，然后就开始监听<span style="font-family:Times New Roman"> Client</span>端的请求：<span style="font-family:Times New Roman"></span></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 5476px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_12" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_12" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=12&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#/etc/init.d/nfs-kernel-server&nbsp;restart&nbsp;（或：&nbsp;#sudo&nbsp;service&nbsp;nfs-kernel-server&nbsp;restart）&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#/etc/init.d/nfs-kernel-server restart （或： #sudo service nfs-kernel-server restart）</pre>
+<p><br>
+<span style="font-family:Times New Roman">&nbsp; &nbsp;Linux </span>服务器端<span style="font-family:Times New Roman"> NFS</span>服务器的配置到此就已经配置好了。</p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>六、<span style="font-family:Times New Roman">nfs</span>挂载文件系统</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+这也是最后一步了，至于文件系统嘛，买板子的时候，店家可定给了资料了，然后就是解压到那个你指定的目录下面的。我的是<span style="font-family:Times New Roman">/home/eastmoon/ok6410/rootfs</span></span></p>
+<span style="font-size:18px"><span style="font-family:Times New Roman"></span></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 5745px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_13" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_13" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=13&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>#sudo&nbsp;tar&nbsp;–zxf&nbsp;FORLINX_6410_yaffs2_v1.0.tgz就可以了。&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">#sudo tar –zxf FORLINX_6410_yaffs2_v1.0.tgz就可以了。
+
+</pre>
+<p><br>
+<span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后就是要设置<span style="font-family:Times New Roman">uboot</span>的启动参数了</span></p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+启动<span style="font-family:Times New Roman">uboot</span>，然后</span></p>
+<span style="font-family:Times New Roman; font-size:18px"></span><div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 5910px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_14" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_14" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=14&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>set&nbsp;bootargs&nbsp;</span><span class="attribute">root</span><span>=/dev/nfs&nbsp;</span><span class="attribute">console</span><span>=</span><span class="attribute-value">ttySAC0</span><span>,115200&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="attribute">nfsroot</span><span>=</span><span class="attribute-value">192</span><span>.168.5.&nbsp;100:/home/eastmoon/ok6410/rootfs&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="attribute">ip</span><span>=</span><span class="attribute-value">192</span><span>.168.5.150:192.168.5.100:192.168.5.1:255.255.255.0::eth0:off&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>saveenv&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="tag">&lt;</span><span class="tag-name">span</span><span>&nbsp;</span><span class="attribute">style</span><span>=</span><span class="attribute-value">"font-size:18px;"</span><span class="tag">&gt;</span><span class="tag">&lt;</span><span class="tag-name">span</span><span>&nbsp;</span><span class="attribute">style</span><span>=</span><span class="attribute-value">"font-family:Times&nbsp;New&nbsp;Roman;font-size:14px;"</span><span class="tag">&gt;</span><span class="tag">&lt;/</span><span class="tag-name">span</span><span class="tag">&gt;</span><span class="tag">&lt;/</span><span class="tag-name">span</span><span class="tag">&gt;</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="html" name="code" style="display: none;">set bootargs root=/dev/nfs console=ttySAC0,115200 
+
+nfsroot=192.168.5. 100:/home/eastmoon/ok6410/rootfs 
+
+ip=192.168.5.150:192.168.5.100:192.168.5.1:255.255.255.0::eth0:off
+
+saveenv
+
+<span style="font-size:18px;"><span style="font-family:Times New Roman;font-size:14px;"></span></span></pre>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman; font-size:14px"></span></span>&nbsp;</p>
+<p><span style="font-size:18px"><span style="font-family:Times New Roman; font-size:14px">&nbsp;&nbsp;
+</span></span></p>
+<div class="dp-highlighter bg_html"><div class="bar"><div class="tools"><b>[html]</b> <a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/eastmoon502136/article/details/7905960#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 378px; top: 6193px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_15" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_15" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=15&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-xml"><li class="alt"><span><span>192.168.5.100&nbsp;pc端虚拟机的ip&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;192.168.5.150&nbsp;开发板的ip&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;192.168.5.1&nbsp;网关&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;255.255.255.0&nbsp;子网掩码&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre class="html" name="code" style="display: none;">192.168.5.100 pc端虚拟机的ip
+
+   192.168.5.150 开发板的ip
+
+   192.168.5.1 网关
+
+   255.255.255.0 子网掩码
+
+ 
+
+</pre>
+<p><br>
+<span style="font-size:18px"></span>&nbsp;</p>
+<p><span style="font-size:18px"></span>&nbsp;</p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp; 然后配合刚才的<span style="font-family:Times New Roman">tftp</span>下载，接着复位下板子。然后就可以即通过<span style="font-family:Times New Roman">tftp</span>下载内核也可以<span style="font-family:Times New Roman">nfs</span>挂载文件系统了，之后的开发就方便多了。</span></p>
+<p><span style="font-family:Times New Roman; font-size:18px">&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 终于写完了，心也静下来了，睡觉了，明天继续公司学习，晚上回来学习板子。以后陆续会把自己调通的驱动都写写博客和大家一起分享下。</span></p></div></div><div id="comment_list"><dl class="comment_item comment_topic" id="comment_item_2441013"><dt class="comment_head" floor="1"><br></dt></dl></div></div></div></div><div class="pub_footerall"><dl></dl></div><script type="text/javascript" charset="utf-8" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/pv.aspx" border="0" width="0" height="0"><img src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/msg.popup.js"></script>
+
+<!--ad.csdn.net-->
+<script type="text/javascript" src="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/ad-blog.js"></script>
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script><link rel="stylesheet" type="text/css" href="./OK6410之tftp下载内核，nfs挂载文件系统全过程详解_files/pub_footer_2012.css"></body></html>

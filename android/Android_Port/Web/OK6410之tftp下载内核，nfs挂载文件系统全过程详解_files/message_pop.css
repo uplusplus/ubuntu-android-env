@@ -1,0 +1,93 @@
+.im_popupWindow{background:url(http://csdnimg.cn/www/images/popup/pic_bg.gif) 0 0 no-repeat; position: fixed;bottom: 0px;right: 0px;width:292px; height:240x; float:left;-moz-user-select:none;overflow:hidden;}
+.im_popupWindow h6{position:relative;height:24px;margin:0;line-height:24px;padding:0 10px 0; text-align:left;}
+.im_popupWindow h6 span{font:bold 12px simsun;position:absolute;top:5px; color:#f62c35;text-align:left;}
+.im_popupWindow h6 img{border:0;}
+.im_popupWindow h6 img{border:0;}
+.im_popupWindow h6 img.founctionpic1{position:absolute;top:8px;left:217px;}
+.im_popupWindow h6 img.founctionpic2{position:absolute;top:8px;left:235px;}
+.im_popupWindow h6 img.founctionpic3{position:absolute;top:8px;left:270px;}
+/*vc*/
+.wi_content{margin:0;height:188px;overflow:hidden;text-align:left;line-height:130%;width:280px;font-size:9pt; padding:2px 6px;}
+.wi_content img{width:280px; height:188px; display:block; border:0;}
+.withPadding{}
+.dragging {border:solid 1px black;position:absolute;z-index:65500;background-color:Red;}
+.userAvatar{margin-bottom:2px;border:0;vertical-align:middle;width:20px;height:20px;}
+
+.kuai{width:278px; float:left;line-height:20px; font-size:12px;}
+.clear{ clear:both;}
+.tuijian{float:left; padding:6px 4px; border-bottom:dashed 1px #666;}
+.tuijian ul{ float:right; width:180px;}
+.tuijian ul li{background:url() left center no-repeat;margin-left:0;padding-left:8px;list-style:none;}
+.tuijian img{ border:solid 1px #666}
+.tuijian ul li a:link{ color:#1c33d1; text-decoration:none;}
+.tuijian ul li a:visited{ color:#1c33d1; text-decoration:none;}
+.tuijian ul li a:hover{ color:#f00; text-decoration: underline;}
+
+/*
+.list{ float:left; width:268px; padding:5px;}
+.list li{float:left;width:126px;list-style:none;background:url() left center no-repeat;padding-left:7px;}
+.list li a:link{ color:#1e1e1e; text-decoration:none;}
+.list li a:visited{ color:#1e1e1e; text-decoration:none;}
+.list li a:hover{ color:#f00; text-decoration: underline;}
+*/
+
+* html div#im_popupWindow_miniMsg {
+    position: absolute;
+    right: auto; bottom: auto;
+    left: expression( ( 0 - im_popupWindow_miniMsg.offsetWidth + ( document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body.clientWidth ) + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' );
+    top: expression( ( 0 - im_popupWindow_miniMsg.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
+}
+/*才道平台推广附加样式_20090730*/
+ul.jobliststyle{
+	padding:5px 9px 10px 9px;list-style:none; margin-bottom:5px; width:260px; height:115px;}
+ul.jobliststyle li{
+	list-style:none;
+	float:left;
+	width:260px;
+	height:23px;
+	overflow:hidden;
+	line-height:25px;}
+ul.jobliststyle  li .area{
+	float:left;
+	width:auto;
+	height:25px;
+	overflow:hidden;	
+	margin-left:0px;}
+ul.jobliststyle  li .infotit{
+	float:left;
+	width:96px;
+	height:25px;
+	overflow:hidden;
+	margin-left:3px;}
+ul.jobliststyle  li .award{
+	float:left;
+	width:auto;
+	height:25px;
+	overflow:hidden;
+	color:#f30;
+	font-size:12px;
+	font-weight:700;
+	margin-left:3px;}
+ul.jobliststyle  li .gotobtn{
+	float:right;
+	width:auto;
+	height:25px;
+	overflow:hidden;}
+ul.jobliststyle  li .gotobtn a{
+	display:block;
+	width:50px;
+	height:18px;
+	overflow:hidden;
+	text-align:center;
+	font-size:12px;
+	line-height:20px;
+	background:#ccc;
+	color:#000;
+	text-decoration:none;
+	margin-top:3px;}
+
+div.content_qq{height:24px; color:#666; padding-right:6px; width:286px; font:normal 12px simsun;line-height:24px; text-align:right; float:right;}
+div.content_qq span{text-decoration:none; color:#666;text-align:right; float:right; cursor:pointer;}
+div.content_qq a{text-decoration:none; color:#f28f8e;text-align:right; float:right;}
+div.content_qq a:link, div.content_qq a:visited, div.content_qq a:active{text-decoration:none; color:#f28f8e;}
+div.content_qq a:hover{text-decoration:underline;}

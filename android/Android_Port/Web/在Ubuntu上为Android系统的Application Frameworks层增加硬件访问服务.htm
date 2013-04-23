@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0238)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E7%B3%BB%E7%BB%9F%E7%9A%84Application%20Frameworks%E5%B1%82%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E8%AE%BF%E9%97%AE%E6%9C%8D%E5%8A%A1.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./在Ubuntu上为Android系统的Application Frameworks层增加硬件访问服务_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+
+
+<link rel="stylesheet" type="text/css" href="./在Ubuntu上为Android系统的Application Frameworks层增加硬件访问服务_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+
+<script type="text/javascript">
+    var username = "Luoshengyang";
+    var blog_address = "http://blog.csdn.net/luoshengyang";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "uplusplus";
+</script>
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E7%B3%BB%E7%BB%9F%E7%9A%84Application%20Frameworks%E5%B1%82%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E8%AE%BF%E9%97%AE%E6%9C%8D%E5%8A%A1_files/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E7%B3%BB%E7%BB%9F%E7%9A%84Application%20Frameworks%E5%B1%82%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E8%AE%BF%E9%97%AE%E6%9C%8D%E5%8A%A1.htm">
+        在Ubuntu上为Android系统的Application Frameworks层增加硬件访问服务
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+<p>&nbsp;&nbsp; &nbsp; &nbsp;在数字科技日新月异的今天，软件和硬件的完美结合，造就了智能移动设备的流行。今天大家对iOS和Android系统的趋之若鹜，一定程度上是由于这两个系统上有着丰富多彩的各种应用软件。因此，软件和硬件的关系，在一定程度上可以说，硬件是为软件服务的。硬件工程师研发出一款硬件设备，自然少了软件工程师为其编写驱动程序；而驱动程序的最终目的，是为了使得最上层的应用程序能够使用这些硬件提供的服务来为用户提供软件功能。对Android系统上的应用软件来说，就是要在系统的Application Frameworks层为其提供硬件服务。在前面的几篇文章中，我们着重介绍了Linux内核层、硬件抽象层和运行时库层提供的自定义硬件服务接口，这些接口都是通过C或者C++语言来实现的。在这一篇文章中，我们将介绍如何在Android系统的Application Frameworks层提供Java接口的硬件服务。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;一. 参照<a href="http://blog.csdn.net/luoshengyang/article/details/6575988">在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口</a>一文所示，为硬件抽象层模块准备好JNI方法调用层。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;二. 在Android系统中，硬件服务一般是运行在一个独立的进程中为各种应用程序提供服务。因此，调用这些硬件服务的应用程序与这些硬件服务之间的通信需要通过代理来进行。为此，我们要先定义好通信接口。进入到frameworks/base/core/java/android/os目录，新增IHelloService.aidl接口定义文件：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ cd&nbsp;frameworks/base/core/java/android/os</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;USER-NAME@MACHINE-NAME:~/Android/frameworks/base/core/java/android/os$ vi IHelloService.aidl</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>IHelloService.aidl定义了IHelloService接口：</p><p></p><div class="dp-highlighter bg_java"><div class="bar"><div class="tools"><b>[java]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 515px; top: 958px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-j"><li class="alt"><span><span class="keyword">package</span><span>&nbsp;android.os;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">interface</span><span>&nbsp;IHelloService&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">void</span><span>&nbsp;setVal(</span><span class="keyword">int</span><span>&nbsp;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span><span>&nbsp;getVal();&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="java" style="display: none;">package android.os;
+ 
+interface IHelloService {
+    void setVal(int val);
+    int getVal();
+}</pre><p></p><p><span style="font-family:monospace; font-size:13px"><span style="white-space:pre-wrap">IHelloService接口主要提供了设备和获取硬件寄存器val的值的功能，分别通过setVal和getVal两个函数来实现。</span></span></p><p><span style="font-family:monospace; font-size:13px"><span style="white-space:pre-wrap">三.返回到frameworks/base目录，打开Android.mk文件，修改LOCAL_SRC_FILES变量的值，增加IHelloService.aidl源文件：</span></span></p><p><span style="font-family:monospace; font-size:13px"><span style="white-space:pre-wrap"></span></span><span><span style="font-family:mceinline">## READ ME: ########################################################</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ##</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## When updating this list of aidl files, consider if that aidl is</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## part of the SDK API. If it is, also add it to the list below that</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## is preprocessed and distributed with the SDK. This list should</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## not contain any aidl files for parcelables, but the one below should</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## if you intend for 3rd parties to be able to send those objects</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## across process boundaries.</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ##</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ## READ ME: ########################################################</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; LOCAL_SRC_FILES += /</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; ....................................................................</span></span></p><p><span style="font-family:mceinline">&nbsp;&nbsp;&nbsp;</span><span><span style="font-family:mceinline">core/java/android/os/IVibratorService.aidl /</span></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; </span></span><span><strong><span style="font-family:mceinline">core/java/android/os/IHelloService.aidl /</span></strong></span></p><p><span><span style="font-family:mceinline">&nbsp;&nbsp; core/java/android/service/urlrenderer/IUrlRendererService.aidl /</span></span></p><p><span style="font-family:mceinline">&nbsp;&nbsp; .....................................................................</span></p><div>&nbsp;&nbsp; &nbsp;四. 编译IHelloService.aidl接口：</div><div>&nbsp;&nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ mmm&nbsp;frameworks/base</strong></div><p><span style="font-family:monospace">&nbsp;&nbsp;&nbsp;这样，就会根据IHelloService.aidl生成相应的IHelloService.Stub接口。</span></p><p><span style="font-family:monospace">&nbsp;&nbsp; 五.进入到frameworks/base/services/java/com/android/server目录，新增HelloService.java文件：</span></p><p><span style="font-family:monospace"></span></p><div class="dp-highlighter bg_java"><div class="bar"><div class="tools"><b>[java]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6578352#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 515px; top: 2014px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-j"><li class="alt"><span><span class="keyword">package</span><span>&nbsp;com.android.server;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;android.content.Context;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;android.os.IHelloService;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;android.util.Slog;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;HelloService&nbsp;</span><span class="keyword">extends</span><span>&nbsp;IHelloService.Stub&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">final</span><span>&nbsp;String&nbsp;TAG&nbsp;=&nbsp;</span><span class="string">"HelloService"</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;HelloService()&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init_native();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;setVal(</span><span class="keyword">int</span><span>&nbsp;val)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setVal_native(val);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;getVal()&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;getVal_native();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">native</span><span>&nbsp;</span><span class="keyword">boolean</span><span>&nbsp;init_native();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">native</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;setVal_native(</span><span class="keyword">int</span><span>&nbsp;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">native</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;getVal_native();&nbsp;&nbsp;</span></span></li><li class=""><span>};&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="java" style="display: none;">package com.android.server;
+import android.content.Context;
+import android.os.IHelloService;
+import android.util.Slog;
+public class HelloService extends IHelloService.Stub {
+	private static final String TAG = "HelloService";
+	HelloService() {
+		init_native();
+	}
+	public void setVal(int val) {
+		setVal_native(val);
+	}	
+	public int getVal() {
+		return getVal_native();
+	}
+	
+	private static native boolean init_native();
+    	private static native void setVal_native(int val);
+	private static native int getVal_native();
+};</pre><p></p><p><span style="font-family:monospace">&nbsp;&nbsp; HelloService主要是通过调用JNI方法init_native、setVal_native和getVal_native(见</span><a href="http://blog.csdn.net/luoshengyang/article/details/6575988">在Ubuntu为Android硬件抽象层（HAL）模块编写JNI方法提供Java访问硬件服务接口</a>一文)来提供硬件服务。</p><p>&nbsp;&nbsp; &nbsp; 六.&nbsp;修改同目录的SystemServer.java文件，在ServerThread::run函数中增加加载HelloService的代码：</p><p>&nbsp;&nbsp; &nbsp; @Override</p><p>&nbsp;&nbsp; &nbsp; public void run() {</p><p>&nbsp;&nbsp; &nbsp; ....................................................................................</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;try {</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Slog.i(TAG, "DiskStats Service");</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ServiceManager.addService("diskstats", new DiskStatsService(context));</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;} catch (Throwable e) {</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Slog.e(TAG, "Failure starting DiskStats Service", e);</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;}</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>&nbsp;try {</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Slog.i(TAG, "Hello Service");</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ServiceManager.addService("hello", new HelloService());</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;} catch (Throwable e) {</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Slog.e(TAG, "Failure starting Hello Service", e);</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;}</strong></p><p>&nbsp;&nbsp; &nbsp; ......................................................................................</p><p>&nbsp;&nbsp; &nbsp; } &nbsp; &nbsp; &nbsp;</p><p>&nbsp;&nbsp; &nbsp; 七. 编译HelloService和重新打包system.img：</p><p>&nbsp;&nbsp; &nbsp; <strong>USER-NAME@MACHINE-NAME:~/Android$ mmm&nbsp;frameworks/base/services/java</strong></p><p><strong>&nbsp;&nbsp; &nbsp;&nbsp;USER-NAME@MACHINE-NAME:~/Android$ make snod</strong></p><p><strong>&nbsp;&nbsp; &nbsp; </strong>这样，重新打包后的system.img系统镜像文件就在Application Frameworks层中包含了我们自定义的硬件服务HelloService了，并且会在系统启动的时候，自动加载HelloService。这时，应用程序就可以通过Java接口来访问Hello硬件服务了。我们将在下一篇文章中描述如何编写一个Java应用程序来调用这个HelloService接口来访问硬件，敬请期待。</p>
+</div>
+
+
+
+
+
+            
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+<div class="clear"></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

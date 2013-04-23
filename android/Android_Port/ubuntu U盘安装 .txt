@@ -1,0 +1,441 @@
+ 1 制作
+		官方工具Universal-USB-Installer-1.9.2.1.exe
+ 2 安装自动
+ 
+ 3 修复引导
+  1) 使用LiveCD启动到预览模式
+  2) 挂载硬盘的Ubuntu系统根目录[/]的分区到当前系统
+  3) 安装grub
+		sudo grub-install --root-directory=[挂载到的目录] /dev/sda
+  4) 可能需要的其它操作
+		使用parted设置efi分区为bios_grub on
+		
+
+sudo mii-tool --force=100baseTx-FD eth0
+		
+		
+		
+menuentry "Windows 7" {
+        insmod part_gpt
+        insmod chain
+        set root='(hd0,gpt1)'
+        chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+
+修复引导:
+https://help.ubuntu.com/community/UbuntuSecureRemix
+
+
+
+
+ubuntu12.04-安装 jdk6
+
+博客分类： 系统管理/系统架构/项目管理
+sun-java6不在软件源中。
+
+1.首先添加软件源：
+$sudo gedit /etc/apt/sources.list
+
+在sources.list 文件后添加一行：
+deb http://us.archive.ubuntu.com/ubuntu/ hardy multiverse
+
+ 2.更改sources.list文件后一定要更新：
+$sudo apt-get update
+ 
+ 
+3.安装JDK6
+$sudo apt-get install sun-java6-jdk
+
+
+////
+安装VIM,VI不好用
+
+
+////////////
+64位机搭配linux/androd开发环境
+
+1.查看windows的操作系统和硬件cpu位数
+
+Microsoft Windows XP [版本 5.1.2600]
+(C) 版权所有 1985-2001 Microsoft Corp.
+
+C:/Documents and Settings/Administrator>systeminfo
+
+2.查看linux的操作系统和硬件cpu位数
+
+linux 操作系统的位数查看
+
+getconf LONG_BIT 如果是32表示是32位
+
+eg:
+
+[root@db ~]# getconf LONG_BIT
+32
+
+[root@db ~]# getconf WORD_BIT
+32
+
+或者通过cat /proc/cpuinfo也可以查看
+
+再或者
+
+[root@svr-db-test ~]# file /sbin/init
+/sbin/init: ELF 64-bit LSB executable, AMD x86-64, version 1 (SYSV), for GNU/Linux 2.6.9, dynamically linked (uses shared libs), for GNU/Linux 2.6.9, stripped
+
+在ubuntu上执行
+
+sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev ia32-libs x11proto-core-dev libx11-dev lib32readline5(6 on 12.04)-dev lib32z-dev uuid-dev liblzo2-dev
+64bit Linux使用32bit工具链要用到 gcc-multilib 
+
+更换一下软件源, 下载速度会提高很多，随便解压都ok的, 只是不装这些库不能执行而已.
+
+163的软件源:
+
+deb http://mirrors.163.com/ubuntu/ natty main universe restricted multiverse
+deb-src http://mirrors.163.com/ubuntu/ natty main universe restricted multiverse
+deb http://mirrors.163.com/ubuntu/ natty-security universe main multiverse restricted
+deb-src http://mirrors.163.com/ubuntu/ natty-security universe main multiverse restricted
+deb http://mirrors.163.com/ubuntu/ natty-updates universe main multiverse restricted
+deb http://mirrors.163.com/ubuntu/ natty-proposed universe main multiverse restricted
+deb-src http://mirrors.163.com/ubuntu/ natty-proposed universe main multiverse restricted
+deb http://mirrors.163.com/ubuntu/ natty-backports universe main multiverse restricted
+deb-src http://mirrors.163.com/ubuntu/ natty-backports universe main multiverse restricted
+deb-src http://mirrors.163.com/ubuntu/ natty-updates universe main multiverse restricted
+
+
+
+/////////////////////////////
+ndk
+http://dl.google.com/android/ndk/android-ndk-r8d-linux-x86.tar.bz2
+
+
+
+
+
+////
+测试
+ emulator -data arch/arm/boot/zImage &   
+
+
+
+
+//////
+Android SDK离线安装方法加速详解，提供全部下载地址
+2011年10月3日发表评论阅读评论
+AndroidSDK在国内下载一直很慢··有时候通宵都下不了一点点，最后只有选择离线安装，现在发出离线安装地址和方法，希望对大家有帮助。
+
+版本查看
+http://dl-ssl.google.com/android/repository/repository-7.xml
+
+一，首先下载SDK的安装包，android-sdk_r10-windows.zip（安装工具）解压到目录，如闪电博客的目录D:\programs\android-sdk-windows
+
+下载地址：http://dl.google.com/android/android-sdk_r10-windows.zip（目前最新版）
+
+二，然后新建以下几个文件夹
+
+platforms，docs，samples，usb_driver，market_licensing
+
+三，删除tools全部内容
+
+这一步是可选的，因为tools内容可能已经过时，也可能仍然可用。
+
+四，打开下载工具（迅雷，电驴等等），下载以下内容
+
+谷歌api的安装包
+
+Android SDK Tools, revision 10 
+http://dl-ssl.google.com/android/repository/tools_r21-windows.zip
+
+Android SDK Platform-tools, revision 3 
+http://dl-ssl.google.com/android/repository/platform-tools_r16-windows.zip
+
+Android SDK Docs for Android API 11, revision 1 
+http://dl-ssl.google.com/android/repository/docs-3.0_r01-linux.zip
+
+Android SDK Platform 3.0, revision 1 
+http://dl-ssl.google.com/android/repository/android-3.0_r01-linux.zip
+
+Android SDK Platform 2.3.3._r1 Revision 1 
+http://dl-ssl.google.com/android/repository/android-2.3.3_r02-linux.zip
+
+Android SDK Platform 2.3.1_r2 Revision 2 (Obsolete) 
+http://dl-ssl.google.com/android/repository/android-2.3.1_r02-linux.zip
+
+Android SDK Platform 2.2_r1 Revision 2 
+http://dl-ssl.google.com/android/repository/android-2.2_r02-windows.zip
+
+Android SDK Platform 2.1_r2 Revision 2 
+http://dl-ssl.google.com/android/repository/android-2.1_r02-windows.zip
+
+Android SDK Platform 1.6_r2 Revision 3 
+http://dl-ssl.google.com/android/repository/android-1.6_r03-windows.zip
+
+Android SDK Platform 1.5_r3 Revision 4 
+http://dl-ssl.google.com/android/repository/android-1.5_r04-windows.zip
+
+Android SDK Samples for Android API 11, revision 1 
+http://dl-ssl.google.com/android/repository/samples-3.0_r01-linux.zip
+
+Android SDK Samples for Android API 10, revision 1 
+http://dl-ssl.google.com/android/repository/samples-2.3.3_r01-linux.zip
+
+Android SDK Samples for Android API 9, revision 1 
+http://dl-ssl.google.com/android/repository/samples-2.3_r01-linux.zip
+
+Android SDK Samples for Android API 8, revision 1 
+http://dl-ssl.google.com/android/repository/samples-2.2_r01-linux.zip
+
+Android SDK Samples for Android API 7, revision 1 
+http://dl-ssl.google.com/android/repository/samples-2.1_r01-linux.zip
+
+Android + Google APIs, API 11, revision 1 
+http://dl-ssl.google.com/android/repository/google_apis-11_r01.zip
+
+Android + Google APIs, API 10, revision 1 
+http://dl-ssl.google.com/android/repository/google_apis-10_r02.zip
+
+Android + Google APIs, API 9, revision 2 
+http://dl-ssl.google.com/android/repository/google_apis-9_r02.zip
+
+Android + Google APIs, API 8, revision 2 
+http://dl-ssl.google.com/android/repository/google_apis-8_r02.zip
+
+Android + Google APIs, API 7, revision 1 
+http://dl-ssl.google.com/android/repository/google_apis-7_r01.zip
+
+Android + Google APIs, API 4, revision 2 
+http://dl-ssl.google.com/android/repository/google_apis-4_r02.zip
+
+Android + Google APIs, API 3, revision 3 
+http://dl-ssl.google.com/android/repository/google_apis-3-r03.zip
+
+Google USB Driver package, revision 4 
+https://dl-ssl.google.com/android/repository/usb_driver_r04-windows.zip
+
+Dbank下载地址：http://dl.dbank.com/c0tdze5bas
+
+如果是Linux平台的朋友，请把windows统一改为linux即可，mac平台的朋友改为macosx即可。
+
+需要说明的是，文档和样例都是同样的地址docs-2.2_r01-linux.zip,samples-2.2_r01-linux.zip,samples-2.1_r01-linux.zip。
+
+五，解压文档到指定目录
+
+把android开头的文件解压到platforms目录下
+
+把goole_apis开头的文件解压到add-ons目录下
+
+把market_licensing-r01.zip解压到market_licensing目录下
+
+把tools_r07-windows.zip解压到tools目录下（前面清空了该文件夹）
+
+把docs-2.2_r01-linux.zip解压到docs
+
+把samples-2.2_r01-linux.zip和samples-2.1_r01-linux.zip解压到samples目录下
+
+把usb_driver_r03-windows.zip解压到usb_driver目录下。
+
+基本上安装工作就完成了。
+
+再打开SDK Setup.ext发现，它会找到我们已经安装的内容。
+
+不过，可以也会有内容要更新或者安装，因为你看到该文章时，有可能已经有了更新的内容。
+
+然后，将你的安装目录/tools加到系统环境变量，把安装目录加到Android_Home。就完成了整个安装。
+
+
+export ANDROID_HOME=/opt/softwaretools/android-sdk-linux
+export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+
+
+////////////////////\
+Ubuntu下PC110 fastboot烧写OneNand操作方法
+*****************************开发环境准备************************************
+1. 安装minicom：
+参考：
+http://hi.baidu.com/macroliu_/blog/item/dfd0c154b79402778435243d.html
+2. 下载flashboot
+http://wiki.cheyingwu.tw/@api/deki/files/259/=fastboot
+我的网盘:
+http://dl.dbank.com/c0wvna1omk
+3. 设置fastboot路径
+修改.bashrc或者profile文件：
+
+$ vi /root/.bashrc 或
+$ vi /etc/profile 
+
+在里面加入：
+export PATH="$PATH:/flashboot path"
+4. 如果没有设置flashboot路径，则复制需要烧写的文件到fastboot同一级目录。
+*****************************烧写步骤************************************
+准备工作:
+连接miniUSB到PC;
+连接UART2到电脑串口。
+1.机器进入fastboot状态:
+(1)打开minicom
+$ minicom
+(2)开机后，在串口终端显示:
+In: serialOut: serialErr: serialchecking mode for fastboot ...Hit any key to stop autoboot: 5
+按任意键后：
+SMDKC110 #
+
+(2)进入fastboot状态： 
+SMDKC110 # fastbootFastboot: employ default partition information[Partition table on OneNAND]ptn 0 name='bootloader' start=0x0 len=0x100000(~1024KB) ptn 1 name='recovery' start=0x100000 len=0x500000(~5120KB) ptn 2 name='kernel' start=0x600000 len=0x500000(~5120KB) ptn 3 name='ramdisk' start=0xB00000 len=0x300000(~3072KB) ptn 4 name='system' start=0xE00000 len=0x5A00000(~92160KB) (Yaffs)ptn 5 name='cache' start=0x6800000 len=0x5000000(~81920KB) (Yaffs)ptn 6 name='userdata' start=0xB800000 len=N/A (Yaffs)
+
+2. 烧写代码到OneNand里:
+再开一个终端
+(1) 所有文件在out/target/product/t12c110这里
+$ cd $FROYO_DIR/out/target/product/t12c110
+(2)列出你的手机设备 ：
+$ fastboot devices
+SMDKC110-01 fastboot
+(3)烧u-boot
+$ fastboot flash bootloader u-boot-config_fused.bin 一般不用，如果是空片，用SD卡等方式启动时才需要
+(4)烧zImage和ramdisk-uboot.img(boot.img=zImage+ramdisk-uboot.img)。
+$ fastboot flash kernel zImage$ fastboot flash ramdisk ramdisk-uboot.img
+(5) 烧写system.img
+$ fastboot flash system system.img
+(6) 清除用户数据和cache
+$ fastboot erase userdata
+$ fastboot erase cache
+*****************************fastboot命令集************************************
+下面是fastboot的菜单命令fastboot devices察看手机是否连接 fastboot清除内存 fastboot erase bootloader（清除u-boot） fastboot erase kernel （清除kernel） fastboot erase userdara（清除用户数据） fastboot erase recovery（清除recovery） fastboot erase system（清除系统） fastboot刷nandroid备份文件 fastboot flashallfastboot flash bootloader（刷bootloader） fastboot flash userdara（刷用户数据） fastboot flash recovery（刷recovery） fastboot flash system（刷系统）fastboot flash system /备份/system.imgfastboot reboot（重新启动） fastboot shell （你就会看到下一行有个“#”）
+
+
+
+
+
+
+////
+UBUNTU12.04编译Android源码<命令行>:0:0: 错误： “_FORTIFY_SOURCE”重定义 [-Werror]  
+
+2012-05-05 08:59:41|  分类： Linux |字号 订阅
+<命令行>:0:0: 错误： “_FORTIFY_SOURCE”重定义 [-Werror]
+
+解决方法
+
+安装sudo apt-get install gcc-4.4 g++-4.4 gcc-4.4-multilib g++-4.4-multilib
+
+配置编译环为gcc-4.4 以及 g++-4.4
+
+sudo ln -s /usr/bin/gcc-4.4 /usr/bin/gcc
+
+g++ 同上。
+
+
+
+
+
+
+
+
+Android系统编译过程中常见问题汇总（1）
+分类： Android系统移植相关 2011-11-14 10:59 8299人阅读 评论(12) 收藏 举报
+作者：徐文
+1、问题一：/bin/bash: bison: 未找到命令
+ 解决方法：$ sudo apt-get install bison
+ 
+2、问题二：
+You are attempting to build with the incorrect version of java.
+Your version is: /bin/bash: java: 未找到命令.
+The correct version is: 1.5.
+ 解决方法：
+注意：必须使用1.5的JDK版本。不能使用1.6等其他版本。
+（1）       下载
+在sun官网上下载jdk-1_5_0_22-linux-i586.bin。注意不是jdk-1_5_0_22-linux-i586rpm.bin
+（2）       部署
+进入jdk-1_5_0_22-linux-i586.bin所在目录
+cd ~
+赋予该bin文件可执行属性
+chmod +x jdk-1_5_0_22-linux-i586.bin
+一直回车跳过协议到最后一行：
+Do you agree to the above license terms? [yes or no]
+键入yes回车，开始解压。默认解压到当前目录下的jdk1.5.0_22目录里。
+（3）       配置环境变量
+执行$gedit ~/.bashrc打开.bashrc文件。
+修改./bashrc文件，在文件末尾添加
+#set java environment 
+JAVA_HOME=“你的路径”/jdk1.5.0_10 
+export JRE_HOME=“你的路径”/jdk1.5.0_10/jre 
+export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH 
+export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH 
+保存并关闭文件。
+在终端执行source ~/.bashrc刷新该配置
+ 使用java –version检查JDK是否配置正确。
+ 
+3、问题三：
+host c++: libhost <= build/libs/host/pseudolocalize.cpp/bin/bash: g++: 未找到命令
+make: ***[out/host/linux-x86/obj/STATIC_LIBRARIES/libhost_intermediates/pseudolocalize.o] 错误 127
+ 解决方法：$ sudo apt-get install build-essential
+ 
+4、问题四：
+external/clearsilver/cgi/cgi.c:22:18: 致命错误: zlib.h: 没有那个文件或目录编译终端。
+make: ***[out/host/linux-x86/obj/SHARED_LIBRARIES/libneo_cgi_intermediates/cgi.o] 错误 1
+ 解决方法：$ sudo apt-get install zlib1g-dev
+ 
+5、问题五：
+make: ***[out/host/linux-x86/obj/EXECUTABLES/aapt_intermediates/appt] 错误 1
+ 解决方法：
+打开Android.mk文件
+$gedit frameworks/base/tools/aapt/Android.mk
+编辑下面一行：
+ifeq ($(HOST_OS),linux)
+#LOCAL_LDLIBS += -lrt 　　　　　　把这行注释掉，改为下面一行。
+LOCAL_LDLIBS += -lrt -lpthread
+endif
+ 
+6、问题六：
+host c: adb<= system/core/adb/fdevent.c
+host Executable:adb (out/host/linux-86/obj/EXECUTABLES/adb_intermediates/adb)/user/bin/ld: cannot find –lncurses
+collect2: ld 返回 1
+make: ***[out/host/linux-86/obj/EXECUTABLES/adb_intermediates/adb] 错误 1
+ 解决方法：$sudo apt-get install libncurses5-dev
+ 
+7、问题七：
+make: ***[out/target/product/sam9g45/obj/STATIC_LIBRARIES/libwebcore_intermediates/WebCore/css/CSSPropertyNames.h] 错误 25
+ 解决方法：$sudo apt-get install gpert
+ 
+8、问题八：
+host C++: libutils <= frameworks/base/libs/utils/RefBase.cpp
+frameworks/base/libs/utils/RefBase.cpp: In member function ‘void android::RefBase::weakref_type::trackMe(bool, bool)’:
+frameworks/base/libs/utils/RefBase.cpp:483:67: error: passing ‘const android::RefBase::weakref_impl’ as ‘this’ argument of ‘void android::RefBase::weakref_impl::trackMe(bool, bool)’ discards qualifiers [-fpermissive]
+make: *** [out/host/linux-x86/obj/STATIC_LIBRARIES/libutils_intermediates/RefBase.o] 错误 1
+ 解决方法：
+打开Android.mk
+$ gedit frameworks/base/libs/utils/Android.mk
+将下面这一行
+LOCAL_CFLAGS += -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS)
+改为
+LOCAL_CFLAGS += -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS) -fpermissive
+ 
+9、问题九：
+make: ***[out/host/linux-x86/obj/EXECUTABLES/emulator_intermediates/android/skin/window.o] Error 1
+ 解决方法：$ sudo apt-get install libx11-dev
+ 
+10、问题十：
+make: *** [out/host/linux-x86/obj/EXECUTABLES/localize_intermediates/localize] 错误 1
+ 解决方法：
+打开Android.mk：
+$gedit ./framework/base/tools/localize/Android.mk文件(注意与问题五中的文件是不同文件)
+编辑下面一行：
+ifeq ($(HOST_OS),linux)
+#LOCAL_LDLIBS += -lrt 　　　　　　把这行注释掉，改为下面一行。
+LOCAL_LDLIBS += -lrt –lpthread
+ 
+转载请注明出处：http://blog.csdn.net/pku_android 
+ 
+11、问题十一：
+make: ***[out/host/linux-x86/obj/EXECUTABLES/accRuntimeTest_intermediates/accRuntimeTest] 错误 1
+ 解决方法：
+打开Android.mk:
+$gedit system/core/libacc/tests/Android.mk(注意与问题五和问题十不是同一个文件)
+将以下缺少的语句添加进去：
+LOCAL_SHARED_LIBRARIES := \
+     libacc
+LOCAL_LDLIBS += -ldl
+LOCAL_MODULE_TAGS := tests
+在include $(BUILD_HOST_EXECUTABLE)下面添加以下缺少的语句：
+LOCAL_SHARED_LIBRARIES := \
+     libacc
+LOCAL_LDLIBS += -ldl
+LOCAL_MODULE_TAGS := tests
+

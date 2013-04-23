@@ -1,0 +1,119 @@
+/* == 
+OBLOG用户模板默认样式
+最后修改 2007.05.18
+== */
+body { margin:0; word-break: break-all; }
+table,input { font-size: 12px; }
+img { border: 0; }
+
+h1 { margin: auto auto auto 0; border-bottom: 1px #000000 solid; text-align: left; font-size: 12px; font-weight: bold; }
+h2 { font-size: 12px; font-weight: bold; margin-left:20px!important; width: 100%; text-align: left; }
+
+/* -- 用户头像 -- */
+.ob_face { float: left; border: 1px #666 solid; margin: 0 10 5 5px;}
+
+/* -- 查看更多评论 -- */
+#saveurl { clear: both; }
+
+/* -- 文章回复表单 -- */
+#form_comment {  }
+	#form_comment .title { margin: 0 0 10px 0; font-weight: 600; }
+	#form_comment .d1,#form_comment .d2,#form_comment .d3,#form_comment .d4,#form_comment .d5,#form_comment .d6, { margin: 0 0 5px 0;	text-align: left; }
+
+/* -- 专题分类 -- */
+#subject ul { margin: 0; list-style-type: none; }
+
+/* -- 专题分类横向显示 -- */
+#subject_l ul { margin:0; }
+#subject_l li {	display: inline; margin:auto 5px; list-style-type: none; }
+
+/* -- 最新日志，最新回复，最新留言 -- */
+#newblog ul,#comment ul,#newmessage ul { margin: 0; list-style-type: none; }
+
+/* -- 最新相片 -- */
+#ob_miniphoto { text-align: center; }
+
+/* 我的好友 */
+#myfriend { text-align:center; }
+	#myfriend li { float: left; width: 64px; height: 82px; background: #F4F4F4; border: 1px #eee solid; border-top: 3px #eee solid; text-align: center; margin:0 10px 5px 0; overflow:hidden; }
+		#myfriend li img.ob_face { width: 48px; height: 48px; margin: 6px; border:1px #fff solid; }
+
+/* 我的群组 */
+#mygroups { text-align:center; }
+	#mygroups li { float: left; width: 97px; height: 96px; background: #F4F4F4; border: 1px #eee solid; border-top: 2px #eee solid; border-bottom: 2px #eee solid; text-align: center; margin: 0 10px 5px 0; overflow: hidden; }
+		#mygroups li img.group_logo { width: 80px; height: 60px; margin: 6px; border: 1px #999 solid; }
+
+/* -- 全部日志 -- */
+#subject_index ul {	margin: 10px; width: 90%; list-style-type: none;  text-align: left; font-weight: bold; }
+#subject_index li { margin: 0; }
+#subject_index h1 { border-bottom: 1px #ccc solid; }
+#subject_index span { font-style: italic; }
+
+/* -- 博客信息 -- */
+#info ul { clear: both; margin: 0; padding: 0; list-style-type: none; }
+	#info ul li { float: left; width: 50%; }
+
+/* -- 文章被推荐（DIGG）用户列表 -- */
+div#ArchivesShowList { clear:both; margin: 0 0 20px 0; height:1%; }
+	div#ArchivesShowList #ArchivesShowListTable { border-collapse: collapse; width: 100%; border: 0; }
+	div#ArchivesShowList ul.ShowList_UL { float: left; margin: 6px 5px; padding: 6px 2px 0px 2px; border: 1px #eee solid; width: 64px; height: 90px; overflow: hidden; background: #f4f4f4 url("images/cierre_pie.gif") no-repeat left top; text-align: center; }
+			div#ArchivesShowList ul.ShowList_UL li.ShowList_UserIco a img { border: none; expression(this.width >48 && this.height < this.width ? 48: true); height: expression(this.height > 48 ? 48: true); }
+		div#ArchivesShowList ul.ShowList_UL li.ShowList_UserName { text-align: center; width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* -- edit.css -- */
+#oblog_edit { margin: 0; width: 360px; text-align: left; }
+	#oblog_edit div.quote{ margin: 5px 20px; border: 1px solid #CCC; padding: 5px; background: #F3F3F3; }
+
+/* -- 上一篇下一篇： -- */
+#morelog li { list-style-type: none; text-align: left; }
+
+/* -- 文章页面回复引用 -- */
+div.quote{ clear: both; margin: 5px 20px; padding: 5px; background: #FFFFF3; border: 1px solid #CCCCCC; color: #000; }
+
+/* -- 日志标签 -- */
+#ob_usertags li{ display: inline; width:100px; padding:8px; list-style-type: none; }
+
+/* -- 日志翻页 -- */
+#showpage { text-align: center; }
+
+/*  */
+#blogaddon li { list-style: none; font-weight: 600; }
+#blogaddon li a { font-weight: 400; text-decoration: underline; }
+#blogaddon li a:hover { text-decoration:none; }
+
+/* 详细信息 */
+div#ob_userinfo { background: transparent; padding: 13px 0 0 0; }
+	div#ob_userinfo ul.top { clear: both; background: transparent; border: 0; padding: 0; }
+		div#ob_userinfo ul.top li { float: left; margin: 0 3px -1px 0; background: #F4F4F4; }
+			div#ob_userinfo ul.top li a { padding: 3px 5px; width: 80px; height: 10px; display: block; text-align: center; color: #777!important; font-weight: 600!important; letter-spacing: 1px;}
+			div#ob_userinfo ul.top li a:hover { background: #ECF3FC; }
+		div#ob_userinfo ul.top li.nowselect { border: 1px outset; border-bottom: 0; background: #fff; position: relative; z-index: 999; }
+			div#ob_userinfo ul.top li.nowselect a { color: #333!important; font-weight: 600; }
+			div#ob_userinfo ul.top li.nowselect a:hover { background: #fff; }
+	div#ob_userinfo ul { clear: both; padding: 8px; margin: 0; border: 1px #E0DFE3 solid; background: #fff; }
+		div#ob_userinfo ul li { list-style: none outside; }
+		div#ob_userinfo ul.ob_user_info img.ob_face_info { float: left; width: 48px; height: 48px; margin: 8px 18px 500px 8px; border: 1px #999 solid; }
+		div#ob_userinfo ul.ob_user_info li { list-style: none outside; color: #333; line-height: 1.8; }
+	div#ob_userinfo ul.ob_user_friend { height: 100%; position: relative; z-index: 10; }
+		div#ob_userinfo ul.ob_user_friend li { float: left; width: 60px; height: 70px; padding: 4px; background: #F4F4F4; border: 1px #eee solid; text-align: center; margin: 0 15px 10px 0; }
+			div#ob_userinfo ul.ob_user_friend li a { color: #333!important; }
+			div#ob_userinfo ul.ob_user_friend li a:hover { color: #666!important; text-decoration: underline; }
+			div#ob_userinfo ul.ob_user_friend li img { width: 48px; height: 48px; border: 1px #fff solid; }
+	div#ob_userinfo ul.ob_user_group { height:100%; position: relative; z-index: 10; }
+		div#ob_userinfo ul.ob_user_group li { float: left; width: 130px; height: 110px; padding: 4px; background: #F4F4F4; border: 1px #eee solid; text-align: center; margin: 0 15px 10px 0; }
+			div#ob_userinfo ul.ob_user_group li a { color: #333!important; }
+			div#ob_userinfo ul.ob_user_group li a:hover { color: #666!important; text-decoration: underline; }
+			div#ob_userinfo ul.ob_user_group li img { width: 120px; height: 90px; border: 1px #fff solid; }
+
+/* -- 相册 -- */
+#oblog_usercontent div.photo_album { width: 130px; height: 160px; margin: 8px 0; padding: 10px 0 0 0; background: url("../Images/photo_album.gif") no-repeat left top; }
+#oblog_usercontent div.photo_ico table { height: 100px; }
+	#oblog_usercontent div.photo_ico a img { vertical-align: middle; max-width: 100px; max-height: 100px; width: expression(this.width >100 && this.height < this.width ? 100: true); height: expression(this.height > 100 ? 100: true); }
+#oblog_usercontent div.photo_album_name { width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#oblog_usercontent div.photo_album_list { width: 130px; height: 160px; margin: 8px 0; padding: 10px 0 0 0; }
+	#oblog_usercontent div.photo_album_list div.photo_ico { height: 120px; margin: 0 0 10px 0; background: #f4f4f4; border: 1px #eee solid; }
+		#oblog_usercontent div.photo_album_list div.photo_ico table { height: 120px; }
+#oblog_usercontent div.photo_name { width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* -- 版权信息 -- */
+#powered { clear: both; margin:0 auto ;width: 90%!important; width: 100%; height:15px; text-align: center; }

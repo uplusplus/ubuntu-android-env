@@ -1,0 +1,653 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://blog.csdn.net/luoshengyang/article/details/6568411 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="./在Ubuntu上为Android系统编写Linux内核驱动程序_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./在Ubuntu上为Android系统编写Linux内核驱动程序_files/在Ubuntu上为Android系统编写Linux内核驱动程序.htm">
+        在Ubuntu上为Android系统编写Linux内核驱动程序
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;在智能手机时代，每个品牌的手机都有自己的个性特点。正是依靠这种与众不同的个性来吸引用户，营造品牌凝聚力和用户忠城度，典型的代表非iphone莫属了。<a href="http://www.ifanr.com/39850">据统计</a>，截止2011年5月，AppStore的应用软件数量达381062个，位居第一，而Android Market的应用软件数量达294738，紧随AppStore后面，并有望在8月份越过AppStore。随着Android系统逐步扩大市场占有率，终端设备的多样性亟需更多的移动开发人员的参与。<a href="http://tech.ifeng.com/internet/detail_2011_06/13/6971800_0.shtml">据业内统计</a>，Android研发人才缺口至少30万。目前，对Android人才需求一类是偏向硬件驱动的Android人才需求，一类是偏向软件应用的Android人才需求。总的来说，对有志于从事Android硬件驱动的开发工程师来说，现在是一个大展拳脚的机会。那么，就让我们一起来看看如何为Android系统编写内核驱动程序吧。</p><p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;这里，我们不会为真实的硬件设备编写内核驱动程序。为了方便描述为Android系统编写内核驱动程序的过程，我们使用一个虚拟的硬件设备，这个设备只有一个4字节的寄存器，它可读可写。想起我们第一次学习程序语言时，都喜欢用“Hello, World”作为例子，这里，我们就把这个虚拟的设备命名为“hello”，而这个内核驱动程序也命名为hello驱动程序。其实，Android内核驱动程序和一般Linux内核驱动程序的编写方法是一样的，都是以Linux模块的形式实现的，具体可参考前面<a href="http://blog.csdn.net/luoshengyang/article/details/6557518">Android学习启动篇</a>一文中提到的Linux Device Drivers一书。不过，这里我们还是从Android系统的角度来描述Android内核驱动程序的编写和编译过程。</p><p>&nbsp;&nbsp; &nbsp; &nbsp; 一. 参照前面两篇文章<a href="http://blog.csdn.net/luoshengyang/article/details/6559955">在Ubuntu上下载、编译和安装Android最新源代码</a>和<a href="http://blog.csdn.net/luoshengyang/article/details/6564592">在Ubuntu上下载、编译和安装Android最新内核源代码（Linux Kernel）</a>准备好Android内核驱动程序开发环境。</p><p>&nbsp;&nbsp; &nbsp; &nbsp; 二. 进入到kernel/common/drivers目录，新建hello目录：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ cd kernel/common/drivers</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp; USER-NAME@MACHINE-NAME:~/Android/kernel/common/drivers$ mkdir hello</strong></p><p>&nbsp;&nbsp; &nbsp; &nbsp; 三. 在hello目录中增加hello.h文件：</p><p></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 994px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#ifndef&nbsp;_HELLO_ANDROID_H_</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;_HELLO_ANDROID_H_</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;linux/cdev.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;linux/semaphore.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;HELLO_DEVICE_NODE_NAME&nbsp;&nbsp;"hello"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;HELLO_DEVICE_FILE_NAME&nbsp;&nbsp;"hello"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;HELLO_DEVICE_PROC_NAME&nbsp;&nbsp;"hello"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;HELLO_DEVICE_CLASS_NAME&nbsp;"hello"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">struct</span><span>&nbsp;hello_android_dev&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;val;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;semaphore&nbsp;sem;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;cdev&nbsp;dev;&nbsp;&nbsp;</span></span></li><li class=""><span>};&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">#ifndef _HELLO_ANDROID_H_
+#define _HELLO_ANDROID_H_
+
+#include &lt;linux/cdev.h&gt;
+#include &lt;linux/semaphore.h&gt;
+
+#define HELLO_DEVICE_NODE_NAME  "hello"
+#define HELLO_DEVICE_FILE_NAME  "hello"
+#define HELLO_DEVICE_PROC_NAME  "hello"
+#define HELLO_DEVICE_CLASS_NAME "hello"
+
+struct hello_android_dev {
+	int val;
+	struct semaphore sem;
+	struct cdev dev;
+};
+
+#endif</pre><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;"></span></span><p></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;">&nbsp;&nbsp;&nbsp;这个头文件定义了一些字符串常量宏，在后面我们要用到。此外，还定义了一个字符设备结构体hello_android_dev，这个就是我们虚拟的硬件设备了，val成员变量就代表设备里面的寄存器，它的类型为int，sem成员变量是一个信号量，是用同步访问寄存器val的，dev成员变量是一个内嵌的字符设备，这个Linux驱动程序自定义字符设备结构体的标准方法。</span></span></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;">&nbsp;&nbsp; 四.在hello目录中增加hello.c文件，这是驱动程序的实现部分。驱动程序的功能主要是向上层提供访问设备的寄存器的值，包括读和写。这里，提供了三种访问设备寄存器的方法，一是通过proc文件系统来访问，二是通过传统的设备文件的方法来访问，三是通过devfs文件系统来访问。下面分段描述该驱动程序的实现。</span></span></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;">&nbsp;&nbsp; 首先是包含必要的头文件和定义三种访问设备的方法：</span></span></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;"></span></span></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1623px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;linux/init.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;linux/module.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;linux/types.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;linux/fs.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;linux/proc_fs.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;linux/device.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;asm/uaccess.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"hello.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*主设备和从设备号变量*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_major&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_minor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*设备类别和设备变量*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;</span><span class="keyword">class</span><span>*&nbsp;hello_class&nbsp;=&nbsp;NULL;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;hello_dev&nbsp;=&nbsp;NULL;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*传统的设备文件操作方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_open(</span><span class="keyword">struct</span><span>&nbsp;inode*&nbsp;inode,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_release(</span><span class="keyword">struct</span><span>&nbsp;inode*&nbsp;inode,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_read(</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp,&nbsp;</span><span class="datatypes">char</span><span>&nbsp;__user&nbsp;*buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count,&nbsp;loff_t*&nbsp;f_pos);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_write(</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;__user&nbsp;*buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count,&nbsp;loff_t*&nbsp;f_pos);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*设备文件操作方法表*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;file_operations&nbsp;hello_fops&nbsp;=&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;.owner&nbsp;=&nbsp;THIS_MODULE,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;.open&nbsp;=&nbsp;hello_open,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;.release&nbsp;=&nbsp;hello_release,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;.read&nbsp;=&nbsp;hello_read,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;.write&nbsp;=&nbsp;hello_write,&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>};&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*访问设置属性方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_val_show(</span><span class="keyword">struct</span><span>&nbsp;device*&nbsp;dev,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;device_attribute*&nbsp;attr,&nbsp;&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_val_store(</span><span class="keyword">struct</span><span>&nbsp;device*&nbsp;dev,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;device_attribute*&nbsp;attr,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*定义设备属性*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;DEVICE_ATTR(val,&nbsp;S_IRUGO&nbsp;|&nbsp;S_IWUSR,&nbsp;hello_val_show,&nbsp;hello_val_store);&nbsp;&nbsp;</span></span></li></ol></div><pre class="cpp" name="code" style="display: none;">#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/types.h&gt;
+#include &lt;linux/fs.h&gt;
+#include &lt;linux/proc_fs.h&gt;
+#include &lt;linux/device.h&gt;
+#include &lt;asm/uaccess.h&gt;
+
+#include "hello.h"
+
+/*主设备和从设备号变量*/
+static int hello_major = 0;
+static int hello_minor = 0;
+
+/*设备类别和设备变量*/
+static struct class* hello_class = NULL;
+static struct hello_android_dev* hello_dev = NULL;
+
+/*传统的设备文件操作方法*/
+static int hello_open(struct inode* inode, struct file* filp);
+static int hello_release(struct inode* inode, struct file* filp);
+static ssize_t hello_read(struct file* filp, char __user *buf, size_t count, loff_t* f_pos);
+static ssize_t hello_write(struct file* filp, const char __user *buf, size_t count, loff_t* f_pos);
+
+/*设备文件操作方法表*/
+static struct file_operations hello_fops = {
+	.owner = THIS_MODULE,
+	.open = hello_open,
+	.release = hello_release,
+	.read = hello_read,
+	.write = hello_write, 
+};
+
+/*访问设置属性方法*/
+static ssize_t hello_val_show(struct device* dev, struct device_attribute* attr,  char* buf);
+static ssize_t hello_val_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t count);
+
+/*定义设备属性*/
+static DEVICE_ATTR(val, S_IRUGO | S_IWUSR, hello_val_show, hello_val_store);</pre><p></p><p><span style="font-size:10px;">&nbsp;&nbsp; &nbsp; </span><span style="font-size:12px;">&nbsp; &nbsp;定义传统的设备文件访问方法，主要是定义hello_open、hello_release、hello_read和hello_write这四个打开、释放、读和写设备文件的方法：</span></p><p><span style="font-size:10px;"></span></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2464px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">/*打开设备方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_open(</span><span class="keyword">struct</span><span>&nbsp;inode*&nbsp;inode,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*将自定义设备结构体保存在文件指针的私有数据域中，以便访问设备时拿来用*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev&nbsp;=&nbsp;container_of(inode-&gt;i_cdev,&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev,&nbsp;dev);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;filp-&gt;private_data&nbsp;=&nbsp;dev;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*设备文件释放时调用，空实现*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_release(</span><span class="keyword">struct</span><span>&nbsp;inode*&nbsp;inode,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*读取设备的寄存器val的值*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_read(</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp,&nbsp;</span><span class="datatypes">char</span><span>&nbsp;__user&nbsp;*buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count,&nbsp;loff_t*&nbsp;f_pos)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ssize_t&nbsp;err&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev&nbsp;=&nbsp;filp-&gt;private_data;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*同步访问*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(down_interruptible(&amp;(dev-&gt;sem)))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-ERESTARTSYS;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(count&nbsp;&lt;&nbsp;</span><span class="keyword">sizeof</span><span>(dev-&gt;val))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;out;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*将寄存器val的值拷贝到用户提供的缓冲区*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(copy_to_user(buf,&nbsp;&amp;(dev-&gt;val),&nbsp;</span><span class="keyword">sizeof</span><span>(dev-&gt;val)))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;-EFAULT;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;out;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;<span class="keyword">sizeof</span><span>(dev-&gt;val);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>out:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;up(&amp;(dev-&gt;sem));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*写设备的寄存器值val*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_write(</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;__user&nbsp;*buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count,&nbsp;loff_t*&nbsp;f_pos)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev&nbsp;=&nbsp;filp-&gt;private_data;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ssize_t&nbsp;err&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*同步访问*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(down_interruptible(&amp;(dev-&gt;sem)))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-ERESTARTSYS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(count&nbsp;!=&nbsp;</span><span class="keyword">sizeof</span><span>(dev-&gt;val))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;out;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*将用户提供的缓冲区的值写到设备寄存器去*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(copy_from_user(&amp;(dev-&gt;val),&nbsp;buf,&nbsp;count))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;-EFAULT;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;out;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;<span class="keyword">sizeof</span><span>(dev-&gt;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>out:&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;up(&amp;(dev-&gt;sem));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">/*打开设备方法*/
+static int hello_open(struct inode* inode, struct file* filp) {
+	struct hello_android_dev* dev;        
+	
+	/*将自定义设备结构体保存在文件指针的私有数据域中，以便访问设备时拿来用*/
+	dev = container_of(inode-&gt;i_cdev, struct hello_android_dev, dev);
+	filp-&gt;private_data = dev;
+	
+	return 0;
+}
+
+/*设备文件释放时调用，空实现*/
+static int hello_release(struct inode* inode, struct file* filp) {
+	return 0;
+}
+
+/*读取设备的寄存器val的值*/
+static ssize_t hello_read(struct file* filp, char __user *buf, size_t count, loff_t* f_pos) {
+	ssize_t err = 0;
+	struct hello_android_dev* dev = filp-&gt;private_data;        
+
+	/*同步访问*/
+	if(down_interruptible(&amp;(dev-&gt;sem))) {
+		return -ERESTARTSYS;
+	}
+
+	if(count &lt; sizeof(dev-&gt;val)) {
+		goto out;
+	}        
+
+	/*将寄存器val的值拷贝到用户提供的缓冲区*/
+	if(copy_to_user(buf, &amp;(dev-&gt;val), sizeof(dev-&gt;val))) {
+		err = -EFAULT;
+		goto out;
+	}
+
+	err = sizeof(dev-&gt;val);
+
+out:
+	up(&amp;(dev-&gt;sem));
+	return err;
+}
+
+/*写设备的寄存器值val*/
+static ssize_t hello_write(struct file* filp, const char __user *buf, size_t count, loff_t* f_pos) {
+	struct hello_android_dev* dev = filp-&gt;private_data;
+	ssize_t err = 0;        
+
+	/*同步访问*/
+	if(down_interruptible(&amp;(dev-&gt;sem))) {
+		return -ERESTARTSYS;        
+	}        
+
+	if(count != sizeof(dev-&gt;val)) {
+		goto out;        
+	}        
+
+	/*将用户提供的缓冲区的值写到设备寄存器去*/
+	if(copy_from_user(&amp;(dev-&gt;val), buf, count)) {
+		err = -EFAULT;
+		goto out;
+	}
+
+	err = sizeof(dev-&gt;val);
+
+out:
+	up(&amp;(dev-&gt;sem));
+	return err;
+}</pre><p></p><p><span style="font-size:10px;">&nbsp;&nbsp; &nbsp; &nbsp; </span><span style="font-size:12px;">&nbsp;定义通过devfs文件系统访问方法，这里把设备的寄存器val看成是设备的一个属性，通过读写这个属性来对设备进行访问，主要是实现hello_val_show和hello_val_store两个方法，同时定义了两个内部使用的访问val值的方法__hello_get_val和__hello_set_val：</span></p><p><span style="font-size:10px;"></span></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 3871px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">/*读取寄存器val的值到缓冲区buf中，内部使用*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;__hello_get_val(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev,&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;val&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*同步访问*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(down_interruptible(&amp;(dev-&gt;sem)))&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-ERESTARTSYS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;=&nbsp;dev-&gt;val;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;up(&amp;(dev-&gt;sem));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;snprintf(buf,&nbsp;PAGE_SIZE,&nbsp;</span><span class="string">"%d\n"</span><span>,&nbsp;val);&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*把缓冲区buf的值写到设备寄存器val中去，内部使用*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;__hello_set_val(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;val&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*将字符串转换成数字*/</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;=&nbsp;simple_strtol(buf,&nbsp;NULL,&nbsp;10);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*同步访问*/</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(down_interruptible(&amp;(dev-&gt;sem)))&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-ERESTARTSYS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;val&nbsp;=&nbsp;val;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;up(&amp;(dev-&gt;sem));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;count;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*读取设备属性val*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_val_show(</span><span class="keyword">struct</span><span>&nbsp;device*&nbsp;dev,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;device_attribute*&nbsp;attr,&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;hdev&nbsp;=&nbsp;(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*)dev_get_drvdata(dev);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;__hello_get_val(hdev,&nbsp;buf);&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*写设备属性val*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_val_store(</span><span class="keyword">struct</span><span>&nbsp;device*&nbsp;dev,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;device_attribute*&nbsp;attr,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;buf,&nbsp;</span><span class="datatypes">size_t</span><span>&nbsp;count)&nbsp;{&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;hdev&nbsp;=&nbsp;(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*)dev_get_drvdata(dev);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;__hello_set_val(hdev,&nbsp;buf,&nbsp;count);&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">/*读取寄存器val的值到缓冲区buf中，内部使用*/
+static ssize_t __hello_get_val(struct hello_android_dev* dev, char* buf) {
+	int val = 0;        
+
+	/*同步访问*/
+	if(down_interruptible(&amp;(dev-&gt;sem))) {                
+		return -ERESTARTSYS;        
+	}        
+
+	val = dev-&gt;val;        
+	up(&amp;(dev-&gt;sem));        
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", val);
+}
+
+/*把缓冲区buf的值写到设备寄存器val中去，内部使用*/
+static ssize_t __hello_set_val(struct hello_android_dev* dev, const char* buf, size_t count) {
+	int val = 0;        
+
+	/*将字符串转换成数字*/        
+	val = simple_strtol(buf, NULL, 10);        
+
+	/*同步访问*/        
+	if(down_interruptible(&amp;(dev-&gt;sem))) {                
+		return -ERESTARTSYS;        
+	}        
+
+	dev-&gt;val = val;        
+	up(&amp;(dev-&gt;sem));
+
+	return count;
+}
+
+/*读取设备属性val*/
+static ssize_t hello_val_show(struct device* dev, struct device_attribute* attr, char* buf) {
+	struct hello_android_dev* hdev = (struct hello_android_dev*)dev_get_drvdata(dev);        
+
+	return __hello_get_val(hdev, buf);
+}
+
+/*写设备属性val*/
+static ssize_t hello_val_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t count) { 
+	struct hello_android_dev* hdev = (struct hello_android_dev*)dev_get_drvdata(dev);  
+	
+	return __hello_set_val(hdev, buf, count);
+}</pre><p></p><p><span style="font-size:10px;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</span><span style="font-size:12px;">定义通过proc文件系统访问方法，主要实现了hello_proc_read和hello_proc_write两个方法，同时定义了在proc文件系统创建和删除文件的方法hello_create_proc和hello_remove_proc：</span></p><p></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 4838px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">/*读取设备寄存器val的值，保存在page缓冲区中*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_proc_read(</span><span class="datatypes">char</span><span>*&nbsp;page,&nbsp;</span><span class="datatypes">char</span><span>**&nbsp;start,&nbsp;off_t&nbsp;off,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;count,&nbsp;</span><span class="datatypes">int</span><span>*&nbsp;eof,&nbsp;</span><span class="keyword">void</span><span>*&nbsp;data)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(off&nbsp;&gt;&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*eof&nbsp;=&nbsp;1;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;__hello_get_val(hello_dev,&nbsp;page);&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*把缓冲区的值buff保存到设备寄存器val中去*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;ssize_t&nbsp;hello_proc_write(</span><span class="keyword">struct</span><span>&nbsp;file*&nbsp;filp,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;__user&nbsp;*buff,&nbsp;unsigned&nbsp;</span><span class="datatypes">long</span><span>&nbsp;len,&nbsp;</span><span class="keyword">void</span><span>*&nbsp;data)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;err&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;page&nbsp;=&nbsp;NULL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(len&nbsp;&gt;&nbsp;PAGE_SIZE)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"The&nbsp;buff&nbsp;is&nbsp;too&nbsp;large:&nbsp;%lu.\n"</span><span>,&nbsp;len);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-EFAULT;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;page&nbsp;=&nbsp;(<span class="datatypes">char</span><span>*)__get_free_page(GFP_KERNEL);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!page)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;alloc&nbsp;page.\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-ENOMEM;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*先把用户提供的缓冲区值拷贝到内核缓冲区中去*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(copy_from_user(page,&nbsp;buff,&nbsp;len))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;copy&nbsp;buff&nbsp;from&nbsp;user.\n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;-EFAULT;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;out;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;__hello_set_val(hello_dev,&nbsp;page,&nbsp;len);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>out:&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;free_page((unsigned&nbsp;<span class="datatypes">long</span><span>)page);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*创建/proc/hello文件*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;hello_create_proc(</span><span class="keyword">void</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;proc_dir_entry*&nbsp;entry;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;entry&nbsp;=&nbsp;create_proc_entry(HELLO_DEVICE_PROC_NAME,&nbsp;0,&nbsp;NULL);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(entry)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry-&gt;owner&nbsp;=&nbsp;THIS_MODULE;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry-&gt;read_proc&nbsp;=&nbsp;hello_proc_read;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry-&gt;write_proc&nbsp;=&nbsp;hello_proc_write;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*删除/proc/hello文件*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;hello_remove_proc(</span><span class="keyword">void</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;remove_proc_entry(HELLO_DEVICE_PROC_NAME,&nbsp;NULL);&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">/*读取设备寄存器val的值，保存在page缓冲区中*/
+static ssize_t hello_proc_read(char* page, char** start, off_t off, int count, int* eof, void* data) {
+	if(off &gt; 0) {
+		*eof = 1;
+		return 0;
+	}
+
+	return __hello_get_val(hello_dev, page);
+}
+
+/*把缓冲区的值buff保存到设备寄存器val中去*/
+static ssize_t hello_proc_write(struct file* filp, const char __user *buff, unsigned long len, void* data) {
+	int err = 0;
+	char* page = NULL;
+
+	if(len &gt; PAGE_SIZE) {
+		printk(KERN_ALERT"The buff is too large: %lu.\n", len);
+		return -EFAULT;
+	}
+
+	page = (char*)__get_free_page(GFP_KERNEL);
+	if(!page) {                
+		printk(KERN_ALERT"Failed to alloc page.\n");
+		return -ENOMEM;
+	}        
+
+	/*先把用户提供的缓冲区值拷贝到内核缓冲区中去*/
+	if(copy_from_user(page, buff, len)) {
+		printk(KERN_ALERT"Failed to copy buff from user.\n");                
+		err = -EFAULT;
+		goto out;
+	}
+
+	err = __hello_set_val(hello_dev, page, len);
+
+out:
+	free_page((unsigned long)page);
+	return err;
+}
+
+/*创建/proc/hello文件*/
+static void hello_create_proc(void) {
+	struct proc_dir_entry* entry;
+	
+	entry = create_proc_entry(HELLO_DEVICE_PROC_NAME, 0, NULL);
+	if(entry) {
+		entry-&gt;owner = THIS_MODULE;
+		entry-&gt;read_proc = hello_proc_read;
+		entry-&gt;write_proc = hello_proc_write;
+	}
+}
+
+/*删除/proc/hello文件*/
+static void hello_remove_proc(void) {
+	remove_proc_entry(HELLO_DEVICE_PROC_NAME, NULL);
+}</pre><p></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;">&nbsp;&nbsp; 最后，定义模块加载和卸载方法，这里只要是执行设备注册和初始化操作：</span></span></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;"></span></span></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6568411#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 5958px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">/*初始化设备*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;&nbsp;__hello_setup_dev(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev*&nbsp;dev)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev_t&nbsp;devno&nbsp;=&nbsp;MKDEV(hello_major,&nbsp;hello_minor);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(dev,&nbsp;0,&nbsp;<span class="keyword">sizeof</span><span>(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;cdev_init(&amp;(dev-&gt;dev),&nbsp;&amp;hello_fops);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;dev.owner&nbsp;=&nbsp;THIS_MODULE;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;dev.ops&nbsp;=&nbsp;&amp;hello_fops;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*注册字符设备*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;cdev_add(&amp;(dev-&gt;dev),devno,&nbsp;1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(err)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*初始化信号量和寄存器val的值*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;init_MUTEX(&amp;(dev-&gt;sem));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;val&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*模块加载方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;__init&nbsp;hello_init(</span><span class="keyword">void</span><span>){&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;err&nbsp;=&nbsp;-1;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev_t&nbsp;dev&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;device*&nbsp;temp&nbsp;=&nbsp;NULL;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Initializing&nbsp;hello&nbsp;device.\n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*动态分配主设备和从设备号*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;alloc_chrdev_region(&amp;dev,&nbsp;0,&nbsp;1,&nbsp;HELLO_DEVICE_NODE_NAME);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(err&nbsp;&lt;&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;alloc&nbsp;char&nbsp;dev&nbsp;region.\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;fail;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_major&nbsp;=&nbsp;MAJOR(dev);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_minor&nbsp;=&nbsp;MINOR(dev);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*分配helo设备结构体变量*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_dev&nbsp;=&nbsp;kmalloc(<span class="keyword">sizeof</span><span>(</span><span class="keyword">struct</span><span>&nbsp;hello_android_dev),&nbsp;GFP_KERNEL);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!hello_dev)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;-ENOMEM;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;alloc&nbsp;hello_dev.\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;unregister;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*初始化设备*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;__hello_setup_dev(hello_dev);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(err)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;setup&nbsp;dev:&nbsp;%d.\n"</span><span>,&nbsp;err);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;cleanup;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*在/sys/class/目录下创建设备类别目录hello*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_class&nbsp;=&nbsp;class_create(THIS_MODULE,&nbsp;HELLO_DEVICE_CLASS_NAME);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(IS_ERR(hello_class))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;PTR_ERR(hello_class);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;create&nbsp;hello&nbsp;class.\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;destroy_cdev;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*在/dev/目录和/sys/class/hello目录下分别创建设备文件hello*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;temp&nbsp;=&nbsp;device_create(hello_class,&nbsp;NULL,&nbsp;dev,&nbsp;<span class="string">"%s"</span><span>,&nbsp;HELLO_DEVICE_FILE_NAME);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(IS_ERR(temp))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;PTR_ERR(temp);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;create&nbsp;hello&nbsp;device."</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;destroy_class;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*在/sys/class/hello/hello目录下创建属性文件val*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;device_create_file(temp,&nbsp;&amp;dev_attr_val);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(err&nbsp;&lt;&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Failed&nbsp;to&nbsp;create&nbsp;attribute&nbsp;val."</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">goto</span><span>&nbsp;destroy_device;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev_set_drvdata(temp,&nbsp;hello_dev);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*创建/proc/hello文件*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_create_proc();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Succedded&nbsp;to&nbsp;initialize&nbsp;hello&nbsp;device.\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>destroy_device:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;device_destroy(hello_class,&nbsp;dev);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>destroy_class:&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;class_destroy(hello_class);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>destroy_cdev:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;cdev_del(&amp;(hello_dev-&gt;dev));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>cleanup:&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;kfree(hello_dev);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>unregister:&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;unregister_chrdev_region(MKDEV(hello_major,&nbsp;hello_minor),&nbsp;1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>fail:&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;err;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*模块卸载方法*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;__exit&nbsp;hello_exit(</span><span class="keyword">void</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev_t&nbsp;devno&nbsp;=&nbsp;MKDEV(hello_major,&nbsp;hello_minor);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printk(KERN_ALERT<span class="string">"Destroy&nbsp;hello&nbsp;device.\n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*删除/proc/hello文件*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;hello_remove_proc();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*销毁设备类别和设备*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(hello_class)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;device_destroy(hello_class,&nbsp;MKDEV(hello_major,&nbsp;hello_minor));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class_destroy(hello_class);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*删除字符设备和释放设备内存*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(hello_dev)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cdev_del(&amp;(hello_dev-&gt;dev));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kfree(hello_dev);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*释放设备号*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;unregister_chrdev_region(devno,&nbsp;1);&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>MODULE_LICENSE(<span class="string">"GPL"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>MODULE_DESCRIPTION(<span class="string">"First&nbsp;Android&nbsp;Driver"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>module_init(hello_init);&nbsp;&nbsp;</span></li><li class="alt"><span>module_exit(hello_exit);&nbsp;&nbsp;</span></li></ol></div><pre class="cpp" name="code" style="display: none;">/*初始化设备*/
+static int  __hello_setup_dev(struct hello_android_dev* dev) {
+	int err;
+	dev_t devno = MKDEV(hello_major, hello_minor);
+
+	memset(dev, 0, sizeof(struct hello_android_dev));
+
+	cdev_init(&amp;(dev-&gt;dev), &amp;hello_fops);
+	dev-&gt;dev.owner = THIS_MODULE;
+	dev-&gt;dev.ops = &amp;hello_fops;        
+
+	/*注册字符设备*/
+	err = cdev_add(&amp;(dev-&gt;dev),devno, 1);
+	if(err) {
+		return err;
+	}        
+
+	/*初始化信号量和寄存器val的值*/
+	init_MUTEX(&amp;(dev-&gt;sem));
+	dev-&gt;val = 0;
+
+	return 0;
+}
+
+/*模块加载方法*/
+static int __init hello_init(void){ 
+	int err = -1;
+	dev_t dev = 0;
+	struct device* temp = NULL;
+
+	printk(KERN_ALERT"Initializing hello device.\n");        
+
+	/*动态分配主设备和从设备号*/
+	err = alloc_chrdev_region(&amp;dev, 0, 1, HELLO_DEVICE_NODE_NAME);
+	if(err &lt; 0) {
+		printk(KERN_ALERT"Failed to alloc char dev region.\n");
+		goto fail;
+	}
+
+	hello_major = MAJOR(dev);
+	hello_minor = MINOR(dev);        
+
+	/*分配helo设备结构体变量*/
+	hello_dev = kmalloc(sizeof(struct hello_android_dev), GFP_KERNEL);
+	if(!hello_dev) {
+		err = -ENOMEM;
+		printk(KERN_ALERT"Failed to alloc hello_dev.\n");
+		goto unregister;
+	}        
+
+	/*初始化设备*/
+	err = __hello_setup_dev(hello_dev);
+	if(err) {
+		printk(KERN_ALERT"Failed to setup dev: %d.\n", err);
+		goto cleanup;
+	}        
+
+	/*在/sys/class/目录下创建设备类别目录hello*/
+	hello_class = class_create(THIS_MODULE, HELLO_DEVICE_CLASS_NAME);
+	if(IS_ERR(hello_class)) {
+		err = PTR_ERR(hello_class);
+		printk(KERN_ALERT"Failed to create hello class.\n");
+		goto destroy_cdev;
+	}        
+
+	/*在/dev/目录和/sys/class/hello目录下分别创建设备文件hello*/
+	temp = device_create(hello_class, NULL, dev, "%s", HELLO_DEVICE_FILE_NAME);
+	if(IS_ERR(temp)) {
+		err = PTR_ERR(temp);
+		printk(KERN_ALERT"Failed to create hello device.");
+		goto destroy_class;
+	}        
+
+	/*在/sys/class/hello/hello目录下创建属性文件val*/
+	err = device_create_file(temp, &amp;dev_attr_val);
+	if(err &lt; 0) {
+		printk(KERN_ALERT"Failed to create attribute val.");                
+		goto destroy_device;
+	}
+
+	dev_set_drvdata(temp, hello_dev);        
+
+	/*创建/proc/hello文件*/
+	hello_create_proc();
+
+	printk(KERN_ALERT"Succedded to initialize hello device.\n");
+	return 0;
+
+destroy_device:
+	device_destroy(hello_class, dev);
+
+destroy_class:
+	class_destroy(hello_class);
+
+destroy_cdev:
+	cdev_del(&amp;(hello_dev-&gt;dev));
+
+cleanup:
+	kfree(hello_dev);
+
+unregister:
+	unregister_chrdev_region(MKDEV(hello_major, hello_minor), 1);
+
+fail:
+	return err;
+}
+
+/*模块卸载方法*/
+static void __exit hello_exit(void) {
+	dev_t devno = MKDEV(hello_major, hello_minor);
+
+	printk(KERN_ALERT"Destroy hello device.\n");        
+
+	/*删除/proc/hello文件*/
+	hello_remove_proc();        
+
+	/*销毁设备类别和设备*/
+	if(hello_class) {
+		device_destroy(hello_class, MKDEV(hello_major, hello_minor));
+		class_destroy(hello_class);
+	}        
+
+	/*删除字符设备和释放设备内存*/
+	if(hello_dev) {
+		cdev_del(&amp;(hello_dev-&gt;dev));
+		kfree(hello_dev);
+	}        
+
+	/*释放设备号*/
+	unregister_chrdev_region(devno, 1);
+}
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("First Android Driver");
+
+module_init(hello_init);
+module_exit(hello_exit);</pre><p></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;">&nbsp;&nbsp;&nbsp; 五.在hello目录中新增Kconfig和Makefile两个文件，其中Kconfig是在编译前执行配置命令make menuconfig时用到的，而Makefile是执行编译命令make是用到的：</span></span></p><p><span style="font-family:monospace;font-size: 13px;"><span style="white-space: pre-wrap;"></span></span><strong><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; Kconfig文件的内容</span></strong></p><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; config HELLO</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; tristate "First Android Driver"</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; default n</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; help</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; This is the first android driver.</span></div><div></div><div><strong><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;Makefile文件的内容</span></strong></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;obj-$(CONFIG_HELLO) += hello.o</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;在Kconfig文件中，tristate表示编译选项HELLO支持在编译内核时，hello模块支持以模块、内建和不编译三种编译方法，默认是不编译，因此，在编译内核前，我们还需要执行make menuconfig命令来配置编译选项，使得hello可以以模块或者内建的方法进行编译。</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;在Makefile文件中，根据选项HELLO的值，执行不同的编译方法。</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;六. 修改arch/arm/Kconfig和drivers/kconfig两个文件，在menu "Device Drivers"和endmenu之间添加一行：</span></div><div><span style="font-family:Verdana;">&nbsp;&nbsp; &nbsp; &nbsp;</span><strong>source "drivers/hello/Kconfig"</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong>这样，执行make menuconfig时，就可以配置hello模块的编译选项了。.&nbsp;</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;七.&nbsp;修改drivers/Makefile文件，添加一行：</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<strong>obj-$(CONFIG_HELLO) += hello/</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong>八. 配置编译选项：</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android/kernel/common$&nbsp;make menuconfig</strong></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;找到"Device Drivers" =&gt; "First Android Drivers"选项，设置为y。</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;注意，如果内核不支持动态加载模块，这里不能选择m，虽然我们在Kconfig文件中配置了HELLO选项为tristate。要支持动态加载模块选项，必须要在配置菜单中选择Enable loadable module support选项；在支持动态卸载模块选项，必须要在Enable loadable module support菜单项中，选择Module unloading选项。</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;九. 编译：</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android/kernel/common$&nbsp;make</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</strong>编译成功后，就可以在hello目录下看到hello.o文件了，这时候编译出来的zImage已经包含了hello驱动。</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;十. 参照<a href="http://blog.csdn.net/luoshengyang/article/details/6564592">在Ubuntu上下载、编译和安装Android最新内核源代码（Linux Kernel）</a>一文所示，运行新编译的内核文件，验证hello驱动程序是否已经正常安装：</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<strong><strong>USER-NAME@MACHINE-NAME:~/Android$&nbsp;</strong>emulator -kernel ./kernel/common/arch/arm/boot/zImage &amp;</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ adb shell</strong></strong></div><div><strong><span></span></strong><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">进入到dev目录，可以看到hello设备文件：</span></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/ # cd dev</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/dev # ls</div><div><strong><span></span></strong><div><strong><span></span></strong><div>&nbsp;&nbsp; &nbsp;<span style="font-weight: normal;">&nbsp;&nbsp; &nbsp;进入到proc目录，可以看到hello文件：</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/ # cd proc</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/proc # ls</span></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">访问hello文件的值：</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/proc # cat hello</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;0</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/proc # echo '5' &gt; hello</span></div></div></div></div></div></div><span></span><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/proc # cat hello</span></div></div></div></div></div></div></div></div></div></div></div></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;5</div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">进入到sys/class目录，可以看到hello目录：</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/ # cd sys/class</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class # ls</span></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">进入到hello目录，可以看到hello目录：</span></div><div><span style="font-weight: normal;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class # cd hello</span></div><div><span style="font-weight: normal;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello # ls</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">进入到下一层hello目录，可以看到val文件：</span></div></div></div></div></div></div></div></div></div></div></div></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello # cd hello</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello/hello # ls</span></div><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;访问属性文件val的值：</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello/hello # cat val</span></div></div></div></div></div></div></div></div></div></div></div></div></div></div><span></span><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;5</span></div><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello/hello # echo '0' &nbsp;&gt; val</span></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div><span></span><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;root@android:/sys/class/hello/hello # cat val</span></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div><span></span><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><strong><span></span></strong><div><span>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;0</span></div><div>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-weight: normal;">至此，我们的hello内核驱动程序就完成了，并且验证一切正常。这里我们采用的是系统提供的方法和驱动程序进行交互，也就是通过proc文件系统和devfs文件系统的方法，下一篇文章中，我们将通过自己编译的C语言程序来访问/dev/hello文件来和hello驱动程序交互，敬请期待。</span></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
+</div>
+
+
+
+
+
+            
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

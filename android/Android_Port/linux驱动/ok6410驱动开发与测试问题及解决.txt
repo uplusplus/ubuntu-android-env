@@ -1,0 +1,913 @@
+1	开发板配置
+	/proc # cat cpuinfo
+		Processor       : ARMv6-compatible processor rev 6 (v6l)
+		BogoMIPS        : 530.84
+		Features        : swp half thumb fastmult vfp edsp java
+		CPU implementer : 0x41
+		CPU architecture: 7
+		CPU variant     : 0x0
+		CPU part        : 0xb76
+		CPU revision    : 6
+		Hardware        : SMDK6410
+		Revision        : 0000
+		Serial          : 0000000000000000
+		
+		
+2 minicom
+	 1) 安装
+		apt-get install minicom
+	 2) 配置
+		进入minicom:
+			sudo minicom
+		设置minicom ctrl+A O(选择serial port setup)
+		 A - /dev/ttyUSB0
+		 E - 115200 8N1
+		 F - No
+		 G - No
+		 Save setup as dfl (/etc/minirc.dfl)  
+		 ctrl + a x 退出minicom
+
+
+3 tftp服务
+	 1)安装tftpd
+		apt-get install tftpd
+	 2)设定目录
+		/home/uplusplus下建立文件夹tftp:
+		mkdir tfpt
+		修改权限为全部可访问
+		sudo chmod 777 tftp
+	 3)修改配置
+		sudo vi /etc/inetd.conf
+		进行编辑，更改内容如下：
+		tftp         dgram     udp wait nobody   /usr/sbin/tcpd /usr/sbin/in.tftpd /home/uplusplus/tftp
+		将数据目录修改为刚建的目录
+	 4)不能上传问题
+		tftp服务器缺少必要的身份验证，所以默认只允许下载文件，要上传文件，必须是服务器中已存在同名的文件，
+	且该文件权限允许被覆盖。所以首先在服务中创建一个与要上传的文件同名的文件，并更改权限为777。
+
+4 dnw
+	1)下载源码
+		可以网上搜索dnw4linux，下载Q源码:https://github.com/Qunero/dnw4linux，或者直接下载压缩包：
+		https://github.com/Qunero/dnw4linux/downloads
+	2)编译
+		直接在解压后的目录中make即可；然后在对应的子目录中可以找到编译好的文件；
+		更方便的做法：make install 会直接将相关文件编译好，然后放到当前目录下，
+		编译好的文件为：
+		dnw     ---     用于传输数据的软件，用法： dnw filename
+		secbulk.ko  --- 识别下载用USB的驱动； 用法： sudo insmod secbulk.ko
+	3)安装
+		在编译成功后，完成下列步骤方面以后使用：
+		将dnw放到系统路径： sudo cp dnw /usr/sbin/ 
+		将secbulk.ko驱动设为自动加载：
+        先在住目录建立mydriver目录：mkdir /usr/drivers
+        将驱动放入自定义mydriver中：cp secbulk.ko /usr/drivers
+        修改/etc/rc.d/rc.local文件，末尾加入： sudo insmod /usr/drivers/secbulk.ko
+    4)使用
+    启动Linux的Uboot后，进入命令行模式，在超级终端里面执行dnw c0008000
+
+
+5 	修改开机画面
+	1)开机第三屏（android动画）
+	编译成功后在android源码根目录生成out目录，
+	修改android/out/target/product/OK6410/system/framework目录下的framework-res.apk
+	用winrar格式打开，替换assetsimages里的2张图片即可
+
+	2)开机第二屏（android字样）
+	1、选张320*480分辨率的图
+	2、将图转换成raw，用Advanced Batch Converter工具即可
+	3、虚拟机androidouthostlinux-x86bin目录下执行
+	  ./rgb2565 -rle <android_logo.raw> initlogo.rle
+	4、将initlogo.rle放置到android/out/target/product/OK6410/root下即可
+	   如果不放置 则显示的是源码init.C init.c.bak里
+	5、make firmware
+	6、全部重烧
+
+	3)开机第一屏（Linux企鹅图样）
+	1、选张png格式的图片，在Linux下执行：
+	# pngtopnm logo.png > logo_linux.pnm
+	# pnmquant 224 logo_linux.pnm > logo_linux_clut224.pnm
+	# pnmtoplainpnm logo_linux_clut224.pnm > logo_linux_clut224.ppm
+	将生成的ppm拷贝到drivers/video/logo目录下
+	如果想要修改菜单配置  可以在kernel目录下执行make menuconfig
+	进Device Drivers
+	进Graphics Support
+	进Bootop logo
+	进standard 224-clor Linux logo选择性加入图片
+
+	问题点:
+	1)rgb2565:Android/out/host/linux-x86/bin/rgb2565
+	2)图片编辑: GIMP 编辑图片
+	3)将图片转换为raw格式:
+　　使用linux下的ImageMagick自带的convert命令，进行raw格式转换，命令为：
+　　convert -depth 8 android_logo.png rgb:android_logo.raw
+　　注：ubuntu 10.04 默认已经安装ImgageMagick工具，如果当前系统没有安装，可以执行下面的命令安装：
+　　sudo apt-get install imagemagick
+　　4)将raw格式转化为rle文件
+　　需要用到android编译后的rgb2565工具，在android/out/host/linux-x86/bin目录下(android为当前源码所在目录)，转换命令如下：
+　　rgb2565 -rle < android_logo.raw > initlogo.rle
+　　到目前为止，启动需要显示的图像已经做好了，就是initlogo.rle，注意文件名必须是这个，如果想改文件名，需要修改android/system/core/init/init.h中的宏：
+　　#define INIT_IMAGE_FILE "/initlogo.rle"
+
+6 名词:
+	1)goldfish
+	goldfish是Android的模拟器版本的OS分支
+	https://android.googlesource.com/
+	2)bionic
+	Android除了使用的是ARM版本的内核外和传统的x86有所不同外，重要的是Google为Linux内核增强了不少东西，自己开发了 Bionic库，同时又贡献给Linux社区。首先GNU的内核在体积和运行效率上不适合移动设备，系统核心组件都是以动态库的形式驻留在每个进程中， 运行效率和内存占用都是十分重要的问题。Google开发了一个自定义的库名为Bionic，以BSD许可形式开源。Bionic库仅为200KB大小是GNU版本体积的一半，这意味着更高的效率和低内存占用，同时配合经过优化的Java VM Dalvik才可以保证高的性能。Bionic不支持	一些特性比如宽字节对unicode，类似c++那样的异常处理。
+	3)am
+	启动的方法为
+	# am start -n 包(package)名/包名.活动(activity)名称
+	启动的方法可以从每个应用的AndroidManifest.xml的文件中得到
+	Music 和 Video（音乐和视频）的启动方法为：
+	# am start -n com.android.music/com.android.music.MusicBrowserActivity
+	# am start -n com.android.music/com.android.music.VideoBrowserActivity
+	# am start -n com.android.music/com.android.music.MediaPlaybackActivity
+	Camera（照相机）的启动方法为：
+	# am start -n com.android.camera/com.android.camera.Camera
+	Browser（浏览器）的启动方法为：
+	# am start -n com.android.browser/com.android.browser.BrowserActivity
+	启动浏览器 :
+	am start -a android.intent.action.VIEW -d  http://www.google.cn/
+	拨打电话 :
+	am start -a android.intent.action.CALL -d tel:10086
+	启动 google map 直接定位到北京 :
+	am start -a android.intent.action.VIEW geo:0,0?q=beijing
+	4)ADC
+	Analog-to-Digital Converter的缩写，指模/数转换器或者模拟/数字转换器。英文缩写: ADC (Analog to Digital Converter)
+	5)SMDK6410 (Samsung MCU(MicroController) Development Kit)
+	6)i2c
+	I2C协议，很多的器件，采用的都是通过I2C来进行相应的设置,参考http://blog.csdn.net/norains/article/details/6042960
+			
+7 install gcc on Android
+	get 3 files:
+	https://www.dropbox.com/s/uammywfed6d2rgj/android_gcc_r2a.tar.bz2
+	https://www.dropbox.com/s/uammywfed6d2rgj/android_gcc_supplement.tar.bz2
+	https://www.dropbox.com/s/uammywfed6d2rgj/android_R_r1a2.tar.bz2
+	then (here I suppose you have GNU tar or busybox):
+	adb shell mkdir /data/local/gcc
+	adb push android_gcc_r2a.tar.bz2 /data/local/gcc
+	adb push android_gcc_supplement.tar.bz2 /data/local/gcc
+	adb push android_R_r1a2.tar.bz2 /data/local/gcc
+	adb shell
+	cd /data/local/gcc
+	tar xjf android_gcc_r2a.tar.bz2
+	tar xjf android_gcc_supplement.tar.bz2
+	tar xjf android_R_r1a2.tar.bz2
+	finally (writing to bashrc is recommended):
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/data/local/gcc/lib
+	export PATH=$PATH:/data/local/gcc/bin
+	This consumes 170MB, so be careful if your Android’s /data is small.
+
+8 pdk(Android定制过程,官方详解)
+	http://www.kandroid.org/online-pdk/guide/index.html
+	
+	1 Android版本定义的层级:
+	1)	Product
+	myProduct, myProduct_eu, myProduct_eu_fr, j2, sdk
+	The product layer defines a complete specification of a shipping product, defining which modules to build and how to configure them. You might offer a device in several different versions based on locale, for example, or on features such as a camera.
+	
+	2)	Device
+	myDevice, myDevice_eu, myDevice_eu_lite
+	The device layer represents the physical layer of plastic on the device. For example, North American devices probably include QWERTY keyboards whereas devices sold in France probably include AZERTY keyboards. Peripherals typically connect to the device layer.
+	
+	3)	Board
+	sardine, trout, goldfish
+	The board layer represents the bare schematics of a product. You may still connect peripherals to the board layer.
+	
+	4)	Arch
+	arm (arm5te) (arm6), x86, 68k
+	The arch layer describes the processor running on your board.
+	
+	2 添加一个新的product
+	1)Create product directory:
+	cd android2.3.4_32bit
+	mkdir vendor/<company_name>
+	mkdir vendor/<company_name>/products/
+	
+	2)Create a product-specific makefile, called vendor/<company_name>/products/<first_product_name>.mk
+	此Makefile可能参数参考http://www.kandroid.org/online-pdk/guide/build_new_device.html#androidBuildSystemProductDefFiles
+	和vendor/forlinx/products/OK6410.mk
+	
+	OK6410里面定义了需要安装的APK,去掉了Email等APK.
+	
+	3)create an AndroidProducts.mk
+	指向刚创建的<first_product_name>.mk.
+	
+	4)退到上级
+	mkdir vendor/<company_name>/<board_name>
+	create BoardConfig.mk
+	create system.prop to modify system setting,this overrides settings in the products/generic/system.prop/build/target/board/generic/system.prop file
+	
+	5)测试
+	. build/envsetup.sh
+	make PRODUCT-<first_product_name>-user
+	OK6410使用的变通的作法,直接导出一些设定值.
+	
+	6)最终结构
+	<company_name>
+		<board_name>
+			Android.mk
+			product_config.mk
+			system.prop
+		products
+			AndroidProducts.mk
+			<first_product_name>.mk
+			<second_product_name>.mk
+	
+	
+9 android源码结构
+	 Android 2.1
+	|-- Makefile
+	|-- bionic （bionic C库） 
+	|-- bootable （启动引导相关代码） 
+	|-- build （存放系统编译规则及generic等基础开发包配置） 
+	|-- cts （Android兼容性测试套件标准） 
+	|-- dalvik （dalvik JAVA虚拟机） 
+	|-- development （应用程序开发相关）
+	|-- external （android使用的一些开源的模组） 
+	|-- frameworks
+	Android 2.2
+	|-- Makefile
+	|-- bionic                        （bionic C库）
+	|-- bootable                （启动引导相关代码）
+	|-- build                        （存放系统编译规则及generic等基础开发包配置）
+	|-- cts                        （Android兼容性测试套件标准）
+	|-- dalvik                        （dalvik JAVA虚拟机）
+	|-- development        （应用程序开发相关）
+	|-- external                （android使用的一些开源的模组）
+	|-- frameworks                （核心框架——java及C++语言）
+	|-- hardware                （部分厂家开源的硬件抽象层HAL代码）
+	|-- out                        （编译完成后的代码输出与此目录）
+	|-- packages                （应用程序包）
+	|-- prebuilt                （x86和arm架构下预编译的一些资源）
+	|-- sdk                        （sdk及模拟器）
+	|-- system                        （底层文件系统库、应用及组件——C语言）
+	`-- vendor                （厂商定制代码）
+
+	bionic 目录
+	|-- libc                        （C库）
+	|   |-- arch-arm        （ARM架构，包含系统调用汇编实现）
+	|   |-- arch-x86        （x86架构，包含系统调用汇编实现）
+	|   |-- bionic                （由C实现的功能，架构无关）
+	|   |-- docs                （文档）
+	|   |-- include                （头文件）
+	|   |-- inet                （？inet相关，具体作用不明）
+	|   |-- kernel                （Linux内核中的一些头文件）
+	|   |-- netbsd                （？nesbsd系统相关，具体作用不明）
+	|   |-- private                （？一些私有的头文件）
+	|   |-- stdio                （stdio实现）
+	|   |-- stdlib                （stdlib实现）
+	|   |-- string                （string函数实现）
+	|   |-- tools                （几个工具）
+	|   |-- tzcode                （时区相关代码）
+	|   |-- unistd                （unistd实现）
+	|   `-- zoneinfo        （时区信息）
+	|-- libdl                        （libdl实现，dl是动态链接，提供访问动态链接库的功能）
+	|-- libm                        （libm数学库的实现，）
+	|   |-- alpha                （apaha架构）
+	|   |-- amd64                （amd64架构）
+	|   |-- arm                （arm架构）
+	|   |-- bsdsrc                （？bsd的源码）
+	|   |-- i386                （i386架构）
+	|   |-- i387                （i387架构？）
+	|   |-- ia64                （ia64架构）
+	|   |-- include                （头文件）
+	|   |-- man                （数学函数，后缀名为.3，一些为freeBSD的库文件）
+	|   |-- powerpc        （powerpc架构）
+	|   |-- sparc64                （sparc64架构）
+	|   `-- src                （源代码）
+	|-- libstdc++                （libstdc++ C++实现库）
+	|   |-- include                （头文件）
+	|   `-- src                （源码）
+	|-- libthread_db        （多线程程序的调试器库）
+	|   `-- include                （头文件）
+	`-- linker                        （动态链接器）
+	`-- arch                （支持arm和x86两种架构）
+
+	bootable 目录
+	.
+	|-- bootloader                       （适合各种bootloader的通用代码		）
+	|   `-- legacy                       （估计不能直接使用，可以参考		）
+	|       |-- arch_armv6               （V6架构，几个简单的汇编文件		）
+	|       |-- arch_msm7k               （高通7k处理器架构的几个基本驱动	）
+	|       |-- include                  （通用头文件和高通7k架构头文件		）
+	|       |-- libboot                  （启动库，都写得很简单				）
+	|       |-- libc                     （一些常用的c函数					）
+	|       |-- nandwrite                （nandwirte函数实现				）
+	|       `-- usbloader                （usbloader实现					）
+	|-- diskinstaller                    （android镜像打包器，x86可生产iso	）
+	`-- recovery                         （系统恢复相关						）
+		|-- edify                        （升级脚本使用的edify脚本语言		）
+		|-- etc                          （init.rc恢复脚本					）
+		|-- minui                        （一个简单的UI						）
+		|-- minzip                       （一个简单的压缩工具				）
+		|-- mtdutils                     （mtd工具							）
+		|-- res                          （资源								）
+		|   `-- images                   （一些图片							）
+		|-- tools                        （工具								）
+		|   `-- ota                      （OTA Over The Air Updates升级工具	）
+	`-- updater                          （升级器							）
+
+	build目录
+	.
+	|-- core                                （核心编译规则）
+	|-- history                                （历史记录）
+	|-- libs                                
+	|   `-- host                        （主机端库，有android “cp”功能替换）
+	|-- target                                （目标机编译对象）
+	|   |-- board                        （开发平台）
+	|   |   |-- emulator        （模拟器）
+	|   |   |-- generic                （通用）
+	|   |   |-- idea6410        （自己添加的）
+	|   |   `-- sim                （最简单）
+	|   `-- product                （开发平台对应的编译规则）
+	|       `-- security        （密钥相关）
+	`-- tools                                （编译中主机使用的工具及脚本）
+		|-- acp                        （Android "acp" Command）
+		|-- apicheck                （api检查工具）
+		|-- applypatch                （补丁工具）
+		|-- apriori                        （预链接工具）
+		|-- atree                        （tree工具）
+		|-- bin2asm                （bin转换为asm工具）
+		|-- check_prereq        （检查编译时间戳工具）
+		|-- dexpreopt                （模拟器相关工具，具体功能不明）
+		|-- droiddoc                （？作用不明，java语言，网上有人说和JDK5有关）
+		|-- fs_config                （This program takes a list of files and directories）
+		|-- fs_get_stats                （获取文件系统状态）
+		|-- iself                        （判断是否ELF格式）
+		|-- isprelinked                （判断是否prelinked）
+		|-- kcm                        （按键相关）
+		|-- lsd                        （List symbol dependencies）
+		|-- releasetools                （生成镜像的工具及脚本）
+		|-- rgb2565                （rgb转换为565）
+		|-- signapk                （apk签名工具）
+		|-- soslim                        （strip工具）
+	`-- zipalign                （zip archive alignment tool）
+
+	dalvik目录 dalvik虚拟机
+	.
+	|-- dalvikvm                        （main.c的目录）
+	|-- dexdump                        （dex反汇编）
+	|-- dexlist                                （List all methods in all concrete classes in a DEX file.）
+	|-- dexopt                                （预验证与优化）
+	|-- docs                                （文档）
+	|-- dvz                                （和zygote相关的一个命令）
+	|-- dx                                （dx工具，将多个java转换为dex）
+	|-- hit                                （？java语言写成）
+	|-- libcore                                （核心库）
+	|-- libcore-disabled                （？禁用的库）
+	|-- libdex                                （dex的库）
+	|-- libnativehelper                （Support functions for Android's class libraries）
+	|-- tests                                （测试代码）
+	|-- tools                                （工具）
+	`-- vm                                （虚拟机实现）
+
+	development 目录                （开发者需要的一些例程及工具）
+	|-- apps                                （一些核心应用程序）
+	|   |-- BluetoothDebug        （蓝牙调试程序）
+	|   |-- CustomLocale        （自定义区域设置）
+	|   |-- Development        （开发）
+	|   |-- Fallback                （和语言相关的一个程序）
+	|   |-- FontLab                （字库）
+	|   |-- GestureBuilder        （手势动作）
+	|   |-- NinePatchLab        （？）
+	|   |-- OBJViewer                （OBJ查看器）
+	|   |-- SdkSetup                （SDK安装器）
+	|   |-- SpareParts                （高级设置）
+	|   |-- Term                        （远程登录）
+	|   `-- launchperf                （？）
+	|-- build                                （编译脚本模板）
+	|-- cmds                                （有个monkey工具）
+	|-- data                                （配置数据）
+	|-- docs                                （文档）
+	|-- host                                （主机端USB驱动等）
+	|-- ide                                （集成开发环境）
+	|-- ndk                                （本地开发套件——c语言开发套件）
+	|-- pdk                                （Platform Developer Kit,避免碎片化）
+	|-- samples                        （例程）
+	|   |-- AliasActivity        （？）
+	|   |-- ApiDemos                （API演示程序）
+	|   |-- BluetoothChat        （蓝牙聊天）
+	|   |-- BrowserPlugin        （浏览器插件）
+	|   |-- BusinessCard        （商业卡）
+	|   |-- Compass                （指南针）
+	|   |-- ContactManager        （联系人管理器）
+	|   |-- CubeLiveWallpaper        （动态壁纸的一个简单例程）
+	|   |-- FixedGridLayout        （像是布局）
+	|   |-- GlobalTime                （全球时间）
+	|   |-- HelloActivity        （Hello）
+	|   |-- Home                        （Home）
+	|   |-- JetBoy                        （jetBoy游戏）
+	|   |-- LunarLander        （貌似又是一个游戏）
+	|   |-- MailSync                （邮件同步）
+	|   |-- MultiResolution        （多分辨率）
+	|   |-- MySampleRss        （RSS）
+	|   |-- NotePad                （记事本）
+	|   |-- RSSReader                （RSS阅读器）
+	|   |-- SearchableDictionary        （目录搜索）
+	|   |-- SimpleJNI                （JNI例程）
+	|   |-- SkeletonApp        （空壳APP）
+	|   |-- Snake                        （snake程序）
+	|   |-- SoftKeyboard        （软键盘）
+	|   |-- Wiktionary                （？维基）
+	|   `-- WiktionarySimple（？维基例程）
+	|-- scripts                                （脚本）
+	|-- sdk                                （sdk配置）
+	|-- simulator                        （？模拟器）
+	|-- testrunner                        （？测试用）
+	`-- tools                                （一些工具）
+
+	external 目录
+	.
+	|-- aes                        （AES加密）								<2.3.4 ->
+	|-- alsa-lib 				(声卡驱动相关)								<2.3.4 +>
+	|-- alsa-utils   			(Advanced Linux Sound Architecture)			<2.3.4 +>
+	|-- apache-http                （网页服务器）
+	|-- astl                        （ASTL (Android STL) is a slimmed-down version of the regular C++ STL.）
+	|-- bison                        （自动生成语法分析器，将无关文法转换成C、C++）
+	|-- blktrace                （blktrace is a block layer IO tracing mechanism）
+	|-- bluetooth                （蓝牙相关、协议栈）
+	|-- bsdiff                        （diff工具）
+	|-- bzip2                        （压缩工具）
+	|-- clearsilver                （html模板系统）
+	|-- dbus                        （低延时、低开销、高可用性的IPC机制）
+	|-- dhcpcd                （DHCP服务）
+	|-- dosfstools                （DOS文件系统工具）
+	|-- dropbear                （SSH2的server）
+	|-- e2fsprogs                （EXT2文件系统工具）
+	|-- elfcopy                （复制ELF的工具）
+	|-- elfutils                        （ELF工具）
+	|-- embunit                （Embedded Unit Project）
+	|-- emma                        （java代码覆盖率统计工具）
+	|-- esd                        （Enlightened Sound Daemon，将多种音频流混合在一个设备上播放）
+	|-- expat                        （Expat is a stream-oriented XML parser.）
+	|-- fdlibm                        （FDLIBM (Freely Distributable LIBM)）
+	|-- freetype                （字体）
+	|-- fsck_msdos                （dos文件系统检查工具）
+	|-- gdata                        （google的无线数据相关）
+	|-- genext2fs                （genext2fs generates an ext2 filesystem as a normal (non-root) user）
+	|-- giflib                        （gif库）
+	|-- googleclient        （google用户库）
+	|-- grub                        （This is GNU GRUB, the GRand Unified Bootloader.）
+	|-- gtest                        （Google C++ Testing Framework）
+	|-- icu4c                        （ICU(International Component for Unicode)在C/C++下的版本）
+	|-- ipsec-tools                （This package provides a way to use the native IPsec functionality ）
+	|-- iptables                （防火墙）
+	|-- jdiff                        （generate a report describing the difference between two public Java APIs.）
+	|-- jhead                        （jpeg头部信息工具）
+	|-- jpeg                        （jpeg库）
+	|-- junit                        （JUnit是一个Java语言的单元测试框架）
+	|-- kernel-headers        （内核的一些头文件）
+	|-- libffi                        （libffi is a foreign function interface library.）
+	|-- libpcap                （网络数据包捕获函数）
+	|-- libpng                        （png库）
+	|-- libxml2                （xml解析库）
+	|-- mtpd                        （一个命令）
+	|-- netcat                        （simple Unix utility which reads and writes dataacross network connections）
+	|-- netperf                        （网络性能测量工具）
+	|-- neven                        （看代码和JNI相关）
+	|-- opencore                （多媒体框架）
+	|-- openssl                （SSL加密相关）
+	|-- openvpn                （VPN开源库）
+	|-- oprofile                （OProfile是Linux内核支持的一种性能分析机制。）
+	|-- ping                        （ping命令）
+	|-- ppp                        （pppd拨号命令，好像还没有chat）
+	|-- proguard                （Java class file shrinker, optimizer, obfuscator, and preverifier）
+	|-- protobuf                （a flexible, efficient, automated mechanism for serializing structured data）
+	|-- qemu                        （arm模拟器）
+	|-- safe-iop                （functions for performing safe integer operations ）
+	|-- skia                        （skia图形引擎）
+	|-- sonivox                （sole MIDI solution for Google Android Mobile Phone Platform）
+	|-- speex                        （Speex编/解码API的使用(libspeex)）
+	|-- sqlite                        （数据库）
+	|-- srec                        （Nuance 公司提供的开源连续非特定人语音识别）
+	|-- strace                        （trace工具）
+	|-- svox                        （Embedded Text-to-Speech）
+	|-- tagsoup                （TagSoup是一个Java开发符合SAX的HTML解析器）
+	|-- tcpdump                （抓TCP包的软件）
+	|-- tesseract                （Tesseract Open Source OCR Engine.）
+	|-- tinyxml                （TinyXml is a simple, small, C++ XML parser）
+	|-- tremor                        （I stream and file decoder provides an embeddable,integer-only library）
+	|-- v8					(google的新的javascript引擎,chrome的发动机)   										<2.3.4 +>
+	|-- webkit                        （浏览器核心）
+	|-- wpa_supplicant        （无线网卡管理）
+	|-- xmlwriter                （XML 编辑工具）
+	|-- yaffs2                        （yaffs文件系统）
+	`-- zlib                        （a general purpose data compression library）
+
+	frameworks 目录        （核心框架——java及C++语言）
+	.
+	|-- base                        （基本内容）
+	|   |-- api                （？都是xml文件，定义了java的api？）
+	|   |-- awt                （AWT库）
+	|   |-- build                （空的）
+	|   |-- camera                （摄像头服务程序库）
+	|   |-- cmds                （重要命令：am、app_proce等）
+	|   |-- core                （核心库）
+	|   |-- data                （字体和声音等数据文件）
+	|   |-- docs                （文档）
+	|   |-- graphics        （图形相关）
+	|   |-- include                （头文件）
+	|   |-- keystore        （和数据签名证书相关）
+	|   |-- libs                （库）
+	|   |-- location        （地区库）
+	|   |-- media                （媒体相关库）
+	|   |-- obex                （蓝牙传输库）
+	|   |-- opengl                （2D-3D加速库）
+	|   |-- packages        （设置、TTS、VPN程序）
+	|   |-- sax                （XML解析器）
+	|   |-- services        （各种服务程序）
+	|   |-- telephony        （电话通讯管理）
+	|   |-- test-runner        （测试工具相关）
+	|   |-- tests                （各种测试）
+	|   |-- tools                （一些叫不上名的工具）
+	|   |-- vpn                （VPN）
+	|   `-- wifi                （无线网络）
+	|-- opt                        （可选部分）
+	|   |-- com.google.android                                （有个framework.jar）
+	|   |-- com.google.android.googlelogin                （有个client.jar）
+	|   `-- emoji                （standard message elements）
+	`-- policies                （Product policies are operating system directions aimed at specific uses）
+		`-- base                
+			|-- mid        （MID设备）
+			`-- phone        （手机类设备，一般用这个）
+
+	hardware 目录                （部分厂家开源的硬解适配层HAL代码）
+	|-- broadcom                        （博通公司）
+	|   `-- wlan                        （无线网卡）
+	|-- libhardware                        （硬件库）
+	|   |-- include                        （头文件）
+	|   `-- modules                （Default (and possibly architecture dependents) HAL modules）
+	|       |-- gralloc                （gralloc显示相关）
+	|       `-- overlay                （Skeleton for the "overlay" HAL module.）
+	|-- libhardware_legacy        （旧的硬件库）
+	|   |-- flashlight                （背光）
+	|   |-- gps                        （GPS）
+	|   |-- include                        （头文件）
+	|   |-- mount                        （旧的挂载器）
+	|   |-- power                        （电源）
+	|   |-- qemu                        （模拟器）
+	|   |-- qemu_tracing        （模拟器跟踪）
+	|   |-- tests                        （测试）
+	|   |-- uevent                        （uevent）
+	|   |-- vibrator                        （震动）
+	|   `-- wifi                        （无线）
+	|-- msm7k                        （高通7k处理器开源抽象层）
+	|   |-- boot                        （启动）
+	|   |-- libaudio                （声音库）
+	|   |-- libaudio-qsd8k        （qsd8k的声音相关库）
+	|   |-- libcamera                （摄像头库）
+	|   |-- libcopybit                （copybit库）
+	|   |-- libgralloc                （gralloc库）
+	|   |-- libgralloc-qsd8k        （qsd8k的gralloc库）
+	|   |-- liblights                （背光库）
+	|   `-- librpc                        （RPC库）
+	|-- ril                                （无线电抽象层）
+	|   |-- include                        （头文件）
+	|   |-- libril                        （库）
+	|   |-- reference-cdma-sms        （cdma短信参考）
+	|   |-- reference-ril                        （ril参考）
+	|   `-- rild                                （ril后台服务程序）
+	`-- ti                                                （ti公司开源HAL）
+		|-- omap3                                （omap3处理器）
+		|   |-- dspbridge                （DSP桥）
+		|   |-- libopencorehw        （opencore硬件库）
+		|   |-- liboverlay                （overlay硬件库）
+		|   |-- libstagefrighthw        （stagefright硬件库）
+		|   `-- omx                        （omx组件）
+		`-- wlan                                （无线网卡）
+
+	packages 目录
+	.
+	|-- apps                                （应用程序库）
+	|   |-- AlarmClock                （闹钟）
+	|   |-- Bluetooth                （蓝牙）
+	|   |-- Browser                （浏览器）
+	|   |-- Calculator                （计算器）
+	|   |-- Calendar                （日历）
+	|   |-- Camera                 （相机）
+	|   |-- CertInstaller                （在Android中安装数字签名，被调用）
+	|   |-- Contacts                （拨号(调用)、联系人、通话记录）
+	|   |-- DeskClock                （桌面时钟）
+	|   |-- Email                        （Email）
+	|   |-- Gallery                        （相册，和Camera类似，多了列表）
+	|   |-- Gallery3D                （？3D相册）
+	|   |-- GlobalSearch        （为google搜索服务，提供底层应用）
+	|   |-- GoogleSearch        （google搜索）
+	|   |-- HTMLViewer        （浏览器附属界面，被浏览器应用调用，同时提供存储记录功能）
+	|   |-- IM                        （即时通讯，为手机提供信号发送、接收、通信的服务）
+	|   |-- Launcher                （登陆启动项，显示图片框架等等图形界面）
+	|   |-- Launcher2                （登陆启动项，负责应用的调用）
+	|   |-- Mms                        （？彩信业务）
+	|   |-- Music                        （音乐播放器）
+	|   |-- PackageInstaller        （安装、卸载程序的响应）
+	|   |-- Phone                        （电话拨号程序）
+	|   |-- Provision                （预设应用的状态，使能应用）
+	|   |-- Settings                （开机设定，包括电量、蓝牙、设备信息、界面、wifi等）
+	|   |-- SoundRecorder        （录音机，可计算存储所需空间和时间）
+	|   |-- Stk                         （接收和发送短信）
+	|   |-- Sync                        （空）   -------○1
+	|   |-- Updater                （空）
+	|   `-- VoiceDialer                （语音识别通话）
+	|-- inputmethods                （输入法）
+	|   |-- LatinIME                （拉丁文输入法）
+	|   |-- OpenWnn                （OpenWnn输入法）
+	|   `-- PinyinIME                （拼音输入法）
+	|-- providers                        （提供器，提供应用程序、界面所需的数据）
+	|   |-- ApplicationsProvider                （应用程序提供器，提供应用程序启动项、更新等）
+	|   |-- CalendarProvider                        （日历提供器）
+	|   |-- ContactsProvider                        （联系人提供器）
+	|   |-- DownloadProvider                （下载管理提供器）
+	|   |-- DrmProvider                        （创建和更新数据库时调用）
+	|   |-- GoogleContactsProvider        （联系人提供器的子类，用以同步联系人）
+	|   |-- GoogleSubscribedFeedsProvider（设置信息提供器）
+	|   |-- ImProvider                                （空）
+	|   |-- ManagementProvider                （空）
+	|   |-- MediaProvider                        （媒体提供器，提供存储数据）
+	|   |-- TelephonyProvider                （彩信提供器）
+	|   |-- UserDictionaryProvider        （用户字典提供器，提供用户常用字字典）
+	|   `-- WebSearchProvider                （空）
+	|-- services                                        
+	|   |-- EasService                                （空）
+	|   `-- LockAndWipe                        （空）
+	`-- wallpapers                                        （墙纸）
+		|-- Basic                                        （基本墙纸，系统内置墙纸）
+		|-- LivePicker                                （选择动态壁纸）
+		|-- MagicSmoke                        （壁纸特殊效果）
+		`-- MusicVisualization                （音乐可视化，图形随音乐而变化）
+
+
+	prebuilt 目录                        （x86和arm架构下预编译的一些资源）
+	.
+	|-- android-arm                （arm-android相关）
+	|   |-- gdbserver                （gdb调试器）
+	|   `-- kernel                        （模拟的arm内核）
+	|-- android-x86                （x86-android相关）
+	|   `-- kernel                        （空的）
+	|-- common                        （通用编译好的代码，应该是java的）
+	|-- darwin-x86                        （drawin x86平台）
+	|   `-- toolchain                （工具链）
+	|       |-- arm-eabi-4.2.1        
+	|       |-- arm-eabi-4.3.1        
+	|       `-- arm-eabi-4.4.0        
+	|-- darwin-x86_64                （drawin x86 64bit平台）
+	|-- linux-x86                        （linux x86平台）
+	|   `-- toolchain                （工具链，我们应该主要用这个）
+	|       |-- arm-eabi-4.2.1        
+	|       |-- arm-eabi-4.3.1        
+	|       |-- arm-eabi-4.4.0        
+	|       `-- i686-unknown-linux-gnu-4.2.1   （x86版编译器）
+	|-- linux-x86_64                （linux x86 64bit平台）
+	|-- windows               （windows平台）
+	`-- windows-x86_64        （64bit windows平台）
+	system 目录               （底层文件系统库、应用及组件——C语言）
+	.
+	|-- Bluetooth              （蓝牙相关）
+	|-- core                   （系统核心工具盒接口）
+	|   |-- adb                （adb调试工具）
+	|   |-- cpio               （cpio工具，创建img）
+	|   |-- debuggerd          （调试工具）
+	|   |-- fastboot           （快速启动相关）
+	|   |-- include            （系统接口头文件）
+	|   |-- init               （init程序源代码）
+	|   |-- libacc             （轻量级C编译器）
+	|   |-- libctest           （libc测试相关）
+	|   |-- libcutils          （libc工具）
+	|   |-- liblog                （log库）
+	|   |-- libmincrypt        （加密库）
+	|   |-- libnetutils        （网络工具库）
+	|   |-- libpixelflinger        （图形处理库）
+	|   |-- libsysutils        （系统工具库）
+	|   |-- libzipfile        （zip库）
+	|   |-- logcat                （查看log工具）
+	|   |-- logwrapper        （log封装工具）
+	|   |-- mkbootimg        （制作启动boot.img的工具和脚本）
+	|   |-- netcfg                （网络配置netcfg源码）
+	|   |-- nexus                （google最新手机的代码）
+	|   |-- rootdir                （rootfs，包含一些etc下的脚本和配置）
+	|   |-- sh                        （shell代码）
+	|   |-- toolbox                （toolbox，类似busybox的工具集）
+	|   `-- vold                （SD卡管理器）
+	|-- extras                        （额外工具）
+	|   |-- latencytop        （a tool for software developers ，identifying system latency happen）
+	|   |-- libpagemap        （pagemap库）
+	|   |-- librank                （Java Library Ranking System库）
+	|   |-- procmem        （pagemap相关）
+	|   |-- procrank        （Java Library Ranking System相关）
+	|   |-- showmap        （showmap工具）
+	|   |-- showslab        （showslab工具）
+	|   |-- sound                （声音相关）
+	|   |-- su                        （su命令源码）
+	|   |-- tests                （一些测试工具）
+	|   `-- timeinfo        （时区相关）
+	`-- wlan                        （无线相关）
+		`-- ti                        （ti网卡相关工具及库）
+
+	vendor 目录                        （厂家定制内容）
+	|-- aosp                                （android open source project）
+	|   `-- products                （一些板级规则）
+	|-- htc                                （HTC公司）
+	|   |-- common-open        （通用部分）
+	|   |   `-- akmd                （解压img用的工具）
+	|   |-- dream-open                （G1开放部分）
+	|   |-- prebuilt-open        （预编译开放部分）
+	|   `-- sapphire-open        （sapphire这款型号开放内容）
+	|-- pv-open                        （没东西）
+	|-- qcom                                （里面基本是空的）
+	`-- sample                        （google提供的样例）
+		|-- apps                        （应用）
+		|   |-- client                （用户）
+		|   `-- upgrade        （升级）
+		|-- frameworks                （框架）
+		|   `-- PlatformLibrary        （平台库）
+		|-- products                （产品）
+		|-- sdk_addon                （sdk添加部分）
+		`-- skins                        （皮肤）
+			`-- WVGAMedDpi        （WVGA适用的图片）
+
+
+
+9 Android Overlay
+	1、 测试代码
+	frameworks/base/libs/surfaceflinger/tests/overlays/overlays.cpp提供了一个简单的overlay调用流程，可惜这个测试程序有错误，
+		在sp<Surface> surface = client->createSurface(getpid(), 0, 320, 240, PIXEL_FORMAT_UNKNOWN, ISurfaceComposer::ePushBuffers);
+	这句话编译不过去，错误在Surface的申请，和overlay无关。
+	我们来看看这段代码：
+	int main(int argc, char** argv)
+	{
+		// set up the thread-pool 建立线程池
+		sp<ProcessState> proc(ProcessState::self());
+		ProcessState::self()->startThreadPool();
+		// create a client to surfaceflinger 创建一个SurfaceFlinger client
+		sp<SurfaceComposerClient> client = new SurfaceComposerClient();
+		
+		// create pushbuffer surface 创建一个surface，最后那个参数是类型？
+		sp<Surface> surface = client->createSurface(getpid(), 0, 320, 240, 
+				PIXEL_FORMAT_UNKNOWN, ISurfaceComposer::ePushBuffers);
+		// get to the isurface 取得isurface接口
+		sp<ISurface> isurface = Test::getISurface(surface);
+		printf("isurface = %p\n", isurface.get());
+		
+		// now request an overlay 创建一个overlay
+		sp<OverlayRef> ref = isurface->createOverlay(320, 240, PIXEL_FORMAT_RGB_565);
+		sp<Overlay> overlay = new Overlay(ref);
+		
+		/*
+		 * here we can use the overlay API 创建好overlay后，即可使用overlay的API，这些都对应到overlay HAL的具体实现
+		 */
+		
+		overlay_buffer_t buffer; 
+		overlay->dequeueBuffer(&buffer);
+		printf("buffer = %p\n", buffer);
+		
+		void* address = overlay->getBufferAddress(buffer);
+		printf("address = %p\n", address);
+		overlay->queueBuffer(buffer);//最重要的操作就是通过queueBuffer将buffer列队
+		return 0;
+	}
+	2、Android系统创建中Overlay（调用createOverlay）
+	1）摄像头相关 CameraService.cpp (frameworks\base\camera\libcameraservice) 
+	setPreviewDisplay()、startPreviewMode()
+	|
+	setOverlay()
+	|
+	creatOverlay()
+	2）界面相关 ISurface.cpp (frameworks\base\libs\ui) 
+	LayerBaseClient::Surface::onTransact() <--该函数位于LayerBase.cpp，好像是用于ibind进程通讯的函数
+	|
+	BnSurface::onTransact() //有5种方式，只有确定有overlay硬件支持时才会调用case CREATE_OVERLAY
+	|
+	... ...
+	switch(code) {
+			case REQUEST_BUFFER: {
+				CHECK_INTERFACE(ISurface, data, reply);
+				int bufferIdx = data.readInt32();
+				int usage = data.readInt32();
+				sp<GraphicBuffer> buffer(requestBuffer(bufferIdx, usage));
+				return GraphicBuffer::writeToParcel(reply, buffer.get());
+			}
+			case REGISTER_BUFFERS: {
+				CHECK_INTERFACE(ISurface, data, reply);
+				BufferHeap buffer;
+				buffer.w = data.readInt32();
+				buffer.h = data.readInt32();
+				buffer.hor_stride = data.readInt32();
+				buffer.ver_stride= data.readInt32();
+				buffer.format = data.readInt32();
+				buffer.transform = data.readInt32();
+				buffer.flags = data.readInt32();
+				buffer.heap = interface_cast<IMemoryHeap>(data.readStrongBinder());
+				status_t err = registerBuffers(buffer);
+				reply->writeInt32(err);
+				return NO_ERROR;
+			} break;
+			case UNREGISTER_BUFFERS: {
+				CHECK_INTERFACE(ISurface, data, reply);
+				unregisterBuffers();
+				return NO_ERROR;
+			} break;
+			case POST_BUFFER: {
+				CHECK_INTERFACE(ISurface, data, reply);
+				ssize_t offset = data.readInt32();
+				postBuffer(offset);
+				return NO_ERROR;
+			} break;
+			case CREATE_OVERLAY: {
+				CHECK_INTERFACE(ISurface, data, reply);
+				int w = data.readInt32();
+				int h = data.readInt32();
+				int f = data.readInt32();
+				sp<OverlayRef> o = createOverlay(w, h, f);
+				return OverlayRef::writeToParcel(reply, o);
+			} break;
+			default:
+				return BBinder::onTransact(code, data, reply, flags);
+	... ...
+
+	3）LayerBuffer.cpp (frameworks\base\libs\surfaceflinger) 这儿其实是createOverlay的实现
+	sp<OverlayRef> LayerBuffer::SurfaceLayerBuffer::createOverlay(uint32_t w, uint32_t h, int32_t format)
+	|
+	sp<OverlayRef> LayerBuffer::createOverlay(uint32_t w, uint32_t h, int32_t f)
+	|
+	sp<OverlaySource> source = new OverlaySource(*this, &result, w, h, f); //通过OverlaySource来创建overlay
+	LayerBuffer::OverlaySource::OverlaySource(）//该函数调用了Overlay HAL的API createOverlay
+	{
+		overlay_control_device_t* overlay_dev = mLayer.mFlinger->getOverlayEngine();//get HAL
+		overlay_t* overlay = overlay_dev->createOverlay(overlay_dev, w, h, format);//HAL API
+		// enable dithering... 
+		overlay_dev->setParameter(overlay_dev, overlay, OVERLAY_DITHER, OVERLAY_ENABLE);
+	//设置参数，初始化OverlayRef类，OverlayRef的构造函数在Overlay.cpp中
+		mOverlay = overlay;
+		mWidth = overlay->w;
+		mHeight = overlay->h;
+		mFormat = overlay->format; 
+		mWidthStride = overlay->w_stride;
+		mHeightStride = overlay->h_stride;
+		mInitialized = false;
+	... ...
+		*overlayRef = new OverlayRef(mOverlayHandle, channel,mWidth, mHeight, mFormat, mWidthStride, mHeightStride);
+	}
+3、Overlay HAL模块管理
+		Overlay.cpp (frameworks\base\libs\ui)负责管理overlay HAL，并对HAL的API进行封装
+		1）打开Overlay HAL模块
+		Overlay::Overlay(const sp<OverlayRef>& overlayRef)
+			: mOverlayRef(overlayRef), mOverlayData(0), mStatus(NO_INIT)
+		{
+			mOverlayData = NULL;
+			hw_module_t const* module;
+			if (overlayRef != 0) {
+				if (hw_get_module(OVERLAY_HARDWARE_MODULE_ID, &module) == 0) {
+					if (overlay_data_open(module, &mOverlayData) == NO_ERROR) {
+						mStatus = mOverlayData->initialize(mOverlayData,
+								overlayRef->mOverlayHandle);
+					}
+				}
+			}
+		}
+		2）Overlay HAL的初始化
+		参考上一段，overlayRef = new OverlayRef(mOverlayHandle, channel,mWidth, mHeight, mFormat, mWidthStride, mHeightStride);
+		构造函数位于Overlay.cpp 
+		OverlayRef::OverlayRef(overlay_handle_t handle, const sp<IOverlay>& channel,
+				 uint32_t w, uint32_t h, int32_t f, uint32_t ws, uint32_t hs)
+			: mOverlayHandle(handle), mOverlayChannel(channel),
+			mWidth(w), mHeight(h), mFormat(f), mWidthStride(ws), mHeightStride(hs),
+			mOwnHandle(false)
+		{
+		}
+		3）封装了很多的API，但是没有查到那儿有调用，看来还需要大改框架才能真正将overlay利用起来
+		比如TI自己写的opencore函数中到时有用到，主要负责视频输出。
+		Android_surface_output_omap34xx.cpp (hardware\ti\omap3\libopencorehw)
+		4、总结
+		Overlay的输出对象有两种，一种是视频（主要是YUV格式,调用系统的V4L2），另外一个是ISurface的一些图像数据（RGB格式，直接写framebuffer）
+		从代码实现角度看，目前Android系统默认并没有使用Overlay功能，虽然提供了Skeleton的Overlay HAL，并对其进行封装，但是上层几乎没有调用到封装的API。
+		如果要用好Overlay HAL，需要大量修改上层框架，这对视屏播放可能比较重要，可参考TI的Android_surface_output_omap34xx.cpp。
+		此外Surface实现的Overlay功能和Copybit的功能有部分重复，从TI的代码看主要是实现V4L2的Overlay功能。
+		
+		
+		
+		
+		
+///
+问题:
+1  sd卡烧写失败
+	重新安装驱动程序,不要安装通用的驱动,要安装厂商的芯片驱动.如果在磁盘管理中看得的SD卡,表明驱动安装成功.
+	
+2 OK6410移植android出现：reading u-boot.bin error found:0010
+	使用diskgenius打开sdcard,如果sdcard在树形目录里点不开分支,只在右边的分区里看的到分区,这种分区就不行.
+	修改方法:重新分区,删除旧分区,添加一个主分区,格式化为 Fat32 解决.
+	
+	后来换了张新卡发现烧写后不亮,更新读卡器驱动解决.
+	
+3 s3c-nand: ECC uncorrectable error detected
+	1.uboot命令行中运行下面命令：
+	nand erase 0
+	该命令将删除整块nandflash。
+	2.使用SD启动的uboot重新烧写各个镜像文件。
+	请按照下面的步骤调试：
+	1.使用uboot下使用nand erase 0擦除flash。
+	2.使用SD启动的uboot烧写nand启动的uboot。
+	3.使用nand启动的uboot烧写linux内核与cramfs。
+	
+4 could not load clearsliver-jni:
+  直接进入external/clearsliver/目录,执行mm,单独编译这一模块,再退到根目录make -j4继承编译即可.
+  分析可能是并行编译时的依赖顺序有问题,依赖的clearsliver-jni模块还没有编译完.

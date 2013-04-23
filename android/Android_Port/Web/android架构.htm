@@ -1,0 +1,1841 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40" version=g42dymwpi--nx>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="android架构.files/filelist.xml">
+<link rel=Edit-Time-Data href="android架构.files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Android开发之旅：android架构 - 吴秦 - 博客园</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>微软中国</o:Author>
+  <o:LastAuthor>微软中国</o:LastAuthor>
+  <o:Revision>3</o:Revision>
+  <o:TotalTime>0</o:TotalTime>
+  <o:Created>2013-01-29T06:56:00Z</o:Created>
+  <o:LastSaved>2013-01-29T06:56:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>478</o:Words>
+  <o:Characters>2725</o:Characters>
+  <o:Company>www.xunchi.com</o:Company>
+  <o:Lines>22</o:Lines>
+  <o:Paragraphs>6</o:Paragraphs>
+  <o:CharactersWithSpaces>3197</o:CharactersWithSpaces>
+  <o:Version>11.9999</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<link rel=Stylesheet type="text/css" media=all href="android架构_files/common.css">
+<link rel=Stylesheet type="text/css" media=all href="android架构_files/style.css">
+<link rel=Stylesheet type="text/css" media=all
+href="android架构_files/common2.css">
+<link rel=Stylesheet type="text/css" media=all
+href="android架构_files/shStyle.css">
+<link rel=Stylesheet type="text/css" media=all
+href="android架构_files/customcss.aspx">
+<style>
+<!--
+@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}
+@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}
+@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}
+@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}
+embed
+	{animation-duration:.001s;
+	-ms-animation-duration:.001s;
+	-moz-animation-duration:.001s;
+	-webkit-animation-duration:.001s;
+	-o-animation-duration:.001s;
+	animation-name:nodeInserted;
+	-ms-animation-name:nodeInserted;
+	-moz-animation-name:nodeInserted;
+	-webkit-animation-name:nodeInserted;
+	-o-animation-name:nodeInserted;}
+object
+	{animation-duration:.001s;
+	-ms-animation-duration:.001s;
+	-moz-animation-duration:.001s;
+	-webkit-animation-duration:.001s;
+	-o-animation-duration:.001s;
+	animation-name:nodeInserted;
+	-ms-animation-name:nodeInserted;
+	-moz-animation-name:nodeInserted;
+	-webkit-animation-name:nodeInserted;
+	-o-animation-name:nodeInserted;}
+
+ /* Font Definitions */
+ @font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:SimSun;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:modern;
+	mso-font-pitch:fixed;
+	mso-font-signature:-1610611985 1073750091 0 0 159 0;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:1627421319 -2147483648 8 0 66047 0;}
+@font-face
+	{font-family:Georgia;
+	panose-1:2 4 5 2 5 4 5 2 3 3;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:647 0 0 0 159 0;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	line-height:150%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+h1
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	font-size:24.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h3
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	font-size:13.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h4
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:4;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h5
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:5;
+	font-size:10.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h6
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:6;
+	font-size:7.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	text-align:center;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	border:none;
+	mso-border-bottom-alt:solid windowtext .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 1.0pt 0cm;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p
+	{mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+code
+	{mso-ansi-font-size:12.0pt;
+	mso-bidi-font-size:12.0pt;
+	font-family:宋体;
+	mso-ascii-font-family:宋体;
+	mso-fareast-font-family:宋体;
+	mso-hansi-font-family:宋体;
+	mso-bidi-font-family:宋体;}
+pre
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.blogtopic, li.blogtopic, div.blogtopic
+	{mso-style-name:blog_topic;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.topiclistfooter, li.topiclistfooter, div.topiclistfooter
+	{mso-style-name:topiclistfooter;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commenttextbox, li.commenttextbox, div.commenttextbox
+	{mso-style-name:commenttextbox;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commenttb, li.commenttb, div.commenttb
+	{mso-style-name:commenttb;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.tbcommentname, li.tbcommentname, div.tbcommentname
+	{mso-style-name:tb_comment_name;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.ingtitle, li.ingtitle, div.ingtitle
+	{mso-style-name:ing_title;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.ingbody, li.ingbody, div.ingbody
+	{mso-style-name:ing_body;
+	margin-top:3.75pt;
+	margin-right:0cm;
+	margin-bottom:3.75pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	word-break:break-all;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.ingdate, li.ingdate, div.ingdate
+	{mso-style-name:ing_date;
+	font-size:8.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.ingfooter, li.ingfooter, div.ingfooter
+	{mso-style-name:ing_footer;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cnblogscode, li.cnblogscode, div.cnblogscode
+	{mso-style-name:cnblogs_code;
+	font-size:9.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:宋体;}
+p.cnblogscodecollapse, li.cnblogscodecollapse, div.cnblogscodecollapse
+	{mso-style-name:cnblogs_code_collapse;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cnblogscodehide, li.cnblogscodehide, div.cnblogscodehide
+	{mso-style-name:cnblogs_code_hide;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	display:none;
+	mso-hide:all;}
+p.codeimgclosed, li.codeimgclosed, div.codeimgclosed
+	{mso-style-name:code_img_closed;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.codeimgopened, li.codeimgopened, div.codeimgopened
+	{mso-style-name:code_img_opened;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cnblogscodeopen, li.cnblogscodeopen, div.cnblogscodeopen
+	{mso-style-name:cnblogs_code_open;
+	margin-top:3.75pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.codelinenumber, li.codelinenumber, div.codelinenumber
+	{mso-style-name:codelinenumber;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.divmyzzk, li.divmyzzk, div.divmyzzk
+	{mso-style-name:div_my_zzk;
+	margin-top:3.75pt;
+	margin-right:0cm;
+	margin-bottom:3.75pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.inputmyzzk, li.inputmyzzk, div.inputmyzzk
+	{mso-style-name:input_my_zzk;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.divpostcommentbox, li.divpostcommentbox, div.divpostcommentbox
+	{mso-style-name:divpostcommentbox;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentboxnav, li.commentboxnav, div.commentboxnav
+	{mso-style-name:commentboxnav;
+	margin-top:15.0pt;
+	line-height:120%;
+	mso-pagination:widow-orphan;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentpager, li.commentpager, div.commentpager
+	{mso-style-name:comment_pager;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentpagercurrent, li.commentpagercurrent, div.commentpagercurrent
+	{mso-style-name:comment_pager_current;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:red;}
+p.dp-highlighter, li.dp-highlighter, div.dp-highlighter
+	{mso-style-name:dp-highlighter;
+	font-size:9.0pt;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.dp-about, li.dp-about, div.dp-about
+	{mso-style-name:dp-about;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentboxtitle, li.commentboxtitle, div.commentboxtitle
+	{mso-style-name:commentbox_title;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentboxtitleright, li.commentboxtitleright, div.commentboxtitleright
+	{mso-style-name:commentbox_title_right;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.logintips, li.logintips, div.logintips
+	{mso-style-name:login_tips;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+p.clear, li.clear, div.clear
+	{mso-style-name:clear;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentquote, li.commentquote, div.commentquote
+	{mso-style-name:comment_quote;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commenticon, li.commenticon, div.commenticon
+	{mso-style-name:comment_icon;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.adcommentboxup, li.adcommentboxup, div.adcommentboxup
+	{mso-style-name:ad_commentbox_up;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.authoravatar, li.authoravatar, div.authoravatar
+	{mso-style-name:author_avatar;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.authorprofiletitle, li.authorprofiletitle, div.authorprofiletitle
+	{mso-style-name:author_profile_title;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#666666;
+	font-weight:bold;}
+p.authorprofileinfo, li.authorprofileinfo, div.authorprofileinfo
+	{mso-style-name:author_profile_info;
+	line-height:13.5pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.diggit, li.diggit, div.diggit
+	{mso-style-name:diggit;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.diggnum, li.diggnum, div.diggnum
+	{mso-style-name:diggnum;
+	mso-pagination:widow-orphan;
+	font-size:10.5pt;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.buryit, li.buryit, div.buryit
+	{mso-style-name:buryit;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.burynum, li.burynum, div.burynum
+	{mso-style-name:burynum;
+	mso-pagination:widow-orphan;
+	font-size:10.5pt;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.diggword, li.diggword, div.diggword
+	{mso-style-name:diggword;
+	margin-top:3.75pt;
+	mso-pagination:widow-orphan;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.adbottomtext, li.adbottomtext, div.adbottomtext
+	{mso-style-name:ad_bottom_text;
+	line-height:150%;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.bqpostcomment, li.bqpostcomment, div.bqpostcomment
+	{mso-style-name:bq_post_comment;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.postnextprevdate, li.postnextprevdate, div.postnextprevdate
+	{mso-style-name:post_next_prev_date;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:gray;}
+p.itnews, li.itnews, div.itnews
+	{mso-style-name:itnews;
+	line-height:150%;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.jobofferlist, li.jobofferlist, div.jobofferlist
+	{mso-style-name:job_offer_list;
+	line-height:150%;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cadblock, li.cadblock, div.cadblock
+	{mso-style-name:c_ad_block;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cbpdesc, li.cbpdesc, div.cbpdesc
+	{mso-style-name:c_b_p_desc;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cbpdescreadmore, li.cbpdescreadmore, div.cbpdescreadmore
+	{mso-style-name:c_b_p_desc_readmore;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cbplinkdesc, li.cbplinkdesc, div.cbplinkdesc
+	{mso-style-name:c_b_p_link_desc;
+	margin-top:1.5pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.adtextcommentbox, li.adtextcommentbox, div.adtextcommentbox
+	{mso-style-name:ad_text_commentbox;
+	margin-top:3.75pt;
+	margin-right:0cm;
+	margin-bottom:3.75pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.recentcommentauthor, li.recentcommentauthor, div.recentcommentauthor
+	{mso-style-name:recent_comment_author;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cnblogscodetoolbar, li.cnblogscodetoolbar, div.cnblogscodetoolbar
+	{mso-style-name:cnblogs_code_toolbar;
+	margin-top:3.75pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentbtn, li.commentbtn, div.commentbtn
+	{mso-style-name:comment_btn;
+	margin:0cm;
+	margin-bottom:.0001pt;
+	line-height:16.5pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.cal, li.cal, div.cal
+	{mso-style-name:cal;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.caltitle, li.caltitle, div.caltitle
+	{mso-style-name:caltitle;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.new-comment-block, li.new-comment-block, div.new-comment-block
+	{mso-style-name:new-comment-block;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.pager, li.pager, div.pager
+	{mso-style-name:pager;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.commentvote, li.commentvote, div.commentvote
+	{mso-style-name:comment_vote;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.center, li.center, div.center
+	{mso-style-name:center;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.desclink, li.desclink, div.desclink
+	{mso-style-name:desc_link;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.navigation, li.navigation, div.navigation
+	{mso-style-name:navigation;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.alignleft, li.alignleft, div.alignleft
+	{mso-style-name:alignleft;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.alignright, li.alignright, div.alignright
+	{mso-style-name:alignright;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.addcomment, li.addcomment, div.addcomment
+	{mso-style-name:addcomment;
+	margin-top:9.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:7.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.closecomment, li.closecomment, div.closecomment
+	{mso-style-name:closecomment;
+	margin-top:9.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:7.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.nocomments, li.nocomments, div.nocomments
+	{mso-style-name:nocomments;
+	font-size:8.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.nocommentsadd, li.nocommentsadd, div.nocommentsadd
+	{mso-style-name:nocommentsadd;
+	font-size:8.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.lbsearch, li.lbsearch, div.lbsearch
+	{mso-style-name:lb_search;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.optcomment, li.optcomment, div.optcomment
+	{mso-style-name:opt_comment;
+	margin-top:3.75pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.thumbnailtd, li.thumbnailtd, div.thumbnailtd
+	{mso-style-name:thumbnail_td;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.thumnailimg, li.thumnailimg, div.thumnailimg
+	{mso-style-name:thumnail_img;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.panelinline, li.panelinline, div.panelinline
+	{mso-style-name:panel_inline;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.bar, li.bar, div.bar
+	{mso-style-name:bar;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.columns, li.columns, div.columns
+	{mso-style-name:columns;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.tools, li.tools, div.tools
+	{mso-style-name:tools;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.copy, li.copy, div.copy
+	{mso-style-name:copy;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.title, li.title, div.title
+	{mso-style-name:title;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.para, li.para, div.para
+	{mso-style-name:para;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.footer, li.footer, div.footer
+	{mso-style-name:footer;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.close, li.close, div.close
+	{mso-style-name:close;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.comment, li.comment, div.comment
+	{mso-style-name:comment;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.comments, li.comments, div.comments
+	{mso-style-name:comments;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.string, li.string, div.string
+	{mso-style-name:string;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.keyword, li.keyword, div.keyword
+	{mso-style-name:keyword;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.preprocessor, li.preprocessor, div.preprocessor
+	{mso-style-name:preprocessor;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.submit, li.submit, div.submit
+	{mso-style-name:submit;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.line, li.line, div.line
+	{mso-style-name:line;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+span.ingdate1
+	{mso-style-name:ing_date1;
+	mso-ansi-font-size:8.5pt;
+	mso-bidi-font-size:8.5pt;
+	color:gray;}
+p.bar1, li.bar1, div.bar1
+	{mso-style-name:bar1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.columns1, li.columns1, div.columns1
+	{mso-style-name:columns1;
+	mso-pagination:widow-orphan;
+	background:#F8F8F8;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:gray;}
+p.tools1, li.tools1, div.tools1
+	{mso-style-name:tools1;
+	mso-pagination:widow-orphan;
+	background:#F8F8F8;
+	border:none;
+	mso-border-left-alt:solid #6CE26C 2.25pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 0cm 8.0pt;
+	font-size:7.0pt;
+	font-family:Verdana;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:silver;}
+p.copy1, li.copy1, div.copy1
+	{mso-style-name:copy1;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:solid #ACA899 .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 0cm 0cm;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.title1, li.title1, div.title1
+	{mso-style-name:title1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:red;
+	font-weight:bold;}
+p.para1, li.para1, div.para1
+	{mso-style-name:para1;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.footer1, li.footer1, div.footer1
+	{mso-style-name:footer1;
+	text-align:right;
+	mso-pagination:widow-orphan;
+	background:#ECEADB;
+	border:none;
+	mso-border-top-alt:solid white .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 0cm 0cm;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#333333;}
+p.close1, li.close1, div.close1
+	{mso-style-name:close1;
+	mso-pagination:widow-orphan;
+	background:#ECEADB;
+	font-size:8.5pt;
+	font-family:Tahoma;
+	mso-fareast-font-family:宋体;
+	color:#333333;}
+p.comment1, li.comment1, div.comment1
+	{mso-style-name:comment1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#008200;}
+p.comments1, li.comments1, div.comments1
+	{mso-style-name:comments1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#008200;}
+p.string1, li.string1, div.string1
+	{mso-style-name:string1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:blue;}
+p.keyword1, li.keyword1, div.keyword1
+	{mso-style-name:keyword1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#006699;
+	font-weight:bold;}
+p.preprocessor1, li.preprocessor1, div.preprocessor1
+	{mso-style-name:preprocessor1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:gray;}
+span.current1
+	{mso-style-name:current1;
+	color:white;
+	border:solid navy 1.0pt;
+	mso-border-alt:solid navy .75pt;
+	padding:2.0pt;
+	background:#2E6AB1;
+	font-weight:bold;}
+span.moderate1
+	{mso-style-name:moderate1;
+	color:#FF3300;}
+p.submit1, li.submit1, div.submit1
+	{mso-style-name:submit1;
+	margin-top:0cm;
+	margin-right:3.75pt;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+span.current2
+	{mso-style-name:current2;
+	color:white;
+	border:solid navy 1.0pt;
+	mso-border-alt:solid navy .75pt;
+	padding:2.0pt;
+	background:#2E6AB1;
+	font-weight:bold;}
+span.ingdate2
+	{mso-style-name:ing_date2;
+	mso-ansi-font-size:9.0pt;
+	mso-bidi-font-size:9.0pt;
+	color:gray;}
+p.diggnum1, li.diggnum1, div.diggnum1
+	{mso-style-name:diggnum1;
+	line-height:18.0pt;
+	mso-pagination:widow-orphan;
+	font-size:10.5pt;
+	font-family:Verdana;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#075DB3;}
+p.burynum1, li.burynum1, div.burynum1
+	{mso-style-name:burynum1;
+	line-height:18.0pt;
+	mso-pagination:widow-orphan;
+	font-size:10.5pt;
+	font-family:Verdana;
+	mso-fareast-font-family:宋体;
+	mso-bidi-font-family:宋体;
+	color:#075DB3;}
+p.line1, li.line1, div.line1
+	{mso-style-name:line1;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+ /* Page Definitions */
+ @page
+	{mso-footnote-separator:url("android架构.files/header.htm") fs;
+	mso-footnote-continuation-separator:url("android架构.files/header.htm") fcs;
+	mso-endnote-separator:url("android架构.files/header.htm") es;
+	mso-endnote-continuation-separator:url("android架构.files/header.htm") ecs;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:42.55pt;
+	mso-footer-margin:49.6pt;
+	mso-even-header:url("android架构.files/header.htm") eh1;
+	mso-header:url("android架构.files/header.htm") h1;
+	mso-even-footer:url("android架构.files/header.htm") ef1;
+	mso-footer:url("android架构.files/header.htm") f1;
+	mso-first-header:url("android架构.files/header.htm") fh1;
+	mso-first-footer:url("android架构.files/header.htm") ff1;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:1091199146;
+	mso-list-template-ids:982054470;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:1113937174;
+	mso-list-template-ids:-353858152;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:1276597015;
+	mso-list-template-ids:-1030555024;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:1848515668;
+	mso-list-template-ids:248170864;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:普通表格;
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<link title=RSS type="application/rss+xml" rel=alternate
+href="http://www.cnblogs.com/skynet/rss">
+<link title=RSD type="application/rsd+xml" rel=EditURI
+href="http://www.cnblogs.com/skynet/rsd.xml">
+<link type="application/wlwmanifest+xml" rel=wlwmanifest
+href="http://www.cnblogs.com/skynet/wlwmanifest.xml">
+
+<script  async type="text/javascript" src="./android架构_files/gpt.js">
+</script>
+
+<script  type="text/javascript" async src="./android架构_files/ga.js">
+</script>
+
+<script  src="./android架构_files/jquery.js" type="text/javascript">
+</script>
+
+<script  type="text/javascript">
+var currentBlogApp = 'skynet';
+</script>
+
+<script  src="./android架构_files/common.js" type="text/javascript">
+</script>
+
+<script  src="./android架构_files/json2.js" type="text/javascript">
+</script>
+
+<script language="JavaScript"  src="./android架构_files/skin.js" type="text/javascript">
+</script>
+
+<script  type="text/javascript" src="./android架构_files/syntaxHighlighter.js">
+</script>
+
+<script  async type="text/javascript" src="http://common.cnblogs.com/script/google_ads_gpt.js">
+</script>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="3074"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body bgcolor=white background="android架构_files/images/webBg.gif" lang=ZH-CN
+link="#6699CC" vlink="#6699CC" style='tab-interval:21.0pt'>
+
+<div class=Section1>
+
+<div style='margin-bottom:22.5pt' id=post>
+
+<div>
+
+<div id="cnblogs_post_body">
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>通过前面两篇：</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:7.5pt;margin-bottom:
+9.0pt;margin-left:33.75pt;text-indent:0cm;line-height:normal;mso-list:l3 level1 lfo1;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'><a
+href="http://www.cnblogs.com/skynet/archive/2010/04/12/1709892.html"
+target="_blank"><span style='color:#3D81EE'>Android </span><span lang=EN-US
+style='font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+color:#3D81EE'><span lang=EN-US>开发之旅：环境搭建及</span></span><span style='color:
+#3D81EE'>HelloWorld</span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:7.5pt;margin-bottom:
+9.0pt;margin-left:33.75pt;text-indent:0cm;line-height:normal;mso-list:l3 level1 lfo1;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'><a
+href="http://www.cnblogs.com/skynet/archive/2010/04/13/1711479.html"
+target="_blank"><span style='color:#3D81EE'>Android </span><span lang=EN-US
+style='font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+color:#3D81EE'><span lang=EN-US>开发之旅：</span></span><span style='color:#3D81EE'>HelloWorld</span><span
+lang=EN-US style='font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#3D81EE'><span lang=EN-US>项目的目录结构</span></span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>我们对</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>有了个大致的了解，知道如何搭建</span><span lang=EN-US style='font-size:
+10.5pt;font-family:Georgia;color:#333333'>android</span><span style='font-size:
+10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>的环境及简单地写一个</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>HelloWorld</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>程序，而且知道一个</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>项目包括哪些文件夹和文件及相应的作用。本篇将站在顶级的高度</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>架构，来看</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>。我开篇就说了，这个系列适合</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>0</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>基础的人且我也是从</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>0</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>开始按照这个步骤来学的，谈架构是不是有点螳臂挡车，自不量力呢？我觉得其实不然，如果一开始就对整个</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>的架构了然于胸，就不会误入歧途，能够很好地把握全局。本文的主题如下：</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level1 lfo2;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>1</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、架构图直观</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level1 lfo2;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、架构详解</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:15.0pt;margin-bottom:
+5.0pt;margin-left:67.5pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level2 lfo2;
+tab-stops:list 72.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2.1</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux
+Kernel <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:15.0pt;margin-bottom:
+5.0pt;margin-left:67.5pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level2 lfo2;
+tab-stops:list 72.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2.1</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android
+Runtime <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:15.0pt;margin-bottom:
+5.0pt;margin-left:67.5pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level2 lfo2;
+tab-stops:list 72.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2.3</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Libraries
+<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:15.0pt;margin-bottom:
+5.0pt;margin-left:67.5pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level2 lfo2;
+tab-stops:list 72.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2.4</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Application
+Framework <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:15.0pt;margin-bottom:
+5.0pt;margin-left:67.5pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level2 lfo2;
+tab-stops:list 72.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2.5</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Applications
+<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l0 level1 lfo2;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>3</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、总结</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>1</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、架构图直观</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>下面这张图展示了</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>系统的主要组成部分：</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'><a
+href="http://images.cnblogs.com/cnblogs_com/skynet/WindowsLiveWriter/Androidandroid_1C63/Android_system_architecture_2.jpg"><span
+style='color:#3D81EE'><img border=0 width=684 height=492 id="_x0000_i1025"
+src="android架构_files/Android_system_architecture_thumb.jpg" style='border-bottom-width:
+0px;border-left-width:0px;border-right-width:0px;border-top-width:0px;
+display:block;float:none;margin-left:auto;margin-right:auto'
+alt="Android_system_architecture" title="Android_system_architecture"></span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='margin-top:9.0pt;margin-right:0cm;
+margin-bottom:9.0pt;margin-left:0cm;text-align:center;line-height:normal'><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>图</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>1</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>系统架构（来源于：</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>android sdk</span><span style='font-size:
+10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>）</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>可以很明显看出，</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>系统架构由</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>5</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>部分组成，分别是：</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux
+Kernel</span><span style='font-size:10.5pt;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;color:#333333'>、</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android Runtime</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>、</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Libraries</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Application
+Framework</span><span style='font-size:10.5pt;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;color:#333333'>、</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Applications</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>。第二部分将详细介绍这</span><span lang=EN-US style='font-size:
+10.5pt;font-family:Georgia;color:#333333'>5</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>个部分。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、架构详解</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>现在我们拿起手术刀来剖析各个部分。其实这部分</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>SDK</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>文档已经帮我们做得很好了，我们要做的就是拿来主义，然后再加上自己理解。下面自底向上分析各层。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2.1</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、</span></strong><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Linux Kernel</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>基于</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux 2.6</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>提供核心系统服务，例如：安全、内存管理、进程管理、网络堆栈、驱动模型。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux
+Kernel</span><span style='font-size:10.5pt;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;color:#333333'>也作为硬件和软件之间的抽象层，它隐藏具体硬件细节而为上层提供统一的服务。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>如果你学过计算机网络知道</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>OSI/RM</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>，就会知道分层的好处就是使用下层提供的服务而为上层提供统一的服务，屏蔽本层及以下层的差异，当本层及以下层发生了变化不会影响到上层。也就是说<strong><span
+style='font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体'>各层各司其职，各层提供固定的</span></strong></span><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>SAP</span></strong><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>（</span></strong><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Service Access Point</span></strong><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>，专业点可以说是<strong><span style='font-family:宋体;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体'>高内聚、低耦合。</span></strong></span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>如果你只是做应用开发，就不需要深入了解</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux
+Kernel</span><span style='font-size:10.5pt;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;color:#333333'>层。</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2.2</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、</span></strong><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Android Runtime</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>包含一个核心库的集合，提供大部分在</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Java</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>编程语言核心类库中可用的功能。每一个</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>应用程序是</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Dalvik</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>虚拟机中的实例，运行在他们自己的进程中。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Dalvik</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>虚拟机设计成，在一个设备可以高效地运行多个虚拟机。</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Dalvik</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>虚拟机可执行文件格式是</span><span lang=EN-US style='font-size:
+10.5pt;font-family:Georgia;color:#333333'>.dex</span><span style='font-size:
+10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>，</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>dex</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>格式是专为</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Dalvik</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>设计的一种压缩格式，适合内存和处理器速度有限的系统。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>大多数虚拟机包括</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>JVM</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>都是基于栈的，而</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Dalvik</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>虚拟机则是基于寄存器的。两种架构各有优劣，一般而言，基于栈的机器需要更多指令，而基于寄存器的机器指令更大。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>dx </span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>是一套工具，可以將</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'> Java .class </span><span style='font-size:
+10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>转换成</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'> .dex </span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>格式。一个</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>dex</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>文件通常会有多个</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>.class</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>。由于</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>dex</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>有時必须进行最佳化，会使文件大小增加</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>1-4</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>倍，以</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>ODEX</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>结尾。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Dalvik</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>虚拟机依赖于</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux </span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>内核提供基本功能，如线程和底层内存管理。</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2.3</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、</span></strong><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Libraries</span></strong><span lang=EN-US style='font-size:
+12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>包含一个</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>C/C++</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>库的集合，供</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>系统的各个组件使用。这些功能通过</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>的应用程序框架（</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>application framework</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>）暴露给开发者。下面列出一些核心库：</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>系统</span></strong><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>C</span></strong><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>库</span></strong><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>标准</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>C</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>系统库（</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>libc</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>）的</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>BSD</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>衍生，调整为基于嵌入式</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Linux</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>设备</span><span style='font-size:10.5pt;font-family:Georgia;
+color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>媒体库</span></strong><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>基于</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>PacketVideo</span><span style='font-size:
+10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>的</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>OpenCORE</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>。这些库支持播放和录制许多流行的音频和视频格式，以及静态图像文件，包括</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>MPEG4</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>、</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'> H.264</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'> MP3</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>、</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'> AAC</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'> AMR</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>、</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>JPG</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'> PNG <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>界面管理</span></strong><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>管理访问显示子系统和无缝组合多个应用程序的二维和三维图形层</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>LibWebCore</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>新式的</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Web</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>浏览器引擎</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>,</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>驱动</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android </span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>浏览器和内嵌的</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>web</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>视图</span><span style='font-size:10.5pt;font-family:Georgia;
+color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>SGL</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>基本的</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>2D</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>图形引擎</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>3D</span></strong><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>库</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>基于</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>OpenGL ES 1.0 APIs</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>的实现。库使用硬件</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>3D</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>加速或包含高度优化的</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>3D</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>软件光栅</span><span style='font-size:10.5pt;font-family:
+Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>FreeType</span></b><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> ——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>位图和矢量字体渲染</span><span style='font-size:10.5pt;
+font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l1 level1 lfo3;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>SQLite</span></b><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> ——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>所有应用程序都可以使用的强大而轻量级的关系数据库引擎</span><span style='font-size:
+10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2.4</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、</span></strong><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Application Framework</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>通过提供开放的开发平台，</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>使开发者能够编制极其丰富和新颖的应用程序。开发者可以自由地利用设备硬件优势、访问位置信息、运行后台服务、设置闹钟、向状态栏添加通知等等，很多很多。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>开发者可以完全使用核心应用程序所使用的框架</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>APIs</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>。应用程序的体系结构旨在简化组件的重用，任何应用程序都能发布他的功能且任何其他应用程序可以使用这些功能（需要服从框架执行的安全限制）。这一机制允许用户替换组件。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>所有的应用程序其实是一组服务和系统，包括：</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l2 level1 lfo4;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>视图（</span></strong><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>View</span></strong><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>丰富的、可扩展的视图集合，可用于构建一个应用程序。包括包括列表、网格、文本框、按钮，甚至是内嵌的网页浏览器</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l2 level1 lfo4;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>内容提供者（</span></strong><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Content Providers</span></strong><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>使应用程序能访问其他应用程序（如通讯录）的数据，或共享自己的数据</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l2 level1 lfo4;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>资源管理器（</span></strong><strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Resource Manager</span></strong><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>提供访问非代码资源，如本地化字符串、图形和布局文件</span><span style='font-size:
+10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l2 level1 lfo4;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>通知管理器（</span></strong><code><b><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;color:#333333'>Notification</span></b></code><code><b><span
+lang=EN-US style='font-size:12.0pt;color:#333333'> </span></b></code><code><b><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;color:#333333'>Manager</span></b></code><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>使所有的应用程序能够在状态栏显示自定义警告</span><span style='font-size:10.5pt;
+font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-top:5.0pt;margin-right:7.5pt;margin-bottom:
+5.0pt;margin-left:33.75pt;text-indent:-18.0pt;line-height:normal;mso-list:l2 level1 lfo4;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='mso-bidi-font-size:
+10.5pt;font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:#333333'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><strong><span style='font-size:10.5pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>活动管理器（</span></strong><code><b><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;color:#333333'>Activity</span></b></code><code><b><span
+lang=EN-US style='font-size:12.0pt;color:#333333'> </span></b></code><code><b><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;color:#333333'>Manager</span></b></code><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>）</span></strong><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>——</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>管理应用程序生命周期</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>,</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>提供通用的导航回退功能</span><span
+style='font-size:10.5pt;font-family:Georgia;color:#333333'> <span lang=EN-US><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>2.5</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、</span></strong><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>Applications</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>Android</span><span style='font-size:10.5pt;
+mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;color:#333333'>装配一个核心应用程序集合，包括电子邮件客户端、</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>SMS</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>程序、日历、地图、浏览器、联系人和其他设置。所有应用程序都是用</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Java</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>编程语言写的。更加丰富的应用程序有待我们去开发！</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:normal;mso-outline-level:5'><strong><span
+lang=EN-US style='font-size:12.0pt;font-family:Georgia;mso-bidi-font-family:
+宋体;color:#333333'>3</span></strong><strong><span style='font-size:12.0pt;
+font-family:宋体;mso-ascii-font-family:Georgia;mso-hansi-font-family:Georgia;
+mso-bidi-font-family:宋体;color:#333333'>、总结</span></strong><span lang=EN-US
+style='font-size:12.0pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>从上面我们知道</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>的架构是分层的，非常清晰，分工很明确。</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'>Android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>本身是一套软件堆叠</span><span lang=EN-US style='font-size:10.5pt;
+font-family:Georgia;color:#333333'>(Software Stack)</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>，或称为「软件叠层架构」，叠层主要分成三层：操作系统、中间件、应用程序。从上面我们也看到了开源的力量，一个个熟悉的开源软件在这里贡献了自己的一份力量。</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:9.0pt;margin-right:0cm;margin-bottom:9.0pt;
+margin-left:0cm;line-height:normal'><span style='font-size:10.5pt;mso-ascii-font-family:
+Georgia;mso-hansi-font-family:Georgia;color:#333333'>现在我们对</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>android</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>的系统架构有了一个整体上的了解，我将用一个例子来深入体会一下，但是考虑到此系列希望</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Georgia;color:#333333'>0</span><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>基础的人也能看懂，在介绍例子之前将介绍一下</span><strong><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>Android</span></strong><strong><span
+style='font-size:10.5pt;font-family:宋体;mso-ascii-font-family:Georgia;
+mso-hansi-font-family:Georgia;mso-bidi-font-family:宋体;color:#333333'>应用程序的原理及一些术语</span></strong><span
+style='font-size:10.5pt;mso-ascii-font-family:Georgia;mso-hansi-font-family:
+Georgia;color:#333333'>，可能需要几篇来介绍。敬请关注！</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Georgia;color:#333333'><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

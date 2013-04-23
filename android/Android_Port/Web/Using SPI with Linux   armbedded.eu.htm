@@ -1,0 +1,555 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0028)http://armbedded.eu/node/318 -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr" class="js" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>Using SPI with Linux | armbedded.eu</title>
+  
+<link rel="prev" href="http://armbedded.eu/node/258">
+<link rel="up" href="http://armbedded.eu/node/338">
+<link rel="next" href="http://armbedded.eu/node/339">
+<link rel="shortcut icon" href="http://armbedded.eu/sites/all/themes/taskit/favicon.ico" type="image/x-icon">
+<meta name="description" content="Introduction SPI (Synchronous Peripheral Interface) is a synchronous serial interface with which to connect peripheral chips like ADCs, EEPROMS, Sensors or other Micro-Controllers. SPI works in master and slave mode, while the master provides the clock signal and each slave has a dedicated chipselect.">
+<link rel="canonical" href="./Using SPI with Linux   armbedded.eu_files/Using SPI with Linux   armbedded.eu.htm">
+<meta name="revisit-after" content="1 day">
+  <link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/book.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/node.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/defaults.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/system.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/system-menus.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/user.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/img_assist.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/forum.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/views.css">
+<link type="text/css" rel="stylesheet" media="all" href="./Using SPI with Linux   armbedded.eu_files/style.css">
+  <script type="text/javascript" src="./Using SPI with Linux   armbedded.eu_files/js_1c8752a2e033fbb3ffd9336e8a909cd0.js"></script><style type="text/css"></style>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, { "basePath": "/" });
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var BASE_URL = "/";
+//--><!]]>
+</script>
+  <script type="text/javascript"> </script>
+</head>
+
+<body>
+
+<table border="0" cellpadding="0" cellspacing="0" id="header">
+  <tbody><tr>
+    <td id="logo">
+      <a href="http://armbedded.eu/" title="Home"><img src="./Using SPI with Linux   armbedded.eu_files/logo.png" alt="Home"></a>      <h1 class="site-name"><a href="http://armbedded.eu/" title="Home">armbedded.eu</a></h1>          </td>
+    <td id="menu">
+            <ul class="links" id="navlist"><li class="menu-169 first"><a href="http://armbedded.eu/" title="">Home</a></li>
+<li class="menu-306"><a href="http://armbedded.eu/downloads" title="">Download</a></li>
+<li class="menu-148"><a href="http://armbedded.eu/documentation" title="">Documentation</a></li>
+<li class="menu-806"><a href="http://armbedded.eu/howtos" title="">Howtos</a></li>
+<li class="menu-191"><a href="http://armbedded.eu/faq" title="">FAQ</a></li>
+<li class="menu-147 last"><a href="http://armbedded.eu/forum" title="">Forum</a></li>
+</ul>      <form action="./Using SPI with Linux   armbedded.eu_files/Using SPI with Linux   armbedded.eu.htm" accept-charset="UTF-8" method="post" id="search-theme-form">
+<div><div id="search" class="container-inline">
+  <div class="form-item" id="edit-search-theme-form-1-wrapper">
+ <label for="edit-search-theme-form-1">Search this site: </label>
+ <input type="text" maxlength="128" name="search_theme_form" id="edit-search-theme-form-1" size="15" value="" title="Enter the terms you wish to search for." class="form-text">
+</div>
+<input type="submit" name="op" id="edit-submit-1" value="Search" class="form-submit">
+<input type="hidden" name="form_build_id" id="form-6716d5fb4cab9f0baf483a636b8757bb" value="form-6716d5fb4cab9f0baf483a636b8757bb">
+<input type="hidden" name="form_id" id="edit-search-theme-form" value="search_theme_form">
+</div>
+
+</div></form>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"><div></div></td>
+  </tr>
+</tbody></table>
+
+<table border="0" cellpadding="0" cellspacing="0" id="content">
+  <tbody><tr>
+    <td id="sidebar-left">
+        <div class="block block-book" id="block-book-0">
+    <h2 class="title"><a href="http://armbedded.eu/howtos" class="book-title">Howtos</a></h2>
+    <div class="content"><ul class="menu"><li class="expanded first active-trail"><a href="http://armbedded.eu/node/338">Using Interfaces (GPIO, UART, SPI, ...)</a><ul class="menu"><li class="leaf first"><a href="http://armbedded.eu/node/174">Enabling more UARTs on Stamp9G20/PortuxG20</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/322">RS485 on Embedded Linux Boards</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/258">Use GPIO pins from userspace</a></li>
+<li class="leaf active-trail"><a href="./Using SPI with Linux   armbedded.eu_files/Using SPI with Linux   armbedded.eu.htm" class="active">Using SPI with Linux</a></li>
+<li class="leaf last"><a href="http://armbedded.eu/node/339">Using ADC on AT91SAM9G20 based products</a></li>
+</ul></li>
+<li class="leaf"><a href="http://armbedded.eu/node/77">Building an initial ramdisk without root permission</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/175">Creating a JFFS2 image from a directory structure</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/8">SAM-BA : Flashing taskit's ARM-based boards</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/29">Flashing new u-boot on Portux920T / Portux Panel-PC</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/44">Implementing an own boot-logo for Panel-Card</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/104">Nano-X with tslib support</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/169">Using Watchdog on Stamp9G20 or PortuxG20</a></li>
+<li class="collapsed"><a href="http://armbedded.eu/node/208">Development with Eclipse</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/247">Installing Debian/GNU Linux on Stamp9G20 and PortuxG20</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/335">Using Xenomai on PortuxG20/Stamp9G20</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/370">Installing a rootfs on SD card</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/372">Using Power Management Features</a></li>
+<li class="leaf"><a href="http://armbedded.eu/node/383">Using the NAND flash on NanosG20</a></li>
+<li class="leaf last"><a href="http://armbedded.eu/node/405">Using the buzzer on PortuxG20 rev. 2 and NanosG20</a></li>
+</ul></div>
+ </div>
+    </td>    <td valign="top">
+            <div id="main">
+        <div class="breadcrumb"><a href="http://armbedded.eu/">Home</a> » <a href="http://armbedded.eu/howtos">Howtos</a> » <a href="http://armbedded.eu/node/338">Using Interfaces (GPIO, UART, SPI, ...)</a></div>        <h1 class="title">Using SPI with Linux</h1>
+        <div class="tabs"><ul class="tabs primary">
+<li class="active"><a href="./Using SPI with Linux   armbedded.eu_files/Using SPI with Linux   armbedded.eu.htm" class="active">View</a></li>
+<li><a href="http://armbedded.eu/node/318/backlinks">What links here</a></li>
+</ul>
+</div>
+                          <div class="node">
+        <span class="submitted">Last edited by aehrlich on Thu, 05/12/2011 - 11:10</span>    <div class="taxonomy"></div>
+    <div class="content"><h3>Introduction</h3>
+<p>SPI (Synchronous Peripheral Interface) is a synchronous serial interface with which to connect peripheral chips like ADCs, EEPROMS, Sensors or other Micro-Controllers.<br>
+SPI works in master and slave mode, while the master provides the clock signal and each slave has a dedicated chipselect. On our AT91SAM9 based devices a Linux driver is provided. As most peripheral chips are slaves this driver only works in master mode. To connect a spi chip four signals are needed: CLK, MISO (master in, slave out), MOSI (master out, slave in) and a chipselect.<br>
+This how-to describes how to configure and use the SPI user-mode device driver (spi-dev).</p>
+<h3>Preparing the Kernel</h3>
+<p>On some of our products, the driver is already activated, which are listed below:</p>
+<ul>
+<li><b>PortuxG20:</b> Chipselects, which are exported on the PXB are already configured in the kernel. It is necessary to activate the driver.</li>
+<li><b>Ledato NanosG20:</b> Chipselects, which are exported on the I/O interface are configured. The driver is also already activated. Unless you have the need to change the standard settings, you can skip this chapter</li>
+</ul>
+<h4>Configuring the Kernel</h4>
+<p>Activate the driver in menuconfig (make menuconfig):</p>
+<pre>Device Drivers ---&gt; SPI
+Device Drivers ---&gt; SPI ---&gt; Atmel SPI Controller
+Device Drivers ---&gt; SPI ---&gt; User mode SPI device driver support
+</pre><h4>Add SPI board support</h4>
+<p>Add the following structure to your arch/arm/mach-at91/board-xxx.c:</p>
+<pre>static struct spi_board_info stamp9g20_spi_devices[] = {
+    {
+        .modalias    = "spidev",
+        .chip_select    = 0,
+        .max_speed_hz    = 1 * 1000 * 1000,
+        .bus_num    = 1,
+	.mode = SPI_MODE_3,
+    }, 
+    {
+        .modalias    = "spidev",
+        .chip_select    = 2,
+        .max_speed_hz    = 1 * 1000 * 1000,
+        .bus_num    = 1,
+	.mode = SPI_MODE_3,
+    },
+}; 
+</pre><p>Of course this structure can be adapted according to your needs. The details of the members are explained below:</p>
+<ul>
+<li><b>.modalias</b> This tells which spi-device driver to use. Setting it to "spidev" will use the spi user mode device driver, but there are other device drivers in the kernel, e.g. for the ADS7843 Touchscreen. If you want to use one of these you have to set the relevant modalias for this driver and of course activate it in your configuration.</li>
+<li><b>.chip_select</b> This tells your device driver which chipselect to use.</li>
+<li><b>.max_speed_hz</b> This is the maximum possible speed configured for this chip select. The speed of the SPI should be between MCK and MCK divided by 255. Take care to not use a value here which cannot be supported by your platform.<br>
+<table border="1">
+<tbody><tr>
+<th>Processor</th>
+<th>MCK (Hz)</th>
+<th>SPI Min</th>
+</tr>
+<tr>
+<td>AT91SAM9261</td>
+<td>99,993,600</td>
+<td>392,132</td>
+</tr>
+<tr>
+<td>AT91SAM9G20</td>
+<td>132,096,000</td>
+<td>518,024</td>
+</tr>
+<tr>
+<td>AT91SAM9G10</td>
+<td>120,000,000</td>
+<td>471,000</td>
+</tr>
+<tr>
+<td>AT91SAM9G45</td>
+<td>132,096,000</td>
+<td>518,024</td>
+</tr>
+</tbody></table>
+</li>
+<li><b>.bus_num</b> This chooses if SPI0 or SPI1 of the AT91SAM9xx is used.</li>
+<li><b>.mode</b> There are four different SPI modes, mode three is most commonly used by peripherals which can be only slaves. The mode of master and slave have to be the same, so when in doubt consult the datasheet of your device. There are two relevant parameters, the clock phase (CPHA) and clock polarity (CPOL). Is the phase zero (CPHA = 0), then data is sampled at rising edge with CPOL=0 and falling edge with CPOL=1. This behaviour switches with CPHA=1, then data is sampled at falling edge with CPOL=0 and rising edge with CPOL=1.<br>
+<table border="1">
+<tbody><tr>
+<th>SPI Mode</th>
+<th>CPOL</th>
+<th>CPHA</th>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>Additionally to adding the structure, you have to add a call to at91_add_device_spi in your xxx_board_init function:</p>
+<pre>at91_add_device_spi(stamp9g20_spi_devices, ARRAY_SIZE(stamp9g20_spi_devices));
+</pre><p>After compiling the kernel according to the instructions of your platform and flashing it to your board you should see these SPI devices in your /dev directory:</p>
+<pre>/dev # ls -al /dev/spi*
+crw-rw----    1 root     root     153,   0 Jan  1 00:20 /dev/spidev1.0
+crw-rw----    1 root     root     153,   1 Jan  1 00:20 /dev/spidev1.2
+</pre><h3>Using the SPI User Mode Device Driver</h3>
+<p>There are two ways of of using the user mode spi device driver. You can call either the read/write functions or an ioctl(). With calling read/write you can only read or write at a time. If you need full-duplex read and write, you have to call the ioctl's. Examples for both are provided.<br>
+This is the read/write example. You can compile it either with the cross-compiler of your platform or with the native compiler on your board:</p>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define ARRAY_SIZE(array) sizeof(array)/sizeof(array[0])
+
+
+int main(int argc, char **argv) 
+{
+	int i,fd;
+	char wr_buf[]={0xff,0x00,0x1f,0x0f};
+	char rd_buf[10];;
+
+	if (argc&lt;2) {
+		printf("Usage:\n%s [device]\n", argv[0]);
+		exit(1);
+	}
+   	
+	fd = open(argv[1], O_RDWR);
+	if (fd&lt;=0) { 
+		printf("%s: Device %s not found\n", argv[0], argv[1]);
+		exit(1);
+	}
+	
+	if (write(fd, wr_buf, ARRAY_SIZE(wr_buf)) != ARRAY_SIZE(wr_buf))
+		perror("Write Error");
+	if (read(fd, rd_buf, ARRAY_SIZE(rd_buf)) != ARRAY_SIZE(rd_buf))
+		perror("Read Error");
+	else
+		for (i=0;i&lt;ARRAY_SIZE(rd_buf);i++) {
+		printf("0x%02X ", rd_buf[i]);
+		if (i%2)
+			printf("\n");
+	}
+
+	close(fd);
+	return 0;
+}
+</pre><p>For synchronous transfer, you can have a look at the example from Documentation/spi. It is slightly changed, as the at91-spi driver does not support to change speed or bits per word via the ioctl-transfer interface. You can cross-compile it<br>
+with <code>your-cross-gcc -o spidev-test -I/path-to-cross-kernel-include spidev-test.c</code>. Of course you can also use your compiler on the target board (Make sure you have the package linux-libc-dev installed). Later you can run it like this: <code>spidev-test -D /dev/spidev1.0</code>.</p>
+<pre>/*
+ * SPI testing utility (using spidev driver)
+ *
+ * Copyright (c) 2007  MontaVista Software, Inc.
+ * Copyright (c) 2007  Anton Vorontsov <avorontsov@ru.mvista.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License.
+ *
+ * Cross-compile with cross-gcc -I/path/to/cross-kernel/include
+ *
+ */
+
+#include &lt;stdint.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;getopt.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;linux/types.h&gt;
+#include &lt;linux/spi/spidev.h&gt;
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
+static void pabort(const char *s)
+{
+	perror(s);
+	abort();
+}
+
+static const char *device = "/dev/spidev1.1";
+static uint8_t mode = 3;
+static uint8_t bits = 8;
+static uint32_t speed = 1000000;
+static uint16_t delay;
+
+static void transfer(int fd)
+{
+	int ret;
+	uint8_t tx[] = {
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0x40, 0x00, 0x00, 0x00, 0x00, 0x95,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xDE, 0xAD, 0xBE, 0xEF, 0xBA, 0xAD,
+		0xF0, 0x0D,
+	};
+	uint8_t rx[ARRAY_SIZE(tx)] = {0, };
+	struct spi_ioc_transfer tr = {
+		.tx_buf = (unsigned long)tx,
+		.rx_buf = (unsigned long)rx,
+		.len = ARRAY_SIZE(tx),
+		.delay_usecs = delay,
+		.speed_hz = 0,
+		.bits_per_word = 0,
+	};
+
+	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &amp;tr);
+	if (ret == 1)
+		pabort("can't send spi message");
+
+	for (ret = 0; ret &lt; ARRAY_SIZE(tx); ret++) {
+		if (!(ret % 6))
+			puts("");
+		printf("%.2X ", rx[ret]);
+	}
+	puts("");
+}
+
+void print_usage(const char *prog)
+{
+	printf("Usage: %s [-DsbdlHOLC3]\n", prog);
+	puts("  -D --device   device to use (default /dev/spidev1.1)\n"
+	     "  -s --speed    max speed (Hz)\n"
+	     "  -d --delay    delay (usec)\n"
+	     "  -b --bpw      bits per word \n"
+	     "  -l --loop     loopback\n"
+	     "  -H --cpha     clock phase\n"
+	     "  -O --cpol     clock polarity\n"
+	     "  -L --lsb      least significant bit first\n"
+	     "  -C --cs-high  chip select active high\n"
+	     "  -3 --3wire    SI/SO signals shared\n");
+	exit(1);
+}
+
+void parse_opts(int argc, char *argv[])
+{
+	while (1) {
+		static const struct option lopts[] = {
+			{ "device",  1, 0, 'D' },
+			{ "speed",   1, 0, 's' },
+			{ "delay",   1, 0, 'd' },
+			{ "bpw",     1, 0, 'b' },
+			{ "loop",    0, 0, 'l' },
+			{ "cpha",    0, 0, 'H' },
+			{ "cpol",    0, 0, 'O' },
+			{ "lsb",     0, 0, 'L' },
+			{ "cs-high", 0, 0, 'C' },
+			{ "3wire",   0, 0, '3' },
+			{ NULL, 0, 0, 0 },
+		};
+		int c;
+
+		c = getopt_long(argc, argv, "D:s:d:b:lHOLC3", lopts, NULL);
+
+		if (c == -1)
+			break;
+
+		switch (c) {
+		case 'D':
+			device = optarg;
+			break;
+		case 's':
+			speed = atoi(optarg);
+			break;
+		case 'd':
+			delay = atoi(optarg);
+			break;
+		case 'b':
+			bits = atoi(optarg);
+			break;
+		case 'l':
+			mode |= SPI_LOOP;
+			break;
+		case 'H':
+			mode |= SPI_CPHA;
+			break;
+		case 'O':
+			mode |= SPI_CPOL;
+			break;
+		case 'L':
+			mode |= SPI_LSB_FIRST;
+			break;
+		case 'C':
+			mode |= SPI_CS_HIGH;
+			break;
+		case '3':
+			mode |= SPI_3WIRE;
+			break;
+		default:
+			print_usage(argv[0]);
+			break;
+		}
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	int ret = 0;
+	int fd;
+
+	parse_opts(argc, argv);
+
+	fd = open(device, O_RDWR);
+	if (fd &lt; 0)
+		pabort("can't open device");
+
+	/*
+	 * spi mode
+	 */
+	ret = ioctl(fd, SPI_IOC_WR_MODE, &amp;mode);
+	if (ret == -1)
+		pabort("can't set spi mode");
+
+	ret = ioctl(fd, SPI_IOC_RD_MODE, &amp;mode);
+	if (ret == -1)
+		pabort("can't get spi mode");
+
+	/*
+	 * bits per word
+	 */
+	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &amp;bits);
+	if (ret == -1)
+		pabort("can't set bits per word");
+
+	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &amp;bits);
+	if (ret == -1)
+		pabort("can't get bits per word");
+
+	/*
+	 * max speed hz
+	 */
+	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &amp;speed);
+	if (ret == -1)
+		pabort("can't set max speed hz");
+
+	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &amp;speed);
+	if (ret == -1)
+		pabort("can't get max speed hz");
+
+	printf("spi mode: %d\n", mode);
+	printf("bits per word: %d\n", bits);
+	printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
+
+	transfer(fd);
+
+	close(fd);
+
+	return ret;
+}
+</avorontsov@ru.mvista.com></pre>  <div id="book-navigation-7" class="book-navigation">
+    
+        <div class="page-links clear-block">
+              <a href="http://armbedded.eu/node/258" class="page-previous" title="Go to previous page">‹ Use GPIO pins from userspace</a>
+                    <a href="http://armbedded.eu/node/338" class="page-up" title="Go to parent page">up</a>
+                    <a href="http://armbedded.eu/node/339" class="page-next" title="Go to next page">Using ADC on AT91SAM9G20 based products ›</a>
+          </div>
+    
+  </div>
+</div>
+    <div class="links">» <ul class="links inline"><li class="book_printer first last"><a href="http://armbedded.eu/book/export/html/318" title="Show a printer-friendly version of this book page and its sub-pages.">Printer-friendly version</a></li>
+</ul></div>  </div>
+              </div>
+    </td>
+    <td id="sidebar-right">
+        <div class="block block-user" id="block-user-1">
+    <h2 class="title">Navigation</h2>
+    <div class="content"><ul class="menu"><li class="leaf first last"><a href="http://armbedded.eu/faq">Frequently Asked Questions</a></li>
+</ul></div>
+ </div>
+  <div class="block block-user" id="block-user-0">
+    <h2 class="title">User login</h2>
+    <div class="content"><form action="http://armbedded.eu/node/318?destination=node%2F318" accept-charset="UTF-8" method="post" id="user-login-form">
+<div><div class="form-item" id="edit-name-wrapper">
+ <label for="edit-name">Username: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="text" maxlength="60" name="name" id="edit-name" size="15" value="" class="form-text required">
+</div>
+<div class="form-item" id="edit-pass-wrapper">
+ <label for="edit-pass">Password: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="password" name="pass" id="edit-pass" maxlength="60" size="15" class="form-text required">
+</div>
+<input type="submit" name="op" id="edit-submit" value="Log in" class="form-submit">
+<div class="item-list"><ul><li class="first"><a href="http://armbedded.eu/user/register" title="Create a new user account.">Create new account</a></li>
+<li class="last"><a href="http://armbedded.eu/user/password" title="Request new password via e-mail.">Request new password</a></li>
+</ul></div><input type="hidden" name="form_build_id" id="form-3ee96f840eebf645e05f504d5918c61b" value="form-3ee96f840eebf645e05f504d5918c61b">
+<input type="hidden" name="form_id" id="edit-user-login-block" value="user_login_block">
+
+</div></form>
+</div>
+ </div>
+  <div class="block block-views" id="block-views-recent_changes-block_1">
+    <h2 class="title">Recent changes</h2>
+    <div class="content"><div class="view view-recent-changes view-id-recent_changes view-display-id-block_1 view-dom-id-a6468f29e1b0ec7b5377a5c082130091">
+    
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first">
+      
+  <div class="views-field views-field-type">        <span class="field-content">Book page</span>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="http://armbedded.eu/node/8">SAM-BA : Flashing taskit's ARM-based boards</a></span>  </div>  </div>
+  <div class="views-row views-row-2 views-row-even">
+      
+  <div class="views-field views-field-type">        <span class="field-content">FAQ</span>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="http://armbedded.eu/node/630">My board suddenly does not boot correctly or crashes.</a></span>  </div>  </div>
+  <div class="views-row views-row-3 views-row-odd">
+      
+  <div class="views-field views-field-type">        <span class="field-content">FAQ</span>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="http://armbedded.eu/node/667">What does "NAND read from offset a0000 failed -117" mean in U-Boot? The board still boots correctly.</a></span>  </div>  </div>
+  <div class="views-row views-row-4 views-row-even">
+      
+  <div class="views-field views-field-type">        <span class="field-content">Download</span>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="http://armbedded.eu/node/675">Upgrade package to add NAND 4-bit BCH ECC support to Stamp9G20 and PortuxG20</a></span>  </div>  </div>
+  <div class="views-row views-row-5 views-row-odd views-row-last">
+      
+  <div class="views-field views-field-type">        <span class="field-content">Download</span>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="http://armbedded.eu/node/629">Updated AT91Bootstrap-3.4</a></span>  </div>  </div>
+    </div>
+  
+  
+  
+  
+  
+  
+</div></div>
+ </div>
+    </td>  </tr>
+</tbody></table>
+
+<div id="footer">
+      <div class="block block-block" id="block-block-1">
+    <h2 class="title"></h2>
+    <div class="content">
+<script src="./Using SPI with Linux   armbedded.eu_files/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-3484620-4";
+_udn = "none";
+_ulink = 1;
+urchinTracker();
+</script>
+
+<a href="http://www.taskit.de/">taskit GmbH</a>  /  Tel: +49(0)30 / 611295-0  /  info@taskit.de / <a href="http://www.armbedded.eu/node/13">Corporate Information</a>
+
+</div>
+ </div>
+</div>
+
+
+</body></html>

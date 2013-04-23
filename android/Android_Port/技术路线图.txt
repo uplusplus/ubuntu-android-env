@@ -1,0 +1,7 @@
+1 	uboot 编译/移植 
+2	kernel 编译/移植
+3 	android 编译/移植
+
+4	kernel层驱动编写->生成设备
+5	android服务编写->Java->JNI->驱动设备
+6 	android应用API

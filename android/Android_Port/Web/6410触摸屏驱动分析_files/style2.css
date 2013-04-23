@@ -1,0 +1,431 @@
+body
+{
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	margin: 0px;
+	word-wrap: break-word;
+	background:#28557E url("images/o_bookBG1280.jpg") repeat-y left; 
+}
+
+#header
+{
+	/*1280*1024*/
+	background: url("images/o_bookTop1280.jpg") no-repeat top left; 
+	width:1265px; 	
+	height: 318px;
+	border: none;
+	left: 0px;
+	top: 0px;
+	position: absolute;
+	background-color: transparent;	
+}
+
+#HeaderTitle
+{
+	top: 90px;
+	right: 393px;
+	text-align: right;
+	position: absolute;
+	margin-right: 0px;
+	padding-right: 0px;
+}
+
+#Title
+{
+	font-size: 20px;
+	font-weight:bold;
+}
+
+#SubTitle
+{
+	font-size: 16px;
+}
+
+p.date img
+{
+	vertical-align: middle;
+}
+
+
+
+#main
+{
+	/*right: 270px;*/	
+	width: 810px;
+	top: 0px;
+	padding-top: 150px;
+	left: 60px;
+	position: absolute;
+}
+
+h2 
+{
+	margin-top : 10px;
+	font-size : 13px;
+}
+
+#rightmenu
+{
+	position: absolute;
+	width: 250px;
+	background-color: #FFF;
+	right: 5px;
+	top: 60px;
+}
+
+#rightmenu h3
+{
+	margin: 10px 0px 0px 0px;
+	color: #06A;
+	background-color: #ADF;
+	padding: 2px 5px;
+	font-size: 13px;
+	border: 1px solid #69A;
+	border-bottom: none;
+}
+
+#rightmenu ul
+{
+	list-style: none;
+	margin: 0px;
+	padding: 5px;
+	border: 1px solid #69A;
+}
+
+#footer
+{
+	border-top: 1px solid #7AC;
+ 	padding-top: 5px;
+ 	text-align: center;
+ 	font-size: 11px;
+ 	width:800px; 	
+}
+
+input.text
+{
+	width: 300px;
+}
+
+textarea
+{
+	width: 300px;
+	height: 200px;
+}
+
+#comments h4 span
+{
+	color: #999;
+}
+
+#comments h4
+{
+	margin: 0px;
+	font-size: 13px;
+}
+
+p
+{
+	margin: 10px 0px;
+	line-height: 1.5;
+	font-size: 13px;
+}
+
+h3
+{
+	font-size: 15px;
+	border-bottom: 1px solid #AAA;
+}
+
+#relatedlinks ul
+{
+	list-style: none;
+	margin-left: 10px;
+	padding: 0px;
+}
+
+a
+{
+	color: #336699;
+	text-decoration: none;
+	background: transparent;
+}
+
+a:link
+{
+	color: #336699;
+	background: transparent;
+}
+a:visited
+{
+	color: #336699;
+	background: transparent;
+}
+a:hover
+{
+	color: #336699;
+	background: transparent;
+	text-decoration: none;
+}
+
+
+/*1280*1024*/
+/*
+body
+{
+	background: #28557E url(  "images/o_mbookBG.jpg" ) repeat-y left;
+}*/
+
+.date
+{
+	display: none;
+}
+
+
+
+h1 a, h1 a:link, h1 a:visited, h1 a:active, h1 a:hover
+{
+	font-family: verdana, arial, sans-serif;
+	font-size: 20px;
+	color: #000000;
+	font-weight: bold;
+	border: none;
+}
+
+div.post
+{
+	line-height: 1.5;
+	font-size:13px;
+}
+
+div.post h2
+{
+	border-bottom: 1px solid #666;
+}
+
+h2 a:link, h2 a:visited, h2 a:active
+{
+	color: #0000FF;
+	font-weight: normal;
+}
+
+h2 a:hover
+{
+	border: none;
+	font-weight: bold;
+	color: #0000FF;
+}
+
+#rightmenu
+{
+	position: absolute;
+	width: 250px;
+	background-color: transparent;
+	/* 1280*1024 */
+	left : 963px; 
+	top: 60px;
+	color: #aaa;
+	line-height:1.5;
+}
+
+#rightmenu h3
+{
+	font: bold 13px Verdana;
+	margin: 0px;
+	padding: 5px;
+	padding-bottom: 0px;
+	background-color: transparent;
+	border: none;
+	color: #aaa;
+	border-bottom: 1px dashed #aaa;
+}
+
+#rightmenu ul
+{
+	list-style: none;
+	margin: 0px;
+	padding: 2px;
+	border: none;
+	margin-bottom: 5px;
+	font-size: 12px;
+}
+
+#rightmenu a:link
+{
+	color: #aaa;
+	background: transparent;
+}
+#rightmenu a:visited
+{
+	color: #aaa;
+	background: transparent;
+}
+#rightmenu a:hover
+{
+	color: #aaa;
+	background: transparent;
+}
+
+
+p.date
+{
+	font-size: 13px;
+	font-weight: bold;
+	border-bottom: 1px solid #AAA;
+	margin-bottom: 0px;
+	padding: 2px 0px;
+}
+
+blockquote
+{	
+}
+
+p.postfoot
+{
+	font-size: 11px;
+}
+
+
+.Cal
+{
+	border: 1px solid #69A;
+	width: 100%;
+	font-family: Arial;
+	font-size: 12px;
+	margin-top: 10px;
+	height: 150px;
+	background-color: transparent;
+	color: #aaa;
+}
+
+.CalTitle
+{
+	background-color: #28557c;
+	border-color: #ADF;
+	font-family: Arial;
+	font-size: 13px;
+	color: #aaa;
+	border-bottom: 1px solid #69A;
+	margin-left: 0px;
+	padding: 0px;
+	height: 100%;
+}
+
+.CalOtherMonthDay
+{
+	color: #808080;
+}
+
+.CalSelector
+{
+}
+
+.CalNextPrev
+{
+}
+
+.CalDayHeader
+{
+}
+
+.CalSelectedDay
+{
+}
+
+.CalWeekendDay
+{
+}
+
+.CalTodayDay
+{
+	color: red;
+}
+
+a.CalTodayDay,a.CalTodayDay:link,a.CalTodayDay:visited,a.CalTodayDay:active,.CalTodayDay
+{
+	color: red;
+}
+
+.input_my_zzk {
+background-color:Transparent;
+border:1px solid #EBEBEB;
+width:120px;
+padding:2px 5px;
+}
+
+.btn_my_zzk {
+color: #AAA;
+border:1px solid #EBEBEB;
+}
+
+img{
+border:0px;
+}
+/* Digg Begin */
+
+#digg_block{margin-top:10px;}
+
+#author_profile{float:left;width:300px;margin-top:10px}
+.author_avatar{vertical-align:top;float:left;padding-right:5px;padding-top:5px;padding-left:2px;border:0px;}
+.author_profile_title{font-weight:bold;color:#666;}
+.author_profile_info{float:left;line-height:18px;}
+
+#div_digg{
+	float:right; 
+	/*text-align:right;*/
+	margin-bottom:10px;
+	margin-right:30px;
+	font-size:12px;
+	width:120px;
+	text-align:center;
+	margin-top:10px;
+}
+
+.diggit{
+	float:left; 
+	width:46px;
+	height:52px;
+	background:url('/images/upup.gif') no-repeat;	
+	text-align:center;
+	cursor:pointer;
+	margin-top:2px;
+}
+.diggnum{
+	line-height:2.2em;
+	font-size:14px;
+	color:#075DB3;
+	font-family:Verdana;
+}
+
+.buryit{
+	float:right; 
+	margin-left:20px;
+	width:46px;
+	height:52px;
+	background:url('/images/downdown.gif') no-repeat;	
+	text-align:center;
+	cursor:pointer;
+	margin-top:2px;
+}
+
+.burynum{
+	line-height:2.2em;
+	font-size:14px;
+	color:#075DB3;
+	font-family:Verdana;
+}
+
+.diggword{
+	margin-top:5px;
+	margin-left:0px;
+	font-size:12px;
+	color:gray;
+}
+
+a.digg_gray:link		 {color: gray; text-decoration: underline;}
+a.digg_gray:visited	 {color: gray; text-decoration: underline;}
+a.digg_gray:hover	 {color: red; text-decoration: underline;}
+a.digg_gray:active	 {color: gray; text-decoration: underline}
+
+/* Digg End */
+
+.comment_quote {border: 1px solid #BBBBBB;}

@@ -1,0 +1,972 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0050)http://blog.csdn.net/turui/article/details/4858908 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>嵌入式 linux 下 通用 console（控制台） 的实现 - 涂睿的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="前言：        当我们使用嵌入式linux 进行开发时，kernel 跑起来之后，我们希望能通过串口（标准输入、输出），在应用程序正在运行的过程中，进行一些调试工作，例如，对CPU一些寄存进行调整，以观测调整以后的结果，并且，当我们无法把我们的应用程序放在后台运行，那么我们就需要实现一个基础的控制台。         下文中的控制台，虽然简单，但完备的支持 上 下 左 右 bac">
+<script type="text/javascript" async="" src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/ga.js"></script><script src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/jquery.js" type="text/javascript"></script><style type="text/css"></style>
+<script src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/plugins.js" type="text/javascript"></script>
+<script src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/common.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+<link rel="Stylesheet" type="text/css" href="./嵌入式 linux 下 通用 console（控制台） 的实现_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/turui/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./嵌入式 linux 下 通用 console（控制台） 的实现_files/default.css">
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<script src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./嵌入式 linux 下 通用 console（控制台） 的实现_files/navtop_2012.css">
+<div class="nav_top_2011">
+<p><br></p></div><div id="container"><div id="body"><div id="main"><div class="main"><div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./嵌入式 linux 下 通用 console（控制台） 的实现_files/嵌入式 linux 下 通用 console（控制台） 的实现.htm">
+        嵌入式 linux 下 通用 console（控制台） 的实现
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage"><br></div>
+
+
+    
+<div id="article_content" class="article_content">
+<p>前言：</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当我们使用嵌入式linux 进行开发时，kernel 跑起来之后，我们希望能通过串口（标准输入、输出），在应用程序正在运行的过程中，进行一些调试工作，例如，对CPU一些寄存进行调整，以观测调整以后的结果，并且，当我们无法把我们的应用程序放在后台运行，那么我们就需要实现一个基础的控制台。</p>
+<p>&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下文中的控制台，虽然简单，但完备的支持 上 下 左 右 backspace del 常用控制台操作，使用 上 下 键可以浏览已经输入过的命令（类似 doskey 这样的功能），支持 光标 左右移动 修改命令</p>
+<p>&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一般我们在 main 函数最后 都会做 while(TRUE) sleep(1000) 这样 阻塞住主线程，用这个控制台的实现，替换这个过程，则应用程序可增加控制台应用功能，各部分的具体实现如下：</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>调用代码(main.c)：</p>
+<p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/4858908#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 834px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;stdio.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"app_console.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;main(</span><span class="datatypes">int</span><span>&nbsp;argc,&nbsp;</span><span class="datatypes">char</span><span>&nbsp;*argv[])&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;之前的应用代码</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;....&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;....&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;....&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Console_Start();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><textarea cols="84" rows="15" name="code" class="cpp" style="display: none;">#include &lt;stdio.h&gt;
+#include "app_console.h"
+
+int main(int argc, char *argv[])
+{
+	// 之前的应用代码
+	....
+	....
+	....
+	App_Console_Start();	
+ 	return 0;
+}</textarea> </p>
+<p>&nbsp;</p>
+<p>控制台头文件(app_console.h)</p>
+<p>&nbsp;</p>
+<p>&nbsp;<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/4858908#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1265px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#ifndef&nbsp;__APP_CONSOLE_H__</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;__APP_CONSOLE_H__</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#ifdef&nbsp;__cplusplus</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">extern</span><span>&nbsp;</span><span class="string">"C"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif&nbsp;&nbsp;&nbsp;&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"type_def.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">void</span><span>&nbsp;App_Console_Start();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#ifdef&nbsp;__cplusplus</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><textarea cols="83" rows="15" name="code" class="cpp" style="display: none;">#ifndef __APP_CONSOLE_H__
+#define __APP_CONSOLE_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif    
+
+#include "type_def.h"
+
+void App_Console_Start();
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif</textarea> </p>
+<p>&nbsp;</p>
+<p>控制台C文件(app_console.c)</p>
+<p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/4858908#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1742px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#include&nbsp;"app_console.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"ctype.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"unistd.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"app_test.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">//&nbsp;说明</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//&nbsp;read&nbsp;write&nbsp;使用的是&nbsp;POSIX&nbsp;的标准文件读写函数</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//&nbsp;unistd.h&nbsp;包含了&nbsp;STDIN_FILENO&nbsp;等文件描述符的定义</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//&nbsp;ctype.h&nbsp;包含了&nbsp;isprint&nbsp;函数的声明</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//&nbsp;经过仔细考虑，决定不支持&nbsp;ESC&nbsp;键，因为ESC&nbsp;键的键值为&nbsp;0x1b&nbsp;与&nbsp;上下左右的键值重复</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//&nbsp;但可以考虑按2下ESC清除本行输入</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//&nbsp;对不可打印字符的处理仅限于以下已经列出的宏定义</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">//&nbsp;change:</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//&nbsp;放弃对&nbsp;double&nbsp;ESC&nbsp;的支持,因为可能出现按了&nbsp;ESC&nbsp;又按了&nbsp;方向键&nbsp;的情况</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//&nbsp;则用户输入编码为&nbsp;'/x1b'&nbsp;'/x1b'&nbsp;'['&nbsp;'A'&nbsp;(按了ESC&nbsp;又按了上键)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">//&nbsp;change:</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//&nbsp;为了将应用与控制台应用剥离，则将&nbsp;#define&nbsp;MAX_CMD_LEN&nbsp;512&nbsp;房到&nbsp;app_test.h&nbsp;中定义</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//&nbsp;二维数组作为参数进行传递时，需要明确第二个维度的大小，否则编译器无法正确定位地址</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;KEY_BACKSPACE&nbsp;&nbsp;&nbsp;&nbsp;'/x08'&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;back&nbsp;space&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;KEY_DEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'/x7F'&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;del&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;KEY_ENTER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'/x0A'&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;回车</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">//&nbsp;以下为&nbsp;0x1b&nbsp;开头的键值</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//#define&nbsp;KEY_DOUBLEESC&nbsp;&nbsp;&nbsp;&nbsp;"/x1B/x1B"//&nbsp;ESC</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//#define&nbsp;KEY_ARROW_UP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"/x1B[A"&nbsp;&nbsp;//&nbsp;上</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//#define&nbsp;KEY_ARROW_DOWN&nbsp;&nbsp;&nbsp;"/x1B[B"&nbsp;&nbsp;//&nbsp;下</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="comment">//#define&nbsp;KEY_ARROW_LEFT&nbsp;&nbsp;&nbsp;"/x1B[D"&nbsp;&nbsp;//&nbsp;左</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="comment">//#define&nbsp;KEY_ARROW_RIGHT&nbsp;&nbsp;"/x1B[C"&nbsp;&nbsp;//&nbsp;右</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">typedef</span><span>&nbsp;</span><span class="keyword">enum</span><span>&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;WKS_WAIT,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;WKS_RECV1B,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;WKS_UDLR,&nbsp;&nbsp;</span></li><li class="alt"><span>}T_WaitKeyState;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;MAX_CMD_HISTORY&nbsp;32</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;MAX_PAR_COUNT&nbsp;16</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;szPrompt[]&nbsp;=&nbsp;{</span><span class="string">"TR_Console&gt;&nbsp;"</span><span>};&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;T_WaitKeyState&nbsp;waitKeyState&nbsp;=&nbsp;WKS_WAIT;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;szCmdHistory[MAX_CMD_HISTORY][MAX_CMD_LEN];&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">char</span><span>&nbsp;szCmdNow[MAX_CMD_LEN]&nbsp;=&nbsp;{0};&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">UINT32</span><span>&nbsp;nCmdIndex&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">UINT32</span><span>&nbsp;nCmdCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">UINT32</span><span>&nbsp;nCmdInputCount&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">UINT32</span><span>&nbsp;nCmdInputCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_ParseCmd(</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;pCmd);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">UINT32</span><span>&nbsp;App_Console_ReadInput(</span><span class="datatypes">char</span><span>&nbsp;*input)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;U32&nbsp;&nbsp;&nbsp;&nbsp;nRead=0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;pollfd&nbsp;p;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;termio&nbsp;term,term_old;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Get&nbsp;control&nbsp;of&nbsp;the&nbsp;terminal&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;ioctl(STDIN_FILENO,TCGETA,(<span class="keyword">void</span><span>&nbsp;*)&amp;term);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;term_old&nbsp;=&nbsp;term;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;term.c_lflag&nbsp;&amp;=&nbsp;~ICANON;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;term.c_lflag&nbsp;&amp;=&nbsp;~ECHO;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;ioctl(STDIN_FILENO,TCSETAW,(<span class="keyword">void</span><span>&nbsp;*)&amp;term);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Get&nbsp;event&nbsp;we&nbsp;want&nbsp;to&nbsp;know&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;p.fd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;STDIN_FILENO;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;p.events&nbsp;=&nbsp;POLLIN;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;If&nbsp;we&nbsp;receive&nbsp;one&nbsp;thing,&nbsp;get&nbsp;the&nbsp;byte&nbsp;now&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(poll(&amp;p,1,-1)&gt;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(p.revents==POLLIN)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nRead=read(STDIN_FILENO,input,1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Purge&nbsp;the&nbsp;byte&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;tcflush(0,TCIOFLUSH);&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Leave&nbsp;control&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ioctl(STDIN_FILENO,TCSETAW,(<span class="keyword">void</span><span>&nbsp;*)&amp;term_old);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>(nRead);&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_BSChar()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[3];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szTemp[0]&nbsp;=&nbsp;<span class="string">'/b'</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;szTemp[1]&nbsp;=&nbsp;<span class="string">'&nbsp;'</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szTemp[2]&nbsp;=&nbsp;<span class="string">'/b'</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,3);&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnPrintChar(</span><span class="datatypes">char</span><span>&nbsp;input)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCount&nbsp;==&nbsp;MAX_CMD_LEN)&nbsp;</span><span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;&lt;&nbsp;nCmdInputCount)&nbsp;</span><span class="comment">//&nbsp;光标不在末尾</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[MAX_CMD_LEN]&nbsp;=&nbsp;{0};&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmd&nbsp;=&nbsp;szCmdNow;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nBackCount&nbsp;=&nbsp;nCmdInputCount-nCmdInputCursor;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szTemp[0]&nbsp;=&nbsp;input;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;szTemp[1],&amp;pCmd[nCmdInputCursor],nBackCount);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount+1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;pCmd[nCmdInputCursor],&amp;szTemp,nBackCount+1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memset(szTemp,<span class="string">'/b'</span><span>,nBackCount);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount);&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,&amp;input,1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szCmdNow[nCmdInputCount]&nbsp;=&nbsp;input;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount++;&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnBackspace()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;&gt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;==&nbsp;nCmdInputCount)&nbsp;</span><span class="comment">//&nbsp;光标在末尾</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_BSChar();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span class="comment">//&nbsp;光标不在末尾</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[MAX_CMD_LEN]&nbsp;=&nbsp;{0};&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmd&nbsp;=&nbsp;szCmdNow;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nBackCount&nbsp;=&nbsp;nCmdInputCount-nCmdInputCursor;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szTemp[0]&nbsp;=&nbsp;<span class="string">'/b'</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;szTemp[1],&amp;pCmd[nCmdInputCursor],nBackCount);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szTemp[nBackCount+1]&nbsp;=&nbsp;<span class="string">'&nbsp;'</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount+2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;pCmd[nCmdInputCursor-1],&amp;szTemp[1],nBackCount);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memset(szTemp,<span class="string">'/b'</span><span>,nBackCount+1);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount+1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount&nbsp;--;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor--;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnDel()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;&lt;&nbsp;nCmdInputCount)&nbsp;</span><span class="comment">//&nbsp;光标不在末尾</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[MAX_CMD_LEN]&nbsp;=&nbsp;{0};&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmd&nbsp;=&nbsp;szCmdNow;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nBackCount&nbsp;=&nbsp;nCmdInputCount-nCmdInputCursor-1;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szTemp,&amp;pCmd[nCmdInputCursor+1],nBackCount);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szTemp[nBackCount]&nbsp;=&nbsp;<span class="string">'&nbsp;'</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount+1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(&amp;pCmd[nCmdInputCursor],szTemp,nBackCount);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memset(szTemp,<span class="string">'/b'</span><span>,nBackCount+1);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,nBackCount+1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount--;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnDoubleEsc()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCount&nbsp;&gt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmd&nbsp;=&nbsp;szCmdNow;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;将光标移动到最末尾</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>(nCmdInputCursor&nbsp;&lt;&nbsp;nCmdInputCount)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,&amp;pCmd[nCmdInputCursor],1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;清除所有输入的数据</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;i=0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>(i=0;i&lt;nCmdInputCount;i++)&nbsp;App_Console_BSChar();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnUp()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdCursor&nbsp;==&nbsp;0)&nbsp;</span><span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdCursor&nbsp;--;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;清除掉现在所有的输入</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnDoubleEsc();&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmdHistory&nbsp;=&nbsp;&amp;szCmdHistory[nCmdCursor][0];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szCmdNow,pCmdHistory,MAX_CMD_LEN);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount&nbsp;=&nbsp;strlen(szCmdNow);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor=&nbsp;nCmdInputCount;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szCmdNow,nCmdInputCount);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnDown()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdCursor&nbsp;&gt;=&nbsp;(nCmdIndex-1))&nbsp;</span><span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdCursor&nbsp;++;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;清除掉现在所有的输入</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnDoubleEsc();&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmdHistory&nbsp;=&nbsp;&amp;szCmdHistory[nCmdCursor][0];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szCmdNow,pCmdHistory,MAX_CMD_LEN);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount&nbsp;=&nbsp;strlen(szCmdNow);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor=&nbsp;nCmdInputCount;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szCmdNow,nCmdInputCount);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnLeft()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;&gt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;c&nbsp;=&nbsp;</span><span class="string">'/b'</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,&amp;c,1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor--;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnRight()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdInputCursor&nbsp;&lt;&nbsp;nCmdInputCount)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pCmd&nbsp;=&nbsp;szCmdNow;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;c&nbsp;=&nbsp;pCmd[nCmdInputCursor];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,&amp;c,1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor++;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_OnEnter()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;szCmdNow[nCmdInputCount]&nbsp;=&nbsp;<span class="string">'/0'</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[]&nbsp;=&nbsp;{</span><span class="string">"/r/n"</span><span>};&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,strlen(szTemp));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCount&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdInputCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(strlen(szCmdNow)&nbsp;==&nbsp;0)&nbsp;</span><span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdIndex&nbsp;==&nbsp;MAX_CMD_HISTORY)&nbsp;</span><span class="comment">//&nbsp;命令队列满了，移动</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTempCmd[MAX_CMD_HISTORY][MAX_CMD_LEN];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szTempCmd,&amp;szCmdHistory[1][0],MAX_CMD_LEN*(MAX_CMD_HISTORY-1));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szCmdHistory,szTempCmd,MAX_CMD_LEN*(MAX_CMD_HISTORY-1));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdIndex&nbsp;=&nbsp;MAX_CMD_HISTORY-1;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdCursor&nbsp;=&nbsp;nCmdIndex;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;memcpy(szCmdHistory[nCmdIndex],szCmdNow,MAX_CMD_LEN);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdIndex++;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nCmdCursor&nbsp;=&nbsp;nCmdIndex;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;解析命令</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Console_ParseCmd(szCmdNow);&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_CmdLoop()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">BOOL</span><span>&nbsp;bGetEnter&nbsp;=&nbsp;FALSE;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>(TRUE)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;读取一个console输入</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">UINT32</span><span>&nbsp;nReturn&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;input;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nReturn&nbsp;=&nbsp;App_Console_ReadInput&nbsp;(&amp;input);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nReturn&nbsp;&gt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">switch</span><span>(waitKeyState)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;WKS_WAIT&nbsp;:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(isprint(input))</span><span class="comment">//&nbsp;可打印字符</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnPrintChar(input);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(input&nbsp;==&nbsp;KEY_BACKSPACE)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnBackspace();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;KEY_DEL)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnDel();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;KEY_ENTER)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnEnter();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bGetEnter&nbsp;=&nbsp;TRUE;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'/x1b'</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_RECV1B;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_WAIT;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;WKS_RECV1B:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'/x1b'</span><span>)&nbsp;</span><span class="comment">//&nbsp;按了ESC&nbsp;又按了方向键，或者是&nbsp;ESC</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//App_Console_OnDoubleEsc();</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_RECV1B;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'['</span><span>)&nbsp;</span><span class="comment">//可能为&nbsp;上下左右&nbsp;4个键</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_UDLR;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span class="comment">//下面的情况为&nbsp;按了&nbsp;ESC&nbsp;键之后，按了其他的键的处理</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(isprint(input))&nbsp;App_Console_OnPrintChar(input);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_WAIT;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;WKS_UDLR:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'A'</span><span>)</span><span class="comment">//&nbsp;上</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnUp();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'B'</span><span>)</span><span class="comment">//&nbsp;下</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnDown();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'D'</span><span>)</span><span class="comment">//&nbsp;左</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnLeft();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(input&nbsp;==&nbsp;</span><span class="string">'C'</span><span>)</span><span class="comment">//&nbsp;右</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_OnRight();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(isprint(input))&nbsp;App_Console_OnPrintChar(input);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;waitKeyState&nbsp;=&nbsp;WKS_WAIT;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">default</span><span>:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(bGetEnter)&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">void</span><span>&nbsp;App_Console_Start()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;清空&nbsp;sdtout&nbsp;缓冲</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;fflush(stdout);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;fflush(stdin);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTemp[]&nbsp;=&nbsp;{</span><span class="string">"/r/nStart&nbsp;TR&nbsp;Console.../r/n/r/n"</span><span>};&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szTemp,strlen(szTemp));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>(TRUE)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(STDOUT_FILENO,szPrompt,strlen(szPrompt));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Console_CmdLoop();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">//&nbsp;解析命令</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Console_ParseCmd(</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;pCmd)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;length&nbsp;=&nbsp;strlen(pCmd);&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;全部转小写</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;i=0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szTempCmd[MAX_CMD_LEN];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(i=0;&nbsp;i&nbsp;&lt;&nbsp;length;&nbsp;i++)&nbsp;szTempCmd[i]&nbsp;=&nbsp;tolower(pCmd[i]);&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;将输入的命令各个&nbsp;part&nbsp;分开&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>&nbsp;szPart[MAX_PAR_COUNT][MAX_CMD_LEN];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nPartCount&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nPartCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;nCmdCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(szPart,0,<span class="keyword">sizeof</span><span>(szPart));&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>(TRUE)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nCmdCursor&nbsp;==&nbsp;length)&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCursor&nbsp;&gt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPartCount++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPartCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(&nbsp;(szTempCmd[nCmdCursor]&nbsp;==&nbsp;</span><span class="string">','</span><span>)&nbsp;||&nbsp;(szTempCmd[nCmdCursor]&nbsp;==&nbsp;</span><span class="string">'&nbsp;'</span><span>)&nbsp;)&nbsp;</span><span class="comment">//&nbsp;part&nbsp;分割符</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szPart[nPartCount][nPartCursor]&nbsp;=&nbsp;<span class="string">'/0'</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPartCount++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPartCursor&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;szPart[nPartCount][nPartCursor]&nbsp;=&nbsp;szTempCmd[nCmdCursor];&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPartCursor++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nCmdCursor++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnCmd(szPart,nPartCount);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><textarea cols="84" rows="15" name="code" class="cpp" style="display: none;">#include "app_console.h"
+#include "ctype.h"
+#include "unistd.h"
+#include "app_test.h"
+
+// 说明
+// read write 使用的是 POSIX 的标准文件读写函数
+// unistd.h 包含了 STDIN_FILENO 等文件描述符的定义
+// ctype.h 包含了 isprint 函数的声明
+// 经过仔细考虑，决定不支持 ESC 键，因为ESC 键的键值为 0x1b 与 上下左右的键值重复
+// 但可以考虑按2下ESC清除本行输入
+// 对不可打印字符的处理仅限于以下已经列出的宏定义
+
+// change:
+// 放弃对 double ESC 的支持,因为可能出现按了 ESC 又按了 方向键 的情况
+// 则用户输入编码为 '/x1b' '/x1b' '[' 'A' (按了ESC 又按了上键)
+
+// change:
+// 为了将应用与控制台应用剥离，则将 #define MAX_CMD_LEN 512 房到 app_test.h 中定义
+// 二维数组作为参数进行传递时，需要明确第二个维度的大小，否则编译器无法正确定位地址
+
+
+
+
+#define KEY_BACKSPACE    '/x08'    // back space 
+#define KEY_DEL          '/x7F'    // del 
+#define KEY_ENTER        '/x0A'    // 回车
+
+// 以下为 0x1b 开头的键值
+//#define KEY_DOUBLEESC    "/x1B/x1B"// ESC
+//#define KEY_ARROW_UP     "/x1B[A"  // 上
+//#define KEY_ARROW_DOWN   "/x1B[B"  // 下
+//#define KEY_ARROW_LEFT   "/x1B[D"  // 左
+//#define KEY_ARROW_RIGHT  "/x1B[C"  // 右
+
+typedef enum 
+{
+	WKS_WAIT,
+	WKS_RECV1B,
+	WKS_UDLR,
+}T_WaitKeyState;
+
+#define MAX_CMD_HISTORY 32
+#define MAX_PAR_COUNT 16
+
+static char szPrompt[] = {"TR_Console&gt; "};
+
+static T_WaitKeyState waitKeyState = WKS_WAIT;
+static char szCmdHistory[MAX_CMD_HISTORY][MAX_CMD_LEN];
+static char szCmdNow[MAX_CMD_LEN] = {0};
+
+static UINT32 nCmdIndex = 0;
+static UINT32 nCmdCursor = 0;
+static UINT32 nCmdInputCount = 0;
+static UINT32 nCmdInputCursor = 0;
+
+static void App_Console_ParseCmd(const char* pCmd);
+
+static UINT32 App_Console_ReadInput(char *input)
+{
+	U32    nRead=0;
+	struct pollfd p;
+	struct termio term,term_old;
+
+	/* Get control of the terminal */
+	ioctl(STDIN_FILENO,TCGETA,(void *)&amp;term);
+	term_old = term;
+	term.c_lflag &amp;= ~ICANON;
+	term.c_lflag &amp;= ~ECHO;
+	ioctl(STDIN_FILENO,TCSETAW,(void *)&amp;term);
+
+	/* Get event we want to know */
+	p.fd     = STDIN_FILENO;
+	p.events = POLLIN;
+
+	/* If we receive one thing, get the byte now */
+	if (poll(&amp;p,1,-1)&gt;0)
+	{
+		if (p.revents==POLLIN)
+		{
+			nRead=read(STDIN_FILENO,input,1);
+		}
+	}
+	/* Purge the byte */
+	/* tcflush(0,TCIOFLUSH); */
+	/* Leave control */
+	ioctl(STDIN_FILENO,TCSETAW,(void *)&amp;term_old);
+	return(nRead);
+}
+
+static void App_Console_BSChar()
+{
+	char szTemp[3];
+	szTemp[0] = '/b';
+	szTemp[1] = ' ';
+	szTemp[2] = '/b';
+	write(STDOUT_FILENO,szTemp,3);	
+}
+
+static void App_Console_OnPrintChar(char input)
+{
+	if(nCmdInputCount == MAX_CMD_LEN) return;
+
+	if(nCmdInputCursor &lt; nCmdInputCount) // 光标不在末尾
+	{
+		char szTemp[MAX_CMD_LEN] = {0};
+		char* pCmd = szCmdNow;
+		int nBackCount = nCmdInputCount-nCmdInputCursor;
+		szTemp[0] = input;
+		memcpy(&amp;szTemp[1],&amp;pCmd[nCmdInputCursor],nBackCount);										
+		write(STDOUT_FILENO,szTemp,nBackCount+1);								
+		memcpy(&amp;pCmd[nCmdInputCursor],&amp;szTemp,nBackCount+1);
+
+		memset(szTemp,'/b',nBackCount);
+		write(STDOUT_FILENO,szTemp,nBackCount);	
+	}
+	else
+	{
+		write(STDOUT_FILENO,&amp;input,1);
+		szCmdNow[nCmdInputCount] = input;
+	}
+
+	nCmdInputCursor++;
+	nCmdInputCount++;
+}
+
+static void App_Console_OnBackspace()
+{
+	if(nCmdInputCursor &gt; 0)
+	{
+		if(nCmdInputCursor == nCmdInputCount) // 光标在末尾
+			App_Console_BSChar();
+		else// 光标不在末尾
+		{
+			char szTemp[MAX_CMD_LEN] = {0};
+			char* pCmd = szCmdNow;
+			int nBackCount = nCmdInputCount-nCmdInputCursor;
+			szTemp[0] = '/b';
+			memcpy(&amp;szTemp[1],&amp;pCmd[nCmdInputCursor],nBackCount);
+			szTemp[nBackCount+1] = ' ';									
+			write(STDOUT_FILENO,szTemp,nBackCount+2);								
+			memcpy(&amp;pCmd[nCmdInputCursor-1],&amp;szTemp[1],nBackCount);
+
+			memset(szTemp,'/b',nBackCount+1);
+			write(STDOUT_FILENO,szTemp,nBackCount+1);				
+		}
+		nCmdInputCount --;
+		nCmdInputCursor--;
+	}
+}
+
+static void App_Console_OnDel()
+{
+	if(nCmdInputCursor &lt; nCmdInputCount) // 光标不在末尾
+	{							
+		char szTemp[MAX_CMD_LEN] = {0};
+		char* pCmd = szCmdNow;
+		
+		int nBackCount = nCmdInputCount-nCmdInputCursor-1;
+		memcpy(szTemp,&amp;pCmd[nCmdInputCursor+1],nBackCount);
+		szTemp[nBackCount] = ' ';
+		write(STDOUT_FILENO,szTemp,nBackCount+1);								
+		memcpy(&amp;pCmd[nCmdInputCursor],szTemp,nBackCount);
+
+		memset(szTemp,'/b',nBackCount+1);
+		write(STDOUT_FILENO,szTemp,nBackCount+1);				
+		nCmdInputCount--;								
+	}
+}
+
+static void App_Console_OnDoubleEsc()
+{
+	if(nCmdInputCount &gt; 0)
+	{
+		char* pCmd = szCmdNow;
+
+		// 将光标移动到最末尾
+		while(nCmdInputCursor &lt; nCmdInputCount)
+		{
+			write(STDOUT_FILENO,&amp;pCmd[nCmdInputCursor],1);
+			nCmdInputCursor++;									
+		}
+
+		// 清除所有输入的数据
+		int i=0;
+		for(i=0;i&lt;nCmdInputCount;i++) App_Console_BSChar();
+		nCmdInputCount = 0;
+		nCmdInputCursor = 0;
+	}
+}
+
+static void App_Console_OnUp()
+{	
+	if(nCmdCursor == 0) return;
+	nCmdCursor --;
+
+	// 清除掉现在所有的输入
+	App_Console_OnDoubleEsc();	
+	
+	char* pCmdHistory = &amp;szCmdHistory[nCmdCursor][0];	
+	memcpy(szCmdNow,pCmdHistory,MAX_CMD_LEN);	
+	nCmdInputCount = strlen(szCmdNow);
+	nCmdInputCursor= nCmdInputCount;
+	write(STDOUT_FILENO,szCmdNow,nCmdInputCount);	
+}
+
+static void App_Console_OnDown()
+{
+	if(nCmdCursor &gt;= (nCmdIndex-1)) return;
+	nCmdCursor ++;
+	
+	// 清除掉现在所有的输入
+	App_Console_OnDoubleEsc();	
+	
+	char* pCmdHistory = &amp;szCmdHistory[nCmdCursor][0];	
+	memcpy(szCmdNow,pCmdHistory,MAX_CMD_LEN);	
+	nCmdInputCount = strlen(szCmdNow);
+	nCmdInputCursor= nCmdInputCount;
+	write(STDOUT_FILENO,szCmdNow,nCmdInputCount);	
+	
+}
+
+static void App_Console_OnLeft()
+{
+	if(nCmdInputCursor &gt; 0)
+	{
+		char c = '/b';
+		write(STDOUT_FILENO,&amp;c,1);
+		nCmdInputCursor--;
+	}
+}
+
+static void App_Console_OnRight()
+{
+	if(nCmdInputCursor &lt; nCmdInputCount)
+	{
+		char* pCmd = szCmdNow;
+		char c = pCmd[nCmdInputCursor];
+		write(STDOUT_FILENO,&amp;c,1);
+		nCmdInputCursor++;
+	}
+}
+
+static void App_Console_OnEnter()
+{	
+	szCmdNow[nCmdInputCount] = '/0';
+	char szTemp[] = {"/r/n"};
+	write(STDOUT_FILENO,szTemp,strlen(szTemp));
+	nCmdInputCount = 0;
+	nCmdInputCursor = 0;
+
+	if(strlen(szCmdNow) == 0) return;
+
+	if(nCmdIndex == MAX_CMD_HISTORY) // 命令队列满了，移动
+	{
+		char szTempCmd[MAX_CMD_HISTORY][MAX_CMD_LEN];
+		memcpy(szTempCmd,&amp;szCmdHistory[1][0],MAX_CMD_LEN*(MAX_CMD_HISTORY-1));
+		memcpy(szCmdHistory,szTempCmd,MAX_CMD_LEN*(MAX_CMD_HISTORY-1));
+		nCmdIndex = MAX_CMD_HISTORY-1;
+		nCmdCursor = nCmdIndex;
+	}
+	
+
+	memcpy(szCmdHistory[nCmdIndex],szCmdNow,MAX_CMD_LEN);
+	
+	nCmdIndex++;
+	nCmdCursor = nCmdIndex;	
+
+	// 解析命令
+	App_Console_ParseCmd(szCmdNow);
+}
+
+static void App_Console_CmdLoop()
+{
+	BOOL bGetEnter = FALSE;
+	while(TRUE)
+	{	
+		// 读取一个console输入
+		UINT32 nReturn = 0;
+		char input;
+		nReturn = App_Console_ReadInput (&amp;input);
+		if(nReturn &gt; 0)
+		{			
+			switch(waitKeyState)
+			{
+				case WKS_WAIT :
+					if(isprint(input))// 可打印字符
+						App_Console_OnPrintChar(input);
+					else
+					{
+						if(input == KEY_BACKSPACE)
+							App_Console_OnBackspace();
+						else if(input == KEY_DEL)
+							App_Console_OnDel();
+						else if(input == KEY_ENTER)
+						{
+							App_Console_OnEnter();
+							bGetEnter = TRUE;
+						}
+						else if(input == '/x1b')
+							waitKeyState = WKS_RECV1B;
+						else
+							waitKeyState = WKS_WAIT;
+					}						
+					break;
+				case WKS_RECV1B:
+					if(input == '/x1b') // 按了ESC 又按了方向键，或者是 ESC
+					{
+						//App_Console_OnDoubleEsc();
+						waitKeyState = WKS_RECV1B;
+					}
+					else 
+
+					if(input == '[') //可能为 上下左右 4个键
+						waitKeyState = WKS_UDLR;
+					else//下面的情况为 按了 ESC 键之后，按了其他的键的处理
+					{						
+						if(isprint(input)) App_Console_OnPrintChar(input);							
+						waitKeyState = WKS_WAIT;
+					}
+					break;
+				case WKS_UDLR:
+					if(input == 'A')// 上
+						App_Console_OnUp();
+					else if(input == 'B')// 下
+						App_Console_OnDown();
+					else if(input == 'D')// 左
+						App_Console_OnLeft();
+					else if(input == 'C')// 右
+						App_Console_OnRight();
+					else
+					{
+						if(isprint(input)) App_Console_OnPrintChar(input);
+					}
+					waitKeyState = WKS_WAIT;					
+					break;
+				default:
+					break;
+			}
+		}
+
+		if(bGetEnter) 
+		{			
+			break;
+		}
+	}
+}
+
+void App_Console_Start()
+{
+	// 清空 sdtout 缓冲
+    fflush(stdout);
+	fflush(stdin);
+
+	char szTemp[] = {"/r/nStart TR Console.../r/n/r/n"};
+	write(STDOUT_FILENO,szTemp,strlen(szTemp));
+
+	while(TRUE)
+	{
+		write(STDOUT_FILENO,szPrompt,strlen(szPrompt));
+		App_Console_CmdLoop();
+	}
+}
+
+// 解析命令
+static void App_Console_ParseCmd(const char* pCmd)
+{
+	int length = strlen(pCmd); 
+	
+	// 全部转小写
+	int i=0;
+	char szTempCmd[MAX_CMD_LEN];
+	for (i=0; i &lt; length; i++) szTempCmd[i] = tolower(pCmd[i]); 
+
+
+	// 将输入的命令各个 part 分开	
+	char szPart[MAX_PAR_COUNT][MAX_CMD_LEN];
+	int nPartCount = 0;
+	int nPartCursor = 0;
+	int nCmdCursor = 0;
+	memset(szPart,0,sizeof(szPart));
+
+	while(TRUE)
+	{
+		if(nCmdCursor == length) 
+		{
+			if(nPartCursor &gt; 0)
+			{
+				nPartCount++;
+				nPartCursor = 0;
+			}
+			break;			
+		}
+		
+		if( (szTempCmd[nCmdCursor] == ',') || (szTempCmd[nCmdCursor] == ' ') ) // part 分割符
+		{
+			szPart[nPartCount][nPartCursor] = '/0';
+			
+			nPartCount++;
+			nPartCursor = 0;
+		}
+		else 
+		{
+			szPart[nPartCount][nPartCursor] = szTempCmd[nCmdCursor];
+			nPartCursor++;
+		}
+		nCmdCursor++;		
+	}
+	App_Test_OnCmd(szPart,nPartCount);		
+}</textarea> </p>
+<p>&nbsp;</p>
+<p>命令实现头文件(app_test.h)</p>
+<p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/4858908#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 9292px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#ifndef&nbsp;__APP_TEST_H__</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;__APP_TEST_H__</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#ifdef&nbsp;__cplusplus</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">extern</span><span>&nbsp;</span><span class="string">"C"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif&nbsp;&nbsp;&nbsp;&nbsp;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"type_def.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;MAX_CMD_LEN&nbsp;512</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">void</span><span>&nbsp;App_Test_OnCmd(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#ifdef&nbsp;__cplusplus</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><textarea cols="84" rows="15" name="code" class="cpp" style="display: none;">#ifndef __APP_TEST_H__
+#define __APP_TEST_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif    
+
+#include "type_def.h"
+
+#define MAX_CMD_LEN 512
+
+void App_Test_OnCmd(char szPart[][MAX_CMD_LEN],int nPartCount);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif</textarea> </p>
+<p>&nbsp;</p>
+<p>命令实现c文件(app_test.c)</p>
+<p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/turui/article/details/4858908#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/turui/article/details/4858908#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 9805px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#include&nbsp;"app_test.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"stapp_main.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"app_qam.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"api_av.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"api_video.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;"api_audio.h"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;"api_pcr.h"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnHelp();&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnWriteReg8(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnReadReg8(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnQamConnect(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnAVPlayMpeg(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnAVStop();&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnVolumeSet(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnMute();&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnUnmute();&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnDENCRegDum();&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnDENCRegSet(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">void</span><span>&nbsp;App_Test_OnCmd(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;这里处理私有的命令</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;==&nbsp;0)&nbsp;</span><span class="keyword">return</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"help"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnHelp();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"writereg8"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;2)&nbsp;App_Test_OnWriteReg8(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"readreg8"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;1)&nbsp;App_Test_OnReadReg8(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"qamconnect"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;1)&nbsp;App_Test_OnQamConnect(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"avplaympeg"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;1)&nbsp;App_Test_OnAVPlayMpeg(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"avstop"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnAVStop();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"volumeset"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;1)&nbsp;App_Test_OnVolumeSet(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"mute"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnMute();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"unmute"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnUnmute();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"dencregdump"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;App_Test_OnDENCRegDum();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>(&nbsp;strcmp(szPart[0],</span><span class="string">"dencregset"</span><span>)&nbsp;==&nbsp;0)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;1)&nbsp;App_Test_OnDENCRegSet(szPart,nPartCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnHelp()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"**************************************************************/n"</span><span>);&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;0&nbsp;MAX&nbsp;0&nbsp;Eg.&nbsp;help/n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;WriteReg8&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;2&nbsp;MAX&nbsp;2&nbsp;Eg.&nbsp;WriteReg8&nbsp;0x1920C114&nbsp;128/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;ReadReg8&nbsp;&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;1&nbsp;MAX&nbsp;1&nbsp;Eg.&nbsp;ReadReg8&nbsp;0x1920C114/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;QamConnect&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;1&nbsp;MAX&nbsp;3&nbsp;Eg.&nbsp;QamConnect&nbsp;546000/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;AVPlayMpeg&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;1&nbsp;MAX&nbsp;3&nbsp;Eg.&nbsp;AVPlayMpeg&nbsp;64&nbsp;63&nbsp;32/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;AVStop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;0&nbsp;MAX&nbsp;0&nbsp;Eg.&nbsp;AVStop/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;VolumeSet&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;1&nbsp;MAX&nbsp;1&nbsp;Eg.&nbsp;VolumeSet&nbsp;63/n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Mute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;0&nbsp;MAX&nbsp;0&nbsp;Eg.&nbsp;Mute/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Unmute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;0&nbsp;MAX&nbsp;0&nbsp;Eg.&nbsp;Unmute/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;DENCRegDump&nbsp;PARAM&nbsp;MUST&nbsp;0&nbsp;MAX&nbsp;0&nbsp;Eg.&nbsp;DENCRegDump/n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;DENCRegSet&nbsp;&nbsp;PARAM&nbsp;MUST&nbsp;1&nbsp;MAX&nbsp;1&nbsp;Eg.&nbsp;DENCRegSet&nbsp;1/n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*************************************************************/n"</span><span>);&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnWriteReg8(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pAddress&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pValue&nbsp;=&nbsp;&amp;szPart[2][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwAddress&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT8&nbsp;nValue&nbsp;=&nbsp;atoi(pValue);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;sscanf(pAddress,<span class="string">"0x%08x"</span><span>,&amp;dwAddress);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;SYS_WriteRegDev8(dwAddress,nValue);&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnQamConnect(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pFreq&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">UINT32</span><span>&nbsp;nFreq&nbsp;=&nbsp;atoi(pFreq);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">UINT32</span><span>&nbsp;nSymbolRate&nbsp;=&nbsp;6875;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;T_DMD_Modulation&nbsp;nQAMMode&nbsp;=&nbsp;QAM_64;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;2)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pSymbolRate&nbsp;=&nbsp;&amp;szPart[2][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nSymbolRate&nbsp;=&nbsp;atoi(pSymbolRate);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;3)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pQAMMode&nbsp;=&nbsp;&amp;szPart[3][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nQAMMode&nbsp;=&nbsp;atoi(pQAMMode);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;App_Qam_Locking(TRUE,nFreq,nSymbolRate,nQAMMode);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnAVPlayMpeg(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT16&nbsp;nVideoPid&nbsp;=&nbsp;0xFFFF;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT16&nbsp;nAudioPid&nbsp;=&nbsp;0xFFFF;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT16&nbsp;nPcrPid&nbsp;=&nbsp;0xFFFF;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pAudioPid&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nAudioPid&nbsp;=&nbsp;atoi(pAudioPid);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;2)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pVideoPid&nbsp;=&nbsp;&amp;szPart[2][0];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nVideoPid&nbsp;=&nbsp;atoi(pVideoPid);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(nPartCount&nbsp;&gt;&nbsp;3)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pPcr&nbsp;=&nbsp;&amp;szPart[3][0];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nPcrPid&nbsp;=&nbsp;atoi(pPcr);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Av_Stop();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Av_Start(nAudioPid,STREAMTYPE_MP2A,nVideoPid,STREAMTYPE_MP2V,nPcrPid);&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnVolumeSet(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT16&nbsp;nVolume&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pVolume&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;nVolume&nbsp;=&nbsp;atoi(pVolume);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Audio_Volume_Set(nVolume);&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnMute()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Audio_Mute();&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnUnmute()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Audio_Unmute();&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnAVStop()&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;Api_Av_Stop();&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnDENCRegDum()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Brightness&nbsp;&nbsp;&nbsp;0x1920C114&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C114));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Contrast&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x1920C118&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C118));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;Saturation&nbsp;&nbsp;&nbsp;0x1920C11c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C11c));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF0&nbsp;0x1920C120&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C120));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF1&nbsp;0x1920C124&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C124));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF2&nbsp;0x1920C128&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C128));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF3&nbsp;0x1920C12c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C12c));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF4&nbsp;0x1920C130&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C130));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF5&nbsp;0x1920C134&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C134));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF6&nbsp;0x1920C138&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C138));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF7&nbsp;0x1920C13c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C13c));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CHROMA_COEF8&nbsp;0x1920C140&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C140));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF0&nbsp;&nbsp;&nbsp;&nbsp;0x1920C148&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C148));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF1&nbsp;&nbsp;&nbsp;&nbsp;0x1920C14c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C14c));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF2&nbsp;&nbsp;&nbsp;&nbsp;0x1920C150&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C150));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF3&nbsp;&nbsp;&nbsp;&nbsp;0x1920C154&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C154));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF4&nbsp;&nbsp;&nbsp;&nbsp;0x1920C158&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C158));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF5&nbsp;&nbsp;&nbsp;&nbsp;0x1920C15c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C15c));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF6&nbsp;&nbsp;&nbsp;&nbsp;0x1920C160&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C160));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF7&nbsp;&nbsp;&nbsp;&nbsp;0x1920C164&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C164));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF8&nbsp;&nbsp;&nbsp;&nbsp;0x1920C168&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C168));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;LUM_COEF9&nbsp;&nbsp;&nbsp;&nbsp;0x1920C16c&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C16c));&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;CFG9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x1920C144&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,SYS_ReadRegDev8(0x1920C144));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnDENCRegSet(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;UINT16&nbsp;nScheme&nbsp;=&nbsp;1;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pScheme&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;nScheme&nbsp;=&nbsp;atoi(pScheme);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">switch</span><span>(nScheme)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;1:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;2:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;3:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;4:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">default</span><span>:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;App_Test_OnReadReg8(</span><span class="datatypes">char</span><span>&nbsp;szPart[][MAX_CMD_LEN],</span><span class="datatypes">int</span><span>&nbsp;nPartCount)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">char</span><span>*&nbsp;pAddress&nbsp;=&nbsp;&amp;szPart[1][0];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">DWORD</span><span>&nbsp;dwAddress&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;sscanf(pAddress,<span class="string">"0x%08x"</span><span>,&amp;dwAddress);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;printf(<span class="string">"*&nbsp;0x%08x&nbsp;value&nbsp;is&nbsp;0x%02x/n"</span><span>,dwAddress,SYS_ReadRegDev8(dwAddress));&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><textarea cols="83" rows="15" name="code" class="cpp" style="display: none;">#include "app_test.h"
+#include "stapp_main.h"
+#include "app_qam.h"
+#include "api_av.h"
+#include "api_video.h"
+#include "api_audio.h"
+#include "api_pcr.h"
+
+static void App_Test_OnHelp();
+static void App_Test_OnWriteReg8(char szPart[][MAX_CMD_LEN],int nPartCount);
+static void App_Test_OnReadReg8(char szPart[][MAX_CMD_LEN],int nPartCount);
+static void App_Test_OnQamConnect(char szPart[][MAX_CMD_LEN],int nPartCount);
+static void App_Test_OnAVPlayMpeg(char szPart[][MAX_CMD_LEN],int nPartCount);
+static void App_Test_OnAVStop();
+static void App_Test_OnVolumeSet(char szPart[][MAX_CMD_LEN],int nPartCount);
+static void App_Test_OnMute();
+static void App_Test_OnUnmute();
+static void App_Test_OnDENCRegDum();
+static void App_Test_OnDENCRegSet(char szPart[][MAX_CMD_LEN],int nPartCount);
+
+void App_Test_OnCmd(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	// 这里处理私有的命令
+
+	if(nPartCount == 0) return;
+
+	if( strcmp(szPart[0],"help") == 0)
+	{
+		App_Test_OnHelp();
+	}
+	else if( strcmp(szPart[0],"writereg8") == 0)
+	{
+		if(nPartCount &gt; 2) App_Test_OnWriteReg8(szPart,nPartCount);
+	}
+	else if( strcmp(szPart[0],"readreg8") == 0)
+	{
+		if(nPartCount &gt; 1) App_Test_OnReadReg8(szPart,nPartCount);
+	}
+	else if( strcmp(szPart[0],"qamconnect") == 0)
+	{
+		if(nPartCount &gt; 1) App_Test_OnQamConnect(szPart,nPartCount);
+	}
+	else if( strcmp(szPart[0],"avplaympeg") == 0)
+	{
+		if(nPartCount &gt; 1) App_Test_OnAVPlayMpeg(szPart,nPartCount);
+	}
+	else if( strcmp(szPart[0],"avstop") == 0)
+	{
+		App_Test_OnAVStop();
+	}
+	else if( strcmp(szPart[0],"volumeset") == 0)
+	{
+		if(nPartCount &gt; 1) App_Test_OnVolumeSet(szPart,nPartCount);
+	}
+	else if( strcmp(szPart[0],"mute") == 0)
+	{
+		App_Test_OnMute();
+	}
+	else if( strcmp(szPart[0],"unmute") == 0)
+	{
+		App_Test_OnUnmute();
+	}
+	else if( strcmp(szPart[0],"dencregdump") == 0)
+	{
+		App_Test_OnDENCRegDum();
+	}
+	else if( strcmp(szPart[0],"dencregset") == 0)
+	{
+		if(nPartCount &gt; 1) App_Test_OnDENCRegSet(szPart,nPartCount);
+	}
+
+}
+
+static void App_Test_OnHelp()
+{
+	printf("**************************************************************/n");	
+	printf("* Help        PARAM MUST 0 MAX 0 Eg. help/n");	
+	printf("* WriteReg8   PARAM MUST 2 MAX 2 Eg. WriteReg8 0x1920C114 128/n");
+	printf("* ReadReg8    PARAM MUST 1 MAX 1 Eg. ReadReg8 0x1920C114/n");
+	printf("* QamConnect  PARAM MUST 1 MAX 3 Eg. QamConnect 546000/n");
+	printf("* AVPlayMpeg  PARAM MUST 1 MAX 3 Eg. AVPlayMpeg 64 63 32/n");
+	printf("* AVStop      PARAM MUST 0 MAX 0 Eg. AVStop/n");
+	printf("* VolumeSet   PARAM MUST 1 MAX 1 Eg. VolumeSet 63/n");	
+	printf("* Mute        PARAM MUST 0 MAX 0 Eg. Mute/n");
+	printf("* Unmute      PARAM MUST 0 MAX 0 Eg. Unmute/n");
+	printf("* DENCRegDump PARAM MUST 0 MAX 0 Eg. DENCRegDump/n");
+	printf("* DENCRegSet  PARAM MUST 1 MAX 1 Eg. DENCRegSet 1/n");	
+	printf("*************************************************************/n");	
+	
+}
+
+static void App_Test_OnWriteReg8(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	char* pAddress = &amp;szPart[1][0];
+	char* pValue = &amp;szPart[2][0];
+
+	DWORD dwAddress = 0;
+	UINT8 nValue = atoi(pValue);
+
+	sscanf(pAddress,"0x%08x",&amp;dwAddress);
+
+	SYS_WriteRegDev8(dwAddress,nValue);	
+}
+
+static void App_Test_OnQamConnect(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	char* pFreq = &amp;szPart[1][0];
+	UINT32 nFreq = atoi(pFreq);
+	UINT32 nSymbolRate = 6875;
+	T_DMD_Modulation nQAMMode = QAM_64;
+	if(nPartCount &gt; 2)
+	{
+		char* pSymbolRate = &amp;szPart[2][0];
+		nSymbolRate = atoi(pSymbolRate);
+	}
+
+	if(nPartCount &gt; 3)
+	{
+		char* pQAMMode = &amp;szPart[3][0];
+		nQAMMode = atoi(pQAMMode);
+	}
+	
+	App_Qam_Locking(TRUE,nFreq,nSymbolRate,nQAMMode);	
+}
+
+
+static void App_Test_OnAVPlayMpeg(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	UINT16 nVideoPid = 0xFFFF;
+	UINT16 nAudioPid = 0xFFFF;
+	UINT16 nPcrPid = 0xFFFF;
+
+
+	char* pAudioPid = &amp;szPart[1][0];
+	nAudioPid = atoi(pAudioPid);
+
+
+	if(nPartCount &gt; 2)
+	{
+		char* pVideoPid = &amp;szPart[2][0];
+		nVideoPid = atoi(pVideoPid);
+	}
+
+	if(nPartCount &gt; 3)
+	{
+		char* pPcr = &amp;szPart[3][0];
+		nPcrPid = atoi(pPcr);
+	}
+
+	Api_Av_Stop();
+	Api_Av_Start(nAudioPid,STREAMTYPE_MP2A,nVideoPid,STREAMTYPE_MP2V,nPcrPid);
+}
+
+static void App_Test_OnVolumeSet(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	UINT16 nVolume = 0; 
+	char* pVolume = &amp;szPart[1][0];
+	nVolume = atoi(pVolume);
+
+	Api_Audio_Volume_Set(nVolume);
+}
+
+static void App_Test_OnMute()
+{
+	Api_Audio_Mute();
+}
+
+static void App_Test_OnUnmute()
+{
+	Api_Audio_Unmute();
+}
+
+static void App_Test_OnAVStop()
+{
+	Api_Av_Stop();
+}
+
+static void App_Test_OnDENCRegDum()
+{
+	printf("* Brightness   0x1920C114 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C114));	
+	printf("* Contrast     0x1920C118 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C118));	
+	printf("* Saturation   0x1920C11c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C11c));
+	
+	printf("* CHROMA_COEF0 0x1920C120 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C120));	
+	printf("* CHROMA_COEF1 0x1920C124 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C124));	
+	printf("* CHROMA_COEF2 0x1920C128 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C128));	
+	printf("* CHROMA_COEF3 0x1920C12c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C12c));	
+	printf("* CHROMA_COEF4 0x1920C130 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C130));	
+	printf("* CHROMA_COEF5 0x1920C134 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C134));	
+	printf("* CHROMA_COEF6 0x1920C138 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C138));	
+	printf("* CHROMA_COEF7 0x1920C13c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C13c));	
+	printf("* CHROMA_COEF8 0x1920C140 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C140));	
+
+	printf("* LUM_COEF0    0x1920C148 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C148));	
+	printf("* LUM_COEF1    0x1920C14c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C14c));	
+	printf("* LUM_COEF2    0x1920C150 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C150));	
+	printf("* LUM_COEF3    0x1920C154 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C154));	
+	printf("* LUM_COEF4    0x1920C158 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C158));	
+	printf("* LUM_COEF5    0x1920C15c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C15c));	
+	printf("* LUM_COEF6    0x1920C160 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C160));	
+	printf("* LUM_COEF7    0x1920C164 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C164));	
+	printf("* LUM_COEF8    0x1920C168 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C168));	
+	printf("* LUM_COEF9    0x1920C16c value is 0x%02x/n",SYS_ReadRegDev8(0x1920C16c));	
+
+	printf("* CFG9         0x1920C144 value is 0x%02x/n",SYS_ReadRegDev8(0x1920C144));		
+	
+}
+
+static void App_Test_OnDENCRegSet(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	UINT16 nScheme = 1; 
+	char* pScheme = &amp;szPart[1][0];
+	nScheme = atoi(pScheme);
+
+	switch(nScheme)
+	{
+		case 1:
+			
+			break;
+		case 2:
+			
+			break;
+		case 3:
+			
+			break;
+		case 4:
+			
+			break;
+		default:
+			break;
+	}
+
+}
+
+static void App_Test_OnReadReg8(char szPart[][MAX_CMD_LEN],int nPartCount)
+{
+	char* pAddress = &amp;szPart[1][0];
+	DWORD dwAddress = 0;
+	
+	sscanf(pAddress,"0x%08x",&amp;dwAddress);
+	printf("* 0x%08x value is 0x%02x/n",dwAddress,SYS_ReadRegDev8(dwAddress));
+}</textarea> </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p></div></div></div></div></div><script type="text/javascript" charset="utf-8" src="./嵌入式 linux 下 通用 console（控制台） 的实现_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="http://counter.csdn.net/pv.aspx?id=24" border="0" width="0" height="0" style="display: none !important; visibility: hidden !important; opacity: 0 !important; background-position: 0px 0px;">
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+
+<!--ad.csdn.net-->
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script><link rel="stylesheet" type="text/css" href="./嵌入式 linux 下 通用 console（控制台） 的实现_files/pub_footer_2012.css"></body></html>

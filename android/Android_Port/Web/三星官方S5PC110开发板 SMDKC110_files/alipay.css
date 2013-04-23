@@ -1,0 +1,92 @@
+@charset "utf-8";
+/*alipay*/
+#alipay {
+    background: none repeat scroll 0 0 #F2F2F2;
+    color: #000;
+    font-size: 12px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 98%;
+	overflow:hidden;
+}
+#alipay .ali-form{
+	float:right;
+	width:58%;
+}
+#alipay input {
+    background: none repeat scroll 0 0 #ffcc00;
+    border: 0 none;
+    height: 24px;
+    margin: 0;
+}
+#alipay li p {
+    background: none repeat scroll 0 0 #3388cc;
+    float: left;
+    font-weight: normal;
+    text-align: center;
+    line-height: 29px;
+    width: 5em;
+    color: #FFFFFF;
+}
+#alipay em {
+    font-size: 30px;
+}
+#alipay ul, #alipay p {
+    margin: 0;
+    padding: 0;
+}
+#alipay ul li {
+    background: none repeat scroll 0 0 #ffcc00;
+    display: block;
+    float: right;
+    height: 29px;
+    line-height: 29px;
+    margin: 0 0 10px 0 !important;
+    padding: 0;
+    width: 230px;
+}
+#alipay .ali-info{
+	float:right;
+	width:39%;
+}
+#alipay .ali-buy {
+    background: url(../images/buy.png) no-repeat;
+    color: #fff;
+    display: inline-block;
+	float:right;
+    font-family: Georgia,Microsoft YaHei,"Times New Roman","宋体";
+    font-size: 24px;
+    font-weight: bold;
+	clear:both;
+    width: 300px;
+    margin-bottom:10px;
+	overflow: hidden;
+    height: 75px;
+}
+#alipay .ali-buy span {
+    display: inline-block;
+    float: left;
+    line-height: 70px;
+    margin-left: 30px;
+    width: 120px;
+}
+
+#alipay .btn {
+    background:none;
+    border: 0 none;
+    cursor: pointer;
+    float: right;
+    height: 40px !important;
+    width: 130px;
+	position:relative;
+	top:18px;
+	right:10px;
+	display:block;
+}
+
+#alipay .ali-desc {
+    color: #222222;
+    font-weight: normal;
+	width:40%;
+	float:left;
+}

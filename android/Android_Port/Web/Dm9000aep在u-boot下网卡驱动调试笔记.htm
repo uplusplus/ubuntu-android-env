@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://blog.csdn.net/farsight2009/article/details/6523098 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Dm9000aep在u-boot下网卡驱动调试笔记 - 华清远见嵌入式学习园地 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="作者：杨硕,华清远见嵌入式培训中心讲师。最近在将u-boot1.3.4移植到三星s5pc100 SOC平台发现u-boot启动之后无法ping通主机，也不能用tftp下载内核。硬件平台用的网卡芯片是dm9000aep，这是一款全集成，性价比高的快速以太网MAC控制器，支持8-bit和16-bit数据宽度，带有一个通用处理器接口，EEPROM接口，10M/100M自适应，带有16KB的SRAM（">
+<script type="text/javascript" async="" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/ga.js"></script><script src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/jquery.js" type="text/javascript"></script>
+<script src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/plugins.js" type="text/javascript"></script>
+<script src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/common.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+<link rel="Stylesheet" type="text/css" href="./Dm9000aep在u-boot下网卡驱动调试笔记_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/farsight2009/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./Dm9000aep在u-boot下网卡驱动调试笔记_files/default.css">
+<style type="text/css"></style><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body contenteditable="true">
+<script src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./Dm9000aep在u-boot下网卡驱动调试笔记_files/navtop_2012.css">
+<div class="nav_top_2011"><br></div><div id="container"><div id="body"><div id="main"><div class="main"><div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./Dm9000aep在u-boot下网卡驱动调试笔记_files/Dm9000aep在u-boot下网卡驱动调试笔记.htm">
+        Dm9000aep在u-boot下网卡驱动调试笔记
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage"><br></div>
+
+
+    
+<div id="article_content" class="article_content">
+<p class="grey"><span class="black9b"><strong>作者：杨硕,</strong></span><span class="STYLE2"><a href="http://www.embedu.org/" target="_blank">华清远见嵌入式培训中心</a><font color="#666666">讲师。</font></span></p>
+<p class="grey">最近在将u-boot1.3.4移植到三星s5pc100 SOC平台发现u-boot启动之后无法ping通主机，也不能用tftp下载内核。硬件平台用的网卡芯片是dm9000aep，这是一款全集成，性价比高的快速以太网MAC控制器，支持8-bit和16-bit数据宽度，带有一个通用处理器接口，EEPROM接口，10M/100M自适应，带有16KB的SRAM（13KB作为接受FIFO，3KB作为发送FIFO）。Dm9000a在嵌入式平台中应用非常广。</p>
+<p class="grey">因为在开发过程中我们需要经常修改重新编译Linux内核，所以每次改完之后都重新烧写内核到nandflash里面很麻烦。所以一定要解决u-boot对dm9000a网卡的支持问题。</p>
+<p class="grey">我们首先需要确定硬件上有没有问题。鉴于Linux内核启动之后可以通过nfs挂在根文件系统，并且工作正常，所以可以确定内核对dm9000a的支持是没问题的，也就是说硬件上没有问题。接下来将注意力集中到软件上。</p>
+<p class="grey">我首先怀疑是u-boot下对dm9000a的驱动有问题。找到驱动源代码：driver/net/dm9000x.c。 在代码一开始的注释中说“Fixed the driver to work with DM9000A”。看了之后很疑惑，既然源码作者都说他的驱动已经支持了DM9000A，那为什么网卡在u-boot下还不能工作？带着半信半疑的态度我进去查看源代码。首先最重要的网卡初始化的代码，在函数eth_init()中，这里面主要是设置网卡的工作模式，数据总线宽度，设置MAC地址并使能网卡等工作。为了确认这段代码是否正确，我又查看了Linux内核中DM9000A的驱动代码dm9000.c，发现两者在关键部分的设置都是一样的，只不过内核里面采用中断的工作模式，而在u-boot中采用轮询的工作模式。如果初始化代码没有问题的话，我继续查看关键的接收以及发送函数，即eth_send()和eth_rx()，发现这两部分也和内核里面是一样的。</p>
+<p class="grey">这下我就更加困惑了，似乎驱动代码是没有问题的，但是问题出在什么地方呢？为了深入的分析原因，我打开了DM9000a的调试接口宏：define CONFIG_DM9000_DEBUG。然后在超级终端ping我的主机，ping的时候会调用eth_init()激活网卡，终端打印出下面的初始化信息：</p>
+<p class="grey">Dm90000 i/o : 0x88000300, id : 0x90000a46<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dm9000 : running in 16 bit mode<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAC : 11:22:33:44:55:66<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Operating at 100M full duplex mode</p>
+<p class="grey">看来初始化是没有问题的，可以读出id号这说明s5pc100和dm9000a数据交互肯定没有问题。但是ping还是会失败。之后打印的信息如下所示：</p>
+<p class="grey">Transmit done<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Receiving packet<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rx status: 0x0101 rx len: 24158<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rx fifo error<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rx length too big</p>
+<p class="grey">问题出在这里了，我们看到主机回传给开发板的数据包的长度是24158Byte，即23.59KB。从前面的介绍我们知道接收fifo只有13KB，这个长度显然太大了，所以后面有fifo error和length too big的提示。在主机端用抓包软件抓包，发现抓到的来自开发板的数据包都不对，MAC地址并不是板子的MAC地址，Protocol是unknown。</p>
+<p class="grey">如果驱动没错的话怎么会是这样的结果？这时我想到会不会是总线宽度设置的不正确导致数据流出错？接着通过查看硬件原理图找到dm9000a接到片选1上，也就是s5pc100的SMC Bank 1上。然后在SMC的控制器中查看相应的控制寄存器，找到每个Bank的总线宽度是在SMC_BW寄存器中配置的，其中4~7位是配置Bank 1的。</p>
+<p class="grey" align="center"><img height="293" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/Column344-1.jpg" width="600" alt=""></p>
+<p class="grey">这时我想到既然dm9000a在内核里面工作正常，那就应该去内核代码里面看看内核是怎么设置的。我在驱动代码里面没有找到设置Bank1的代码。一般来说如果驱动里面不设置的话，那就应该是在平台代码里面做。平台代码位于：arch/arm/mach-s5pc100/mach-smdkc100.c，在平台初始化函数smdkc100_machine_init中，我找到了smdkc100_dm9000_set函数，这个函数里面就是将SMC_BW寄存器里面的4~7位全部设置为1。我们注意这里第四位DataWidth1就是控制数据总线宽度的，设为1就是工作在16位模式。</p>
+<p class="grey">再回到u-boot中，在u-boot的板级初始化文件：board/smdkc100/smdkc100.c中，我在board_init函数中没有找到初始化dm9000a的代码，在整个文件中也没有。因此可以确定u-boot确实没有设置Bank 1的数据总线宽度，而SMC_BW里面4~7位的默认值都是0，因此上电后默认就是8-bit的数据总线宽度。看来终于找到问题所在了，我在board_init中加了一个dm9000aep_pre_init函数，里面将总线宽度配置为16位的，重新编译u-boot，通过dnw烧写到nandflash里面。重启之后再ping主机，果然就可以ping通了。通过抓包工具我们可以清晰看到开发板和主机之间数据包的交互过程：</p>
+<p class="grey" align="center"><img height="57" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/Column344-2.jpg" width="650" alt=""></p>
+<p class="grey">最后还有一个问题，每次ping结束后，网线的物理连接就断掉了，也就是说开发板和主机端的网络指示灯都灭了。跟到u-boot的实现ping的源代码里面，发现每次ping结束之前会调用一下eth_halt函数，这个函数会把网卡禁用掉。所以我在dm9000x.c中将eth_halt中禁用网卡的几行代码注释掉，再重新烧写u-boot，问题就可以解决了。</p>
+<p class="grey"><font face="微软雅黑">嵌入式及3G相关资源及学习请点击：</font><a href="http://www.soku.com/search_video/q_%7B%2B%E5%B5%8C%E5%85%A5%E5%BC%8F%2B%22%E5%8D%8E%E6%B8%85%E8%BF%9C%E8%A7%81%22%7D" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">嵌入式开发视频</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.soku.com/search_video/q_%7B%2Bandroid%2B%22%E5%8D%8E%E6%B8%85%E8%BF%9C%E8%A7%81%22%7D" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">android开发视频</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.3g-edu.org/" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">android培训</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.3g-edu.org/" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">3G培训</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.farsight.com.cn/courses/TS-QT.htm" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">QT培训</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.soku.com/search_video/q_%7B%2Bqt%2B%22%E5%8D%8E%E6%B8%85%E8%BF%9C%E8%A7%81%22%7D" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">QT开发视频</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.farsight.com.cn/courses/TS-ShiziWulianwang.htm" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">物联网培训</font></a><font face="微软雅黑">&nbsp;</font><a href="http://www.soku.com/search_video/q_%7B%2B%E7%89%A9%E8%81%94%E7%BD%91%2B%22%E5%8D%8E%E6%B8%85%E8%BF%9C%E8%A7%81%22%7D" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">物联网技术视频</font></a><font face="微软雅黑">&nbsp;</font><a href="http://u.youku.com/user_show/uid_%e5%8d%8e%e6%b8%85%e8%bf%9c%e8%a7%81" target="_blank"><font face="微软雅黑" color="#0066cc" size="2">嵌入式学习</font></a><font face="微软雅黑">&nbsp;</font></p>
+</div>
+<div class="share_buttons" id="sharePanel"><span>分享到：</span> <a name="sina" class="share_sina" title="分享到新浪微博"></a><a name="qq" class="share_qq" title="分享到腾讯微博"></a></div>
+<!--192.168.1.237-->
+<div class="article_next_prev">
+    <li class="prev_article"><span>上一篇：</span><a href="http://blog.csdn.net/farsight2009/article/details/6405994">Dm9000aep在u-boot下网卡驱动调试笔记</a></li>
+    <li class="next_article"><span>下一篇：</span><a href="http://blog.csdn.net/farsight2009/article/details/6412270">u-boot链接分析</a></li>
+</div>
+
+
+    
+</div>
+<div id="ad_cen"></div>
+<script type="text/javascript">
+    new Ad(4, 'ad_cen');
+</script>
+<div id="comment_title" class="panel_head">查看评论<a name="comments"></a></div>
+<div id="comment_list"><br>&nbsp;&nbsp;暂无评论<br><br><div class="clear"></div></div>
+<div id="comment_bar"></div>
+<div id="comment_form"><div class="guest_link">您还没有登录,请<a href="http://passport.csdn.net/account/login?from=http%3A%2F%2Fblog.csdn.net%2Ffarsight2009%2Farticle%2Fdetails%2F6523098">[登录]</a>或<a href="http://passport.csdn.net/account/register?from=http%3A%2F%2Fblog.csdn.net%2Ffarsight2009%2Farticle%2Fdetails%2F6523098">[注册]</a></div></div>
+<div class="announce">* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '6523098';
+    var commentscount = 0;
+    var islock = false
+</script>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/comment.js"></script>
+<div id="ad_bot"></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+<div id="d-top" style="display: none;">
+<a id="d-top-a" href="http://blog.csdn.net/farsight2009/article/details/6523098#" title="回到顶部">
+<img src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/top.png" alt="TOP"></a>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var d_top=$('#d-top');
+        document.onscroll=function(){
+            var scrTop=(document.body.scrollTop||document.documentElement.scrollTop);
+            if(scrTop>500){
+                d_top.show();
+            }else{
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function(){
+            scrollTo(0,0);
+            this.blur();
+            return false;
+        });
+    });
+</script>
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+<br>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/shCore-src.js"></script>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/ZeroClipboard.js"></script>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/article_code.js"></script>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/cnick.js"></script>
+
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/show.js"></script>
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/showblogmedal.ashx"></script>
+
+<script type="text/javascript" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./Dm9000aep在u-boot下网卡驱动调试笔记_files/pub_footer_2012.css"><div class="pub_footerall"><dl><dt></dt> <dd><br></dd></dl></div><script type="text/javascript" charset="utf-8" src="./Dm9000aep在u-boot下网卡驱动调试笔记_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="http://counter.csdn.net/pv.aspx?id=24" border="0" width="0" height="0" style="display: none !important; visibility: hidden !important; opacity: 0 !important; background-position: 0px 0px;">
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+
+<!--ad.csdn.net-->
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

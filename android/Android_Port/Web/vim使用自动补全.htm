@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/ -->
+<html lang="zh-CN" class=" social-js" version="g42dymwpi--nx"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>vi/vim使用进阶: 自动补全 | 易水博客</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="http://easwy.com/blog/xmlrpc.php">
+<!--[if lt IE 9]>
+<script src="http://easwy.com/blog/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<link rel="alternate" type="application/rss+xml" title="易水博客 » Feed" href="http://easwy.com/blog/feed/">
+<link rel="alternate" type="application/rss+xml" title="易水博客 » 评论 Feed" href="http://easwy.com/blog/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="易水博客 » vi/vim使用进阶: 自动补全 评论 Feed" href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/feed/">
+<link rel="stylesheet" id="social_comments-css" href="./vim使用自动补全_files/comments.css" type="text/css" media="screen">
+<link rel="stylesheet" id="twentytwelve-fonts-css" href="./vim使用自动补全_files/css" type="text/css" media="all">
+<link rel="stylesheet" id="twentytwelve-style-css" href="./vim使用自动补全_files/style.css" type="text/css" media="all">
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css'  href='http://easwy.com/blog/wp-content/themes/twentytwelve/css/ie.css?ver=20121010' type='text/css' media='all' />
+<![endif]-->
+<link rel="stylesheet" id="wp-pagenavi-css" href="./vim使用自动补全_files/pagenavi-css.css" type="text/css" media="all">
+<script type="text/javascript" src="./vim使用自动补全_files/jquery.js"></script><style type="text/css"></style>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://easwy.com/blog/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://easwy.com/blog/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="vi/vim使用进阶: 智能补全" href="http://easwy.com/blog/archives/advanced-vim-skills-omin-complete/">
+<link rel="next" title="vi/vim使用进阶: 指随意动，移动如飞 (一)" href="http://easwy.com/blog/archives/advanced-vim-skills-basic-move-method/">
+<link rel="canonical" href="./vim使用自动补全_files/vim使用自动补全.htm">
+<link rel="shortlink" href="http://easwy.com/blog/?p=168">
+	<script src="./vim使用自动补全_files/enhanced-categories.js" type="text/javascript"></script>
+	<link rel="shortlink" href="http://easwy.com/blog/168">
+<style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #e6e6e6; }
+</style>
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+
+<body class="single single-post postid-168 single-format-standard custom-background custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<hgroup>
+			<h1 class="site-title"><a href="http://easwy.com/blog/" title="易水博客" rel="home">易水博客</a></h1>
+			<h2 class="site-description">关注Linux, Scala, Android, Java, 开源软件和嵌入式系统</h2>
+		</hgroup>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<h3 class="menu-toggle">菜单</h3>
+			<a class="assistive-text" href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#content" title="跳至内容">跳至内容</a>
+			<div class="nav-menu"><ul><li><a href="http://easwy.com/blog/" title="首页">首页</a></li><li class="page_item page-item-570"><a href="http://easwy.com/blog/wordpress/">WordPress</a><ul class="children"><li class="page_item page-item-1010"><a href="http://easwy.com/blog/wordpress/itheme-i18n/">iTheme-i18n</a></li><li class="page_item page-item-574"><a href="http://easwy.com/blog/wordpress/wp-posturl/">WP-PostURL</a></li></ul></li><li class="page_item page-item-7"><a href="http://easwy.com/blog/about/">关于</a></li></ul></div>
+		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-168" class="post-168 post type-post status-publish format-standard hentry category-text tag-vim">
+				<header class="entry-header">
+									<h1 class="entry-title">vi/vim使用进阶: 自动补全</h1>
+										<div class="comments-link">
+					<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comments" title="《vi/vim使用进阶: 自动补全》上的评论">19 条回复</a>				</div><!-- .comments-link -->
+					</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<p>
+    <span class="bold"><strong>&lt;&lt; </strong></span><a class="link" href="http://easwy.com/blog/archives/advanced-vim-skills-catalog/" target="_top">返回vim使用进阶: 目录</a>
+</p>
+<p>
+    本节所用命令的帮助入口：
+  </p>
+<pre class="programlisting">:help compl-generic
+:help 'complete'
+:help ins-completion </pre>
+<p>
+    上篇文章介绍了<a class="link" href="http://easwy.com/blog/archives/advanced-vim-skills-omin-complete/" target="_blank">vim的智能补全(omni补全)</a>，本篇主要介绍vim提供的其它补全方式。
+  </p>
+<p>
+    除智能补全外，最常用的补全方式应该是<span class="command"><strong>CTRL-N</strong></span>和<span class="command"><strong>CTRL-P</strong></span>补全了。它们会在当前缓冲区、其它缓冲区，以及当前文件所包含的头文件中查找以光标前关键字开始的单词。智能补全不能对局部变量进行补全，而<span class="command"><strong>CTRL-N</strong></span>和<span class="command"><strong>CTRL-P</strong></span>补全则可以很好的胜任。
+  </p>
+<p>
+    下图是采用<span class="command"><strong>CTRL-P</strong></span>补全的一个例子，输出字符”pa”，然后按<span class="command"><strong>CTRL-P</strong></span>，vim会在下拉菜单中列出所有的匹配功能供选择，此时再按一下<span class="command"><strong>CTRL-P</strong></span>，就选中了第一个项目，也就是我想输入的”parmp”。我们第一次输入<span class="command"><strong>CTRL-P</strong></span>的是进行补全，第二次输入的<span class="command"><strong>CTRL-P</strong></span>是在下拉菜单中向上选择，二者的含义是不同的。
+  </p>
+<p>
+    我们知道，<span class="command"><strong>CTRL-P</strong></span>一般的含义是向上，因此<span class="command"><strong>CTRL-P</strong></span>补全是向上查找以进行补全，而<span class="command"><strong>CTRL-N</strong></span>是向下查找以进行补全，在不同场合使用不同的快捷键可以加速补全的速度。
+  </p>
+<div class="informalfigure">
+<div class="mediaobject" align="center"><img src="./vim使用自动补全_files/ctrl_p_complete-300x223.jpg" align="middle"></div>
+<div class="caption" align="center"><a class="link" href="http://easwy.com/blog/uploads/2009/03/ctrl_p_complete.jpg" target="_blank">点击查看大图</a></div>
+</div>
+<p>
+    使用<span class="command"><strong>CTRL-N</strong></span>和<span class="command"><strong>CTRL-P</strong></span>补全时，由’<span class="emphasis"><em>complete</em></span>‘选项控制vim从哪些地方查找补全的内容。例如，对于比较大的软件项目，文件包含关系复杂，如果<span class="command"><strong>CTRL-N</strong></span>和<span class="command"><strong>CTRL-P</strong></span>补全时查找所包含的头文件，耗时会比较久。此时，可以在’<span class="emphasis"><em>complete</em></span>‘选项中去掉’<span class="emphasis"><em>i</em></span>‘标记，这样<span class="command"><strong>CTRL-N</strong></span>和<span class="command"><strong>CTRL-P</strong></span>补全就不在头文件中查找了，速度会快很多；当然，弊端就是你无法对头文件中出现的某些内容进行补全了。’<span class="emphasis"><em>complete</em></span>‘选项中其它标记的含义，请阅读手册页。
+  </p>
+<p>
+    vim中其它的补全方式包括：
+  </p>
+<pre class="programlisting">整行补全                        <span class="command"><strong>CTRL-X CTRL-L</strong></span>
+根据当前文件里关键字补全        <span class="command"><strong>CTRL-X CTRL-N</strong></span>
+根据字典补全                    <span class="command"><strong>CTRL-X CTRL-K</strong></span>
+根据同义词字典补全              <span class="command"><strong>CTRL-X CTRL-T</strong></span>
+根据头文件内关键字补全          <span class="command"><strong>CTRL-X CTRL-I</strong></span>
+根据标签补全                    <span class="command"><strong>CTRL-X CTRL-]</strong></span>
+补全文件名                      <span class="command"><strong>CTRL-X CTRL-F</strong></span>
+补全宏定义                      <span class="command"><strong>CTRL-X CTRL-D</strong></span>
+补全vim命令                     <span class="command"><strong>CTRL-X CTRL-V</strong></span>
+用户自定义补全方式              <span class="command"><strong>CTRL-X CTRL-U</strong></span>
+拼写建议                        <span class="command"><strong>CTRL-X CTRL-S</strong></span> </pre>
+<p>
+    例如，当我们按下”<span class="command"><strong>CTRL-X CTRL-F</strong></span>“时，vim就会弹出下拉菜单，显示出当前目录下的可选目录和文件，如下图所示。这样，在输入文件名时方便多了。
+  </p>
+<div class="informalfigure">
+<div class="mediaobject" align="center"><img src="./vim使用自动补全_files/ctrl_x_f_complete-300x221.jpg" align="middle"></div>
+<div class="caption" align="center"><a class="link" href="http://easwy.com/blog/uploads/2009/03/ctrl_x_f_complete.jpg" target="_blank">点击查看大图</a></div>
+</div>
+<p>
+    灵活的运用这些补全方式，甚至自定义自己的补全方式，可以使你的工作更加高效。
+  </p>
+<p>
+    可以在vimrc中定义下面的键绑定，以减少按键次数：
+  </p>
+<pre class="programlisting">inoremap &lt;C-]&gt;             &lt;C-X&gt;&lt;C-]&gt;
+inoremap &lt;C-F&gt;             &lt;C-X&gt;&lt;C-F&gt;
+inoremap &lt;C-D&gt;             &lt;C-X&gt;&lt;C-D&gt;
+inoremap &lt;C-L&gt;             &lt;C-X&gt;&lt;C-L&gt; </pre>
+<p>
+    SuperTab插件会记住你上次所使用的补全方式，下次再补全时，直接使用TAB，就可以重复这种类型的补全。比如，上次你使用<span class="command"><strong>CTRL-X CTRL-F</strong></span>进行了文件名补全，接下来，你就可以使用TAB来继续进行文件名补全，直到你再使用上面列出的补全命令进行了其它形式的补全。这个插件在下面的链接下载：
+  </p>
+<p>
+    <a class="link" href="http://www.vim.org/scripts/script.php?script_id=1643" target="_blank">http://www.vim.org/scripts/script.php?script_id=1643</a>
+  </p>
+<p>
+    下载后，把它放到.vim/plugin目录就可以了。
+  </p>
+<p>
+    可以对下面两个选项进行配置，以调整SuperTab的缺省行为：
+  </p>
+<div class="itemizedlist">
+<ul type="disc">
+<li><span class="emphasis"><em>g:SuperTabRetainCompletionType</em></span>的值缺省为1，意为记住你上次的补全方式，直到使用其它的补全命令改变它；如果把它设成2，意味着记住上次的补全方式，直到按ESC退出插入模式为止；如果设为0，意味着不记录上次的补全方式。
+    </li>
+<li><span class="emphasis"><em>g:SuperTabDefaultCompletionType</em></span>的值设置缺省的补全方式，缺省为<span class="command"><strong>CTRL-P</strong></span>。
+    </li>
+</ul>
+</div>
+<p>
+    你可以在vimrc中设置这两个变量，例如：
+  </p>
+<pre class="programlisting">let g:SuperTabRetainCompletionType = 2
+let g:SuperTabDefaultCompletionType = "&lt;C-X&gt;&lt;C-O&gt;" </pre>
+<p>
+    现在你可以使用TAB来进行补全了，就像在shell中那样，方便了很多！
+  </p>
+<p>
+    <span class="bold"><strong>[参考文档]</strong></span>
+  </p>
+<div class="itemizedlist">
+<ul type="disc">
+<li>
+      vim手册
+    </li>
+<li><a class="link" href="http://vimcdoc.sourceforge.net/" target="_blank">vim中文手册</a></li>
+</ul>
+</div>
+<p>
+    <span class="bold"><strong>&lt;&lt; </strong></span><a class="link" href="http://easwy.com/blog/archives/advanced-vim-skills-catalog/" target="_top">返回vim使用进阶: 目录</a>
+</p>
+<div class="posturl">
+<p><span class="bold"><strong>原创文章，请阅读页脚的<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#license">许可方式</a>，转载请注明：</strong></span>转载自<a class="link" href="http://easwy.com/blog/" target="_top">易水博客</a> [ <a class="link" href="http://easwy.com/blog/" target="_top">http://easwy.com/blog/</a> ]</p>
+<p><span class="bold"><strong>本文链接地址:</strong></span> <a class="link" href="./vim使用自动补全_files/vim使用自动补全.htm" target="_top">http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/</a></p>
+</div>
+<p style="margin-top: 0; margin-bottom: 15px; color: #888888; font-size: 80%; font-style: italic">文章的脚注信息由WordPress的<a href="http://easwy.com/blog/wordpress/wp-posturl/" style="color: #8888FF; text-decoration: underline;">wp-posturl插件</a>自动生成</p>
+<div class="yarpp-related">
+<div class="fixed"></div><div id="related_posts"><h3 class="related_post_title">相关文章</h3><ul class="related_post">
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-omin-complete/" rel="bookmark" title="vi/vim使用进阶: 智能补全">vi/vim使用进阶: 智能补全</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-vim-gdb-pyclewn/" rel="bookmark" title="vi/vim使用进阶: 在VIM中使用GDB调试 – 使用pyclewn">vi/vim使用进阶: 在VIM中使用GDB调试 – 使用pyclewn</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-netrw-bufexplorer-winmanager-plugin/" rel="bookmark" title="vi/vim使用进阶: 文件浏览和缓冲区浏览">vi/vim使用进阶: 文件浏览和缓冲区浏览</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-basic-move-method/" rel="bookmark" title="vi/vim使用进阶: 指随意动，移动如飞 (一)">vi/vim使用进阶: 指随意动，移动如飞 (一)</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-use-ctags-tag-file/" rel="bookmark" title="vi/vim使用进阶: 使用标签(tag)文件">vi/vim使用进阶: 使用标签(tag)文件</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-lookupfile-plugin/" rel="bookmark" title="vi/vim使用进阶: lookupfile插件">vi/vim使用进阶: lookupfile插件</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-filetype-on/" rel="bookmark" title="vi/vim使用进阶: 开启文件类型检测">vi/vim使用进阶: 开启文件类型检测</a></li>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-save-project-configuration/" rel="bookmark" title="vi/vim使用进阶: 保存项目相关配置">vi/vim使用进阶: 保存项目相关配置</a></li>
+</ul></div><div class="fixed"></div>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+			本条目发布于 <a href="./vim使用自动补全_files/vim使用自动补全.htm" title="3:55 下午" rel="bookmark"><time class="entry-date" datetime="2009-02-13T15:55:41+00:00">2009年02月13日</time></a>。属于 <a href="http://easwy.com/blog/archives/category/text/" title="查看 文本处理 中的全部文章" rel="category tag">文本处理</a> 分类，被贴了 <a href="http://easwy.com/blog/archives/tag/vim/" rel="tag">Vim</a> 标签。<span class="by-author">作者是 <span class="author vcard"><a class="url fn n" href="http://easwy.com/blog/archives/author/easwy/" title="查看所有由 Easwy 发布的文章" rel="author">Easwy</a></span>。</span>								</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				<nav class="nav-single">
+					<h3 class="assistive-text">文章导航</h3>
+					<span class="nav-previous"><a href="http://easwy.com/blog/archives/advanced-vim-skills-omin-complete/" rel="prev"><span class="meta-nav">←</span> vi/vim使用进阶: 智能补全</a></span>
+					<span class="nav-next"><a href="http://easwy.com/blog/archives/advanced-vim-skills-basic-move-method/" rel="next">vi/vim使用进阶: 指随意动，移动如飞 (一) <span class="meta-nav">→</span></a></span>
+				</nav><!-- .nav-single -->
+
+				<div id="social">
+		<div class="social-post">
+		<div id="loading" style="display:none">
+			<input type="hidden" id="reload_url" value="http://easwy.com/blog/index.php?social_controller=auth&amp;social_action=reload_form&amp;redirect_to=http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/&amp;post_id=168">
+			Logging In...		</div>
+										<div id="respond">
+				<h3 id="reply-title"><span>Profile <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#respond" style="display:none;">cancel</a></small></span></h3>
+									<form action="http://easwy.com/blog/wp-comments-post.php" method="post" id="commentform">
+						<div class="social-sign-in-links social-clearfix">
+		<a class="social-twitter social-imr social-login comments" href="http://easwy.com/blog/index.php?social_controller=auth&social_action=authorize&key=twitter&post_id=168" id="twitter_signin" target="_blank">Sign in with Twitter</a>
+		<a class="social-facebook social-imr social-login comments" href="http://easwy.com/blog/index.php?social_controller=auth&social_action=authorize&key=facebook&post_id=168" id="facebook_signin" target="_blank">Sign in with Facebook</a>
+	</div>
+<div class="social-divider">
+	<span>or</span>
+</div>
+																				<p class="social-input-row social-input-row-author"><label for="author" class="social-label">Name</label><input id="author" name="author" class="social-input" required="required" type="text" value=""></p>
+<p class="social-input-row social-input-row-email"><label for="email" class="social-label">Email</label><input id="email" name="email" class="social-input" required="required" type="text" value=""><small class="social-help">Not published</small></p>
+<p class="social-input-row social-input-row-url"><label for="url" class="social-label">Website</label><input id="url" name="url" class="social-input" type="text" value=""></p>
+												<p class="social-input-row social-input-row-comment"><label for="comment" class="social-label">Comment</label><textarea id="comment" name="comment" class="social-input" required="required"></textarea></p>												<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="Post It">
+							<input type="hidden" name="comment_post_ID" value="168" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+<input type="hidden" id="use_twitter_reply" name="use_twitter_reply" value="0"><input type="hidden" id="in_reply_to_status_id" name="in_reply_to_status_id" value="">						</p>
+						<div id="commentform-extras"><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="992e66e975"></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0"><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0"></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "";
+var USERINFO = false;
+var atreply = "authorlink";
+/* ]]> */
+</script>
+<script type="text/javascript" src="./vim使用自动补全_files/wp-thread-comment.js.php"></script>
+</div>					</form>
+							</div><!-- #respond -->
+							</div>
+	<div id="social-tabs-comments">
+				<ul class="social-nav social-clearfix">
+			<li class="social-all social-tab-main social-current-tab"><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#" rel="social-all"><span>19 Replies</span></a></li>
+			<li class="social-wordpress"><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#" rel="wordpress"><span>12 Comments</span></a></li>
+			<li class="social-twitter"><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#" rel="social-twitter"><span>0 Tweets</span></a></li>
+			<li class="social-facebook"><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#" rel="social-facebook"><span>0 Facebook</span></a></li>
+			<li class="social-pingback"><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#" rel="social-pingback"><span>7 Pingbacks</span></a></li>
+		</ul>
+
+		<!-- panel items -->
+		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
+			<div id="comments" class="social-comments">
+				<div class="social-last-reply-when">Last reply was 6 months ago</div><div class="cf-clearfix"></div>				<ol class="social-commentlist">
+				<li class="wordpress even thread-even depth-1 social-comment social-clearfix social-wordpress" id="li-comment-40">
+<div class="social-comment-inner social-clearfix" id="comment-40">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">Easwy</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-40" class="social-posted-when" target="_blank">2009年02月13日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>(以下为CSDN评论的转帖)</p>
+<p>#baikaishiuc 发表于2007-05-17 22:51:06  IP: 125.71.3.*<br>
+    感觉linux下的人真幸福啊，只用一份vimrc就可以了，那个shell这么好用，不像windows下的，gvimrc调用前还要在载入_vimrc，但是windows的shell(不知道能不能算),感觉实在有点ugly。今天就被这个 问题烦了一天。</p>
+<p>    不过LZ，为什么喜欢VIM的左边栏上有滚动条，感觉好不可思议。</p>
+<p>#easwy 发表于2007-05-18 14:17:22  IP: 213.70.90.*<br>
+    在windows上，也可以只用_vimrc，我根本就没用gvimrc</p>
+<p>    我的工作环境基本是用putty远程登录到linux上，使用控制台下的vim，这个gvim只是为了抓图用的，所以没怎么设置。</p>
+<p>#baikaishiuc 发表于2007-05-18 17:58:48  IP: 125.71.5.*<br>
+    严重谢谢那条，可以只用_vimrc。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,40,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-40 -->
+</li>
+<li class="wordpress odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-41">
+<div class="social-comment-inner social-clearfix" id="comment-41">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">Easwy</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-41" class="social-posted-when" target="_blank">2009年02月13日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>(以下为CSDN评论的转帖)</p>
+<p>#wadewang2008 发表于2008-12-30 17:50:24  IP: 147.145.35.*<br>
+    hi Easywin and all,<br>
+    i installed a gvim 7.1 on windows.<br>
+    it can do auto-completion from the content of current edited buffer.<br>
+    but it can’t do so from other buffers. i wonder if anyone have met<br>
+    similar issues?</p>
+<p>    do you think it’s related to my plugin “supertab”?</p>
+<p>    i tried installed gvim 7.2 but no change. i have a friend who used<br>
+    gvim 6.3, he can do auto-content from other buffers.</p>
+<p>    btw, i used “se complete” to check,<br>
+    it got:<br>
+    complete=.,w,b,u,t,i<br>
+    looks this option is right.</p>
+<p>    if you need more infos, just let me know.</p>
+<p>    great thanks!<br>
+    wade</p>
+<p>    2008-12-30 23:01:49作者回复<br>
+        应该是和’complete’选项有关，不过你的这个选项似乎没什么问题。我没有使用supertab，不知道它会不会有影响。<br>
+        你使用空白的vimrc启动，会不会有这个问题？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,41,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-41 -->
+</li>
+<li class="wordpress even thread-even depth-1 social-comment social-clearfix social-wordpress" id="li-comment-283">
+<div class="social-comment-inner social-clearfix" id="comment-283">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">karl</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-283" class="social-posted-when" target="_blank">2009年04月13日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>在同一行第二次按CTRL-P的时候会把原来的补全的也给去掉了怎么办？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,283,1,&#39;karl&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-283 -->
+</li>
+<li class="wordpress byuser comment-author-easwy bypostauthor odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-295">
+<div class="social-comment-inner social-clearfix" id="comment-295">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://easwy.com/blog/" rel="external nofollow" class="url">Easwy</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-295" class="social-posted-when" target="_blank">2009年04月14日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-283" rel="nofollow">@karl</a><br>
+没遇到过，能讲清楚一点吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,295,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-295 -->
+</li>
+<li class="wordpress even thread-even depth-1 social-comment social-clearfix social-wordpress" id="li-comment-299">
+<div class="social-comment-inner social-clearfix" id="comment-299">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">karl</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-299" class="social-posted-when" target="_blank">2009年04月14日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<blockquote cite="./vim使用自动补全_files/saved_resource"><p>
+<strong><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-295" rel="nofollow">Easwy </a> :</strong><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-283" rel="nofollow">@karl</a>没遇到过，能讲清楚一点吗？</p></blockquote>
+<p>我是没有装补全的插件下做的，第一个单词没输入完，按ctrl+p补全之后，又接着输入，又碰到一个单词，再按一下ctrl+p，这时没有把这个第二个要补全的单词补全，而是把之前补全的单词也去掉了。。。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,299,1,&#39;karl&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-299 -->
+</li>
+<li class="wordpress byuser comment-author-easwy bypostauthor odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-300">
+<div class="social-comment-inner social-clearfix" id="comment-300">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://easwy.com/blog/" rel="external nofollow" class="url">Easwy</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-300" class="social-posted-when" target="_blank">2009年04月14日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-299" rel="nofollow">@karl</a><br>
+没遇到过，使用vim -u NONE跳过vimrc启动，看看有问题没有</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,300,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-300 -->
+</li>
+<li class="pingback even thread-even depth-1 social-comment social-clearfix social-pingback" id="li-comment-332">
+<div class="social-comment-inner social-clearfix" id="comment-332">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://fhc2007.3322.org/blog/?p=591" rel="external nofollow" class="url">笨鸟先飞 : vim使用进阶</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-332" class="social-posted-when" target="_blank">2009年04月23日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] 程序员的利器 – cscope vim使用进阶: 剑不离手 – quickfix vim使用进阶: 智能补全 vim使用进阶: 自动补全 vim使用进阶: 指随意动，移动如飞 (一) vim使用进阶: 指随意动，移动如飞 [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-332 -->
+</li>
+<li class="wordpress odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-396">
+<div class="social-comment-inner social-clearfix" id="comment-396">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">ttuurr</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-396" class="social-posted-when" target="_blank">2009年05月11日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>如何让supertab自动搜索字典啊？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,396,1,&#39;ttuurr&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-396 -->
+</li>
+<li class="wordpress byuser comment-author-easwy bypostauthor even thread-even depth-1 social-comment social-clearfix social-wordpress" id="li-comment-420">
+<div class="social-comment-inner social-clearfix" id="comment-420">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://easwy.com/blog/" rel="external nofollow" class="url">Easwy</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-420" class="social-posted-when" target="_blank">2009年05月18日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-396" rel="nofollow">@ttuurr</a><br>
+我没用supertab插件，不太清楚</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,420,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-420 -->
+</li>
+<li class="pingback odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-pingback" id="li-comment-718">
+<div class="social-comment-inner social-clearfix" id="comment-718">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://fhc2007.blog.ubuntu.org.cn/?p=591" rel="external nofollow" class="url">寻觅/14 » Blog Archive » vim使用进阶</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-718" class="social-posted-when" target="_blank">2009年07月9日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] 程序员的利器 – cscope vim使用进阶: 剑不离手 – quickfix vim使用进阶: 智能补全 vim使用进阶: 自动补全 vim使用进阶: 指随意动，移动如飞 (一) vim使用进阶: 指随意动，移动如飞 [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-718 -->
+</li>
+<li class="wordpress even thread-even depth-1 social-comment social-clearfix social-wordpress" id="li-comment-2718">
+<div class="social-comment-inner social-clearfix" id="comment-2718">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">rainfish</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-2718" class="social-posted-when" target="_blank">2010年05月4日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>打扰了，使用自动补全时也发现一个问题，我用的是PUTTY远程打开的文件，自动补全提示时，发现选择的那一项是灰白色，正好和显示的字体一个颜色，造成无法看到选择项是什么？请问怎么解决?这里没法贴图片，可能描述的不清楚</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,2718,1,&#39;rainfish&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-2718 -->
+</li>
+<li class="wordpress byuser comment-author-easwy bypostauthor odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-2722">
+<div class="social-comment-inner social-clearfix" id="comment-2722">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://easwy.com/blog/" rel="external nofollow" class="url">Easwy</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-2722" class="social-posted-when" target="_blank">2010年05月5日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p><a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-2718" rel="nofollow">@rainfish </a><br>
+颜色可以更改的，可以看我的这篇文章：<br>
+<a href="http://easwy.com/blog/archives/advanced-vim-skills-syntax-on-colorscheme/" rel="nofollow">vi/vim使用进阶: 乱花渐欲迷人眼 – 语法高亮</a></p>
+<p>另外，看看这个帮助以及其下的帮助：<br>
+:help hl-Pmenu</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,2722,1,&#39;Easwy&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-2722 -->
+</li>
+<li class="pingback even thread-even depth-1 social-comment social-clearfix social-pingback" id="li-comment-7427">
+<div class="social-comment-inner social-clearfix" id="comment-7427">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://www.emptykid.com/blog/archives/218" rel="external nofollow" class="url">VIM插件开发实战–TangramComplete | 网络小强–专注前端，专注web开发</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-7427" class="social-posted-when" target="_blank">2011年04月7日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] VIM的内置补全方式有很多种，更加详细的内容这篇文章讲述的非常清楚 [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-7427 -->
+</li>
+<li class="pingback odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-pingback" id="li-comment-12317">
+<div class="social-comment-inner social-clearfix" id="comment-12317">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://dodomix.net/?p=245" rel="external nofollow" class="url">(转)vi/vim使用进阶: 自动补全 | 城池</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-12317" class="social-posted-when" target="_blank">2011年11月27日</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] 留下评论   <a href="./vim使用自动补全_files/vim使用自动补全.htm" rel="nofollow">http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/</a> [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-12317 -->
+</li>
+<li class="pingback even thread-even depth-1 social-comment social-clearfix social-pingback" id="li-comment-15190">
+<div class="social-comment-inner social-clearfix" id="comment-15190">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://emptykid.sinaapp.com/?p=27" rel="external nofollow" class="url">VIM插件开发实战–TangramComplete | 网络小强</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-15190" class="social-posted-when" target="_blank">10 months ago</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] VIM的内置补全方式有很多种，更加详细的内容这篇文章讲述的非常清楚 [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-15190 -->
+</li>
+<li class="wordpress odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-15902">
+<div class="social-comment-inner social-clearfix" id="comment-15902">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://bnblogs.com/" rel="external nofollow" class="url">笨鸟</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-15902" class="social-posted-when" target="_blank">9 months ago</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>不错的一遍文章，正在学习vim，看到别人用到好牛，但自己用总是有一点跟不上的感觉，不过个人觉得还是蛮好用的。希望博主还有更好的文章有关gvim的发表。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,15902,1,&#39;笨鸟&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-15902 -->
+</li>
+<li class="pingback even thread-even depth-1 social-comment social-clearfix social-pingback" id="li-comment-17465">
+<div class="social-comment-inner social-clearfix" id="comment-17465">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://tianlan.sinaapp.com/?p=114" rel="external nofollow" class="url">vi/vim使用进阶: 自动补全 | tianlan's blog</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-17465" class="social-posted-when" target="_blank">8 months ago</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] 原创文章，请阅读页脚的许可方式，转载请注明：转载自易水博客&nbsp;[http://easwy.com/blog/&nbsp;] [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-17465 -->
+</li>
+<li class="wordpress odd alt thread-odd thread-alt depth-1 social-comment social-clearfix social-wordpress" id="li-comment-17768">
+<div class="social-comment-inner social-clearfix" id="comment-17768">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn">五磅兔</cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-wordpress">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-17768" class="social-posted-when" target="_blank">7 months ago</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>请问博主您使用的vim配色方案叫什么名字？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,17768,1,&#39;五磅兔&#39;);">回复</a>]</p>	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-17768 -->
+</li>
+<li class="pingback even thread-even depth-1 social-comment social-clearfix social-pingback" id="li-comment-20223">
+<div class="social-comment-inner social-clearfix" id="comment-20223">
+	<div class="social-comment-header">
+		<div class="social-comment-author vcard">
+			<cite class="social-fn fn"><a href="http://www.linuxbar.cn/vim%e5%bd%aa%e6%82%8d%e7%9a%84%e8%a1%a5%e5%85%a8%e4%bb%a3%e7%a0%81%e5%8a%9f%e8%83%bd/" rel="external nofollow" class="url">vim彪悍的补全代码功能 _VIM笔记 | linuxBar</a></cite>		</div>
+		<!-- .comment-author .vcard -->
+		<div class="social-comment-meta social-comment-meta-pingback">
+			<span class="social-posted-from">
+								<span>View</span>
+							</span>
+			<a href="http://easwy.com/blog/archives/advanced-vim-skills-auto-complete/#comment-20223" class="social-posted-when" target="_blank">6 months ago</a>
+		</div>
+	</div>
+	<div class="social-comment-body">
+				<p>[...] [1].VIM自动完成功能 [2].vi/vim使用进阶: 自动补全         This entry was posted in vim and tagged 自动补全 by admin. Bookmark the [...]</p>
+	</div>
+			<div class="social-actions entry-meta">
+			</div>
+		<!-- .reply -->
+</div><!-- #comment-20223 -->
+</li>
+				</ol>
+							</div>
+		</div>
+			</div>
+	<!-- #Comments Tabs -->
+	</div>
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<!-- Enhanced Categories 2.2.0 --><aside id="enhanced-categories" class="widget EnhancedCategoriesWidget_render_widget"><h3 class="widget-title">分类目录</h3><script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery('ul.enhanced-categories-1').enhancedCategories({
+			// Override here the default settings for the plugin
+			expandText		: '',
+			contractText	: '',
+			leafText		: '',
+			expandImage		: 'http://easwy.com/blog/wp-content/plugins/enhanced-categories/images/expand.gif',
+			contractImage	: 'http://easwy.com/blog/wp-content/plugins/enhanced-categories/images/contract.gif',
+			leafImage		: '',
+			isButtonAfter	: 1,
+			buttonColor		: '#AA0000',
+			contractChildren: 1		});
+	});
+</script>
+<ul class="enhanced-categories-1">	<li class="cat-item cat-item-86" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/catalog-android/" title="此分类讨论与Android系统相关的话题，包括ROM定制、Android应用开发、Android手机使用技巧等。">Android</a> <a href="http://easwy.com/blog/archives/category/catalog-android/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (8)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-76" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/web-development/" title="本分类讨论web各种web开发技术，如PHP、JSP、JSF等。内容以基于Java的开发技术为主。">Web开发</a> <a href="http://easwy.com/blog/archives/category/web-development/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (4)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-3" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/daughter/" title="我的宝贝，我的天使，我的小情人......无数个词，都无法形容我对她的爱！
+她就是我的女儿，这一个分类，主要记录她成长的点点滴滴。">吾家有女</a> <a href="http://easwy.com/blog/archives/category/daughter/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (4)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-4" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/embedded/" title="讨论嵌入式系统，主要是嵌入式Linux和Android方面的话题">嵌入系统</a> <a href="http://easwy.com/blog/archives/category/embedded/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (5)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-5" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/website/" title="我的建站笔记，wordpress的配置，以及网站编程相关，如PHP，JSP，CSS...">建站手记</a> <a href="http://easwy.com/blog/archives/category/website/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (19)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-6" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/development/" title="讨论开发编程的话题，会包括各种编程语言、UML、设计模式、开发经验......">开发编程</a> <a href="http://easwy.com/blog/archives/category/development/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (10)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-48" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/open-source/" title="本分类主要讨论开源软件，包括Linux操作系统，及开源工具。">开源软件</a> <a href="http://easwy.com/blog/archives/category/open-source/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (52)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-44" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/text/" title="讨论文本处理，会涉及sed, awk, vim等工具，也包括docbook等">文本处理</a> <a href="http://easwy.com/blog/archives/category/text/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (55)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-8" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/life/" title="记录生活点滴">生活点滴</a> <a href="http://easwy.com/blog/archives/category/life/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (0)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-37" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/misc/" title="百宝箱，能容其它分类所不能容">百宝箱</a> <a href="http://easwy.com/blog/archives/category/misc/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (15)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-74" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/bookmarks/" title="本分类包含Easwy的网络书签">网络书签</a> <a href="http://easwy.com/blog/archives/category/bookmarks/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (9)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+	<li class="cat-item cat-item-82" style="list-style-type: none;"><a href="http://easwy.com/blog/archives/category/tweets/" title="本分类收藏Easwy发表在twitter上的内容。">网络微博</a> <a href="http://easwy.com/blog/archives/category/tweets/feed/" title="RSS"><img src="./vim使用自动补全_files/rss.png" alt="RSS" title="RSS" style="margin: 0px 5px; padding: 0px;"></a> (31)
+<span class="button" style="width: 10px; margin: 0px 5px 0px 0px; color: rgb(170, 0, 0);"></span></li>
+</ul></aside><!-- Enhanced Categories 2.2.0 -->		<aside id="recent-posts-2" class="widget widget_recent_entries">		<h3 class="widget-title">近期文章</h3>		<ul>
+					<li>
+				<a href="http://easwy.com/blog/archives/easwy-vimrc-and-vim-settings/" title="Easwy的vim配置共享：包括.vimrc及整个.vim目录">Easwy的vim配置共享：包括.vimrc及整个.vim目录</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/using-scala-sbt-for-android-development/" title="使用Scala + sbt + sbt-android-plugin开发Android应用程序">使用Scala + sbt + sbt-android-plugin开发Android应用程序</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/centos-kvm-virtulization-ubuntu-guest/" title="在CentOS 5上安装Ubuntu KVM虚拟机">在CentOS 5上安装Ubuntu KVM虚拟机</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/linux-lvm-learning-notes/" title="Linux逻辑卷管理器(LVM)学习笔记">Linux逻辑卷管理器(LVM)学习笔记</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/add-post-url-2-1-0-published/" title="WP-PostURL 2.1.0发布">WP-PostURL 2.1.0发布</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/connect-meizu-m9-to-linux/" title="在Linux上使用adb访问魅族M9手机">在Linux上使用adb访问魅族M9手机</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/bookmark-of-delicious-2010-11-18/" title="Easwy的网摘(2010-11-18)">Easwy的网摘(2010-11-18)</a>
+						</li>
+					<li>
+				<a href="http://easwy.com/blog/archives/easwy-twitter-2011-01-23/" title="Easwy的Twitter微博(2011-01-23)">Easwy的Twitter微博(2011-01-23)</a>
+						</li>
+				</ul>
+		</aside><aside id="get-recent-comments" class="widget widget_get_recent_comments"><h3 class="widget-title">最新评论</h3><div id="get_recent_comments_wrap"><ul>	<li class="recentcomments">t.k.: <a href="http://easwy.com/blog/archives/easwy-vimrc-and-vim-settings/#comment-35607" title="t.k.在文章Easwy的vim配置共享：包括.vimrc及整个.vim目录上的评论">博主的vimrc好长，是自己写的...</a></li>
+	<li class="recentcomments">the5fire: <a href="http://easwy.com/blog/archives/advanced-vim-skills-cscope/#comment-35362" title="the5fire在文章vi/vim使用进阶: 程序员的利器 – cscope上的评论">学习了，强大的插件</a></li>
+	<li class="recentcomments">noName: <a href="http://easwy.com/blog/archives/advanced-vim-skills-vim-gdb-vimgdb/#comment-35259" title="noName在文章vi/vim使用进阶: 在VIM中使用GDB调试 – 使用vimgdb上的评论">添加变量监控的时候会提示“Unable to...</a></li>
+	<li class="recentcomments">ming.xie: <a href="http://easwy.com/blog/archives/chinese_in_debian_lenny/#comment-34097" title="ming.xie在文章在Debian Lenny中配置中文上的评论">。。。请问 dpkg-reconfigure...</a></li>
+	<li class="recentcomments">yangzhongxuan: <a href="http://easwy.com/blog/archives/advanced-vim-skills-save-project-configuration/#comment-33948" title="yangzhongxuan在文章vi/vim使用进阶: 保存项目相关配置上的评论">你好 ， 当我打开vim用 source...</a></li>
+	<li class="recentcomments">nandaoruguo: <a href="http://easwy.com/blog/archives/easwy-vimrc-and-vim-settings/#comment-32325" title="nandaoruguo在文章Easwy的vim配置共享：包括.vimrc及整个.vim目录上的评论">我用的更新cscope的脚本是...</a></li>
+	<li class="recentcomments">ffffffff: <a href="http://easwy.com/blog/archives/vim-cscope-ctags/#comment-31002" title="ffffffff在文章vi/Vim + Cscope/Ctags上的评论">請問一下可以修改cscope的q...</a></li>
+	<li class="recentcomments">Jinfeng: <a href="http://easwy.com/blog/about/#comment-30576" title="Jinfeng在文章关于上的评论">请问大神：我想用docbook写...</a></li>
+</ul></div></aside><aside id="views-2" class="widget widget_views"><h3 class="widget-title">热门文章</h3><ul>
+<li><a href="http://easwy.com/blog/archives/advanced-vim-skills-catalog/" title="vi/vim使用进阶: 目录">vi/vim使用进阶: 目录</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-introduce-vimrc/" title="vi/vim使用进阶: vimrc初步">vi/vim使用进阶: vimrc初步</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-prologue/" title="vi/vim使用进阶: 序言">vi/vim使用进阶: 序言</a></li><li><a href="./vim使用自动补全_files/vim使用自动补全.htm" title="vi/vim使用进阶: 自动补全">vi/vim使用进阶: 自动补全</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-omin-complete/" title="vi/vim使用进阶: 智能补全">vi/vim使用进阶: 智能补全</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-taglist-plugin/" title="vi/vim使用进阶: 使用taglist插件">vi/vim使用进阶: 使用taglist插件</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-vim-gdb-vimgdb/" title="vi/vim使用进阶: 在VIM中使用GDB调试 – 使用vimgdb">vi/vim使用进阶: 在VIM中使用GDB调试 – 使用vimgdb</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-use-ctags-tag-file/" title="vi/vim使用进阶: 使用标签(tag)文件">vi/vim使用进阶: 使用标签(tag)文件</a></li><li><a href="http://easwy.com/blog/archives/vim-cscope-ctags/" title="vi/Vim + Cscope/Ctags">vi/Vim + Cscope/Ctags</a></li><li><a href="http://easwy.com/blog/archives/advanced-vim-skills-cscope/" title="vi/vim使用进阶: 程序员的利器 – cscope">vi/vim使用进阶: 程序员的利器 – cscope</a></li></ul>
+</aside><aside id="tag_cloud-2" class="widget widget_tag_cloud"><h3 class="widget-title">分类标签</h3><div class="tagcloud"><a href="http://easwy.com/blog/archives/tag/android/" class="tag-link-10" title="8 个话题" style="font-size: 14.5467625899pt;">android</a>
+<a href="http://easwy.com/blog/archives/tag/apache/" class="tag-link-69" title="1 个话题" style="font-size: 8pt;">apache</a>
+<a href="http://easwy.com/blog/archives/tag/awk/" class="tag-link-13" title="1 个话题" style="font-size: 8pt;">awk</a>
+<a href="http://easwy.com/blog/archives/tag/cscope/" class="tag-link-16" title="3 个话题" style="font-size: 11.0215827338pt;">cscope</a>
+<a href="http://easwy.com/blog/archives/tag/ctags/" class="tag-link-17" title="5 个话题" style="font-size: 12.8345323741pt;">ctags</a>
+<a href="http://easwy.com/blog/archives/tag/cygwin/" class="tag-link-60" title="2 个话题" style="font-size: 9.81294964029pt;">cygwin</a>
+<a href="http://easwy.com/blog/archives/tag/debian/" class="tag-link-50" title="12 个话题" style="font-size: 16.1582733813pt;">debian</a>
+<a href="http://easwy.com/blog/archives/tag/delicious/" class="tag-link-75" title="9 个话题" style="font-size: 15.0503597122pt;">delicious</a>
+<a href="http://easwy.com/blog/archives/tag/docbook/" class="tag-link-11" title="6 个话题" style="font-size: 13.5395683453pt;">docbook</a>
+<a href="http://easwy.com/blog/archives/tag/easwy/" class="tag-link-61" title="17 个话题" style="font-size: 17.6690647482pt;">easwy.com</a>
+<a href="http://easwy.com/blog/archives/tag/git/" class="tag-link-72" title="1 个话题" style="font-size: 8pt;">git</a>
+<a href="http://easwy.com/blog/archives/tag/google/" class="tag-link-77" title="1 个话题" style="font-size: 8pt;">google</a>
+<a href="http://easwy.com/blog/archives/tag/java/" class="tag-link-78" title="1 个话题" style="font-size: 8pt;">java</a>
+<a href="http://easwy.com/blog/archives/tag/kvm/" class="tag-link-90" title="1 个话题" style="font-size: 8pt;">kvm</a>
+<a href="http://easwy.com/blog/archives/tag/linux/" class="tag-link-51" title="43 个话题" style="font-size: 21.4964028777pt;">linux</a>
+<a href="http://easwy.com/blog/archives/tag/lvm/" class="tag-link-88" title="1 个话题" style="font-size: 8pt;">lvm</a>
+<a href="http://easwy.com/blog/archives/tag/m9/" class="tag-link-87" title="1 个话题" style="font-size: 8pt;">m9</a>
+<a href="http://easwy.com/blog/archives/tag/maven/" class="tag-link-79" title="1 个话题" style="font-size: 8pt;">maven</a>
+<a href="http://easwy.com/blog/archives/tag/mysql/" class="tag-link-65" title="1 个话题" style="font-size: 8pt;">mysql</a>
+<a href="http://easwy.com/blog/archives/tag/sbt/" class="tag-link-91" title="1 个话题" style="font-size: 8pt;">sbt</a>
+<a href="http://easwy.com/blog/archives/tag/scala/" class="tag-link-84" title="4 个话题" style="font-size: 12.0287769784pt;">scala</a>
+<a href="http://easwy.com/blog/archives/tag/seo/" class="tag-link-64" title="3 个话题" style="font-size: 11.0215827338pt;">SEO</a>
+<a href="http://easwy.com/blog/archives/tag/subversion/" class="tag-link-46" title="1 个话题" style="font-size: 8pt;">subversion</a>
+<a href="http://easwy.com/blog/archives/tag/thinkpad/" class="tag-link-62" title="6 个话题" style="font-size: 13.5395683453pt;">thinkpad</a>
+<a href="http://easwy.com/blog/archives/tag/tomcat/" class="tag-link-68" title="1 个话题" style="font-size: 8pt;">tomcat</a>
+<a href="http://easwy.com/blog/archives/tag/twitter/" class="tag-link-83" title="31 个话题" style="font-size: 20.1870503597pt;">twitter</a>
+<a href="http://easwy.com/blog/archives/tag/ubuntu/" class="tag-link-85" title="2 个话题" style="font-size: 9.81294964029pt;">ubuntu</a>
+<a href="http://easwy.com/blog/archives/tag/vim/" class="tag-link-12" title="48 个话题" style="font-size: 22pt;">Vim</a>
+<a href="http://easwy.com/blog/archives/tag/windows/" class="tag-link-63" title="2 个话题" style="font-size: 9.81294964029pt;">windows</a>
+<a href="http://easwy.com/blog/archives/tag/wordpress/" class="tag-link-52" title="17 个话题" style="font-size: 17.6690647482pt;">wordpress</a>
+<a href="http://easwy.com/blog/archives/tag/xen/" class="tag-link-73" title="1 个话题" style="font-size: 8pt;">xen</a>
+<a href="http://easwy.com/blog/archives/tag/embedded-linux/" class="tag-link-59" title="1 个话题" style="font-size: 8pt;">嵌入式Linux</a>
+<a href="http://easwy.com/blog/archives/tag/kindergarten/" class="tag-link-70" title="2 个话题" style="font-size: 9.81294964029pt;">幼儿园</a>
+<a href="http://easwy.com/blog/archives/tag/baby/" class="tag-link-41" title="3 个话题" style="font-size: 11.0215827338pt;">育儿</a>
+<a href="http://easwy.com/blog/archives/tag/debug/" class="tag-link-57" title="2 个话题" style="font-size: 9.81294964029pt;">调试</a></div>
+</aside><aside id="archives-2" class="widget widget_archive"><h3 class="widget-title">历史存档</h3>		<ul>
+			<li><a href="http://easwy.com/blog/archives/2012/03/" title="2012 年三月">2012 年三月</a>&nbsp;(1)</li>
+	<li><a href="http://easwy.com/blog/archives/2012/02/" title="2012 年二月">2012 年二月</a>&nbsp;(3)</li>
+	<li><a href="http://easwy.com/blog/archives/2012/01/" title="2012 年一月">2012 年一月</a>&nbsp;(1)</li>
+	<li><a href="http://easwy.com/blog/archives/2011/01/" title="2011 年一月">2011 年一月</a>&nbsp;(5)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/12/" title="2010 年十二月">2010 年十二月</a>&nbsp;(2)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/11/" title="2010 年十一月">2010 年十一月</a>&nbsp;(4)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/10/" title="2010 年十月">2010 年十月</a>&nbsp;(4)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/09/" title="2010 年九月">2010 年九月</a>&nbsp;(6)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/08/" title="2010 年八月">2010 年八月</a>&nbsp;(4)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/07/" title="2010 年七月">2010 年七月</a>&nbsp;(4)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/05/" title="2010 年五月">2010 年五月</a>&nbsp;(5)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/04/" title="2010 年四月">2010 年四月</a>&nbsp;(6)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/03/" title="2010 年三月">2010 年三月</a>&nbsp;(9)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/02/" title="2010 年二月">2010 年二月</a>&nbsp;(6)</li>
+	<li><a href="http://easwy.com/blog/archives/2010/01/" title="2010 年一月">2010 年一月</a>&nbsp;(14)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/12/" title="2009 年十二月">2009 年十二月</a>&nbsp;(3)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/11/" title="2009 年十一月">2009 年十一月</a>&nbsp;(14)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/10/" title="2009 年十月">2009 年十月</a>&nbsp;(1)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/09/" title="2009 年九月">2009 年九月</a>&nbsp;(5)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/08/" title="2009 年八月">2009 年八月</a>&nbsp;(2)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/06/" title="2009 年六月">2009 年六月</a>&nbsp;(2)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/05/" title="2009 年五月">2009 年五月</a>&nbsp;(2)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/04/" title="2009 年四月">2009 年四月</a>&nbsp;(22)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/03/" title="2009 年三月">2009 年三月</a>&nbsp;(17)</li>
+	<li><a href="http://easwy.com/blog/archives/2009/02/" title="2009 年二月">2009 年二月</a>&nbsp;(46)</li>
+		</ul>
+</aside><aside id="linkcat-12" class="widget widget_links"><h3 class="widget-title">Vim</h3>
+	<ul class="xoxo blogroll">
+<li><a href="http://www.vimer.cn/" rel="contact met" title="一个vim爱好者的博客" target="_blank">Vimer的程序世界</a></li>
+
+	</ul>
+</aside>
+		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+						<a href="http://cn.wordpress.org/" title="优雅的个人发布平台">自豪地采用 WordPress</a>
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://easwy.com/blog',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'',
+	avatarPosition	:'',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./vim使用自动补全_files/wp-recentcomments-jquery.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var Sociali18n = {"commentReplyTitle":"Post a Reply"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./vim使用自动补全_files/social.js"></script>
+<script type="text/javascript" src="./vim使用自动补全_files/navigation.js"></script>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

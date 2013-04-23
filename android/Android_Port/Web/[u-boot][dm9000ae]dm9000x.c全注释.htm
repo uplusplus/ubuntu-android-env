@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)http://hi.baidu.com/aokikyon/item/774d12d53fca34332b35c704 -->
+<html id="customDoc" class="mod-with-msyahei" version="g42dymwpi--nx"> <body data-layershow="1" contenteditable="true">    <section class="mod-page-body"> <div class="mod-page-main wordwrap clearfix">  <div class="x-page-container">       <div class="mod-blogpage-wraper">   <div class="grid-80 mod-blogpage">     <div class="mod-text-content mod-post-content mod-cs-contentblock">    <div class="content-head clearfix">     <h2 class="title content-title">[u-boot][dm9000ae]dm9000x.c全注释</h2>  </div>  <div id="content" class="content mod-cs-content text-content clearfix"> <p>//头文件省略，感觉DM9000的代码写的比较简单<br>//放在u-boot里看比较合适，和上层的接口较少，且没有虚实地址转换，较容易理解</p><p>enum DM9000_PHY_mode { DM9000_10MHD = 0, DM9000_100MHD =<br>&nbsp;&nbsp;&nbsp;&nbsp;  1, DM9000_10MFD = 4, DM9000_100MFD = 5, DM9000_AUTO =<br>&nbsp;&nbsp;&nbsp;&nbsp;  8, DM9000_1M_HPNA = 0x10<br>};<br>enum DM9000_NIC_TYPE { FASTETHER_NIC = 0, HOMERUN_NIC = 1, LONGRUN_NIC = 2<br>};</p><p>/* Structure/enum declaration ------------------------------- */<br>typedef struct board_info {<br>u32 runt_length_counter; /* counter: RX length &lt; 64byte */<br>u32 long_length_counter; /* counter: RX length &gt; 1514byte */<br>u32 reset_counter;&nbsp;&nbsp;  /* counter: RESET */<br>u32 reset_tx_timeout; /* RESET caused by TX Timeout */<br>u32 reset_rx_status; /* RESET caused by RX Statsus wrong */<br>u16 tx_pkt_cnt;<br>u16 queue_start_addr;<br>u16 dbug_cnt;<br>u8 phy_addr;<br>u8 device_wait_reset; /* device state */<br>u8 nic_type;&nbsp;&nbsp;  /* NIC type */<br>unsigned char srom[128];<br>} board_info_t;<br>board_info_t dmfe_info;</p><p>/* For module input parameter */<br>static int media_mode = DM9000_AUTO;<br>static u8 nfloor = 0;</p><p>/* function declaration 有这么几个函数要看------------------------------------- */<br>int eth_init(bd_t * bd);<br>int eth_send(volatile void *, int);<br>int eth_rx(void);<br>void eth_halt(void);<br>static int dm9000_probe(void);<br>static u16 phy_read(int);<br>static void phy_write(int, u16);<br>u16 read_srom_word(int);<br>static u8 DM9000_ior(int);<br>static void DM9000_iow(int reg, u8 value);</p><p>/* DM9000 network board routine ---------------------------- */</p><p>#define DM9000_outb(d,r) ( *(volatile u8 *)r = d )<br>#define DM9000_outw(d,r) ( *(volatile u16 *)r = d )<br>#define DM9000_outl(d,r) ( *(volatile u32 *)r = d )<br>#define DM9000_inb(r) (*(volatile u8 *)r)<br>#define DM9000_inw(r) (*(volatile u16 *)r)<br>#define DM9000_inl(r) (*(volatile u32 *)r)</p><p>/*<br>&nbsp;&nbsp;  先看最基本的读写函数<br>&nbsp;&nbsp;  Read a byte from I/O port<br>&nbsp;&nbsp;  读一个byte数据<br>*/<br>static u8<br>DM9000_ior(int reg)<br>{<br>DM9000_outb(reg, DM9000_IO);&nbsp;&nbsp;  //首先发送地址<br>return DM9000_inb(DM9000_DATA);&nbsp;&nbsp;  //然后读取数据，看时序图，感觉时序要求蛮高<br>}</p><p>/*<br>&nbsp;&nbsp;  Write a byte to I/O port<br>&nbsp;&nbsp;  向I/O口写一个btye数据<br>*/<br>static void<br>DM9000_iow(int reg, u8 value)<br>{<br>DM9000_outb(reg, DM9000_IO);&nbsp;&nbsp;  //发送要写入的地址<br>DM9000_outb(value, DM9000_DATA); //再发送数据<br>}</p><p>/*<br>&nbsp;&nbsp;  Read a word from phyxcer<br>&nbsp;&nbsp;  从phy芯片中读取16bit数据<br>*/<br>static u16<br>phy_read(int reg)<br>{<br>u16 val;</p><p>/* Fill the phyxcer register into REG_0C */<br>DM9000_iow(DM9000_EPAR, DM9000_PHY | reg); &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //EEPROM &amp; PHY Address Register 确定读取地址<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //#define DM9000_PHY&nbsp;&nbsp;  0x40 /* PHY address 0x01 */<br>DM9000_iow(DM9000_EPCR, 0xc); /* Issue phyxcer read command */ //EEPROM &amp; PHY Control Register 0b1100 选中并读取phy eeprom<br>udelay(100);&nbsp;&nbsp;  /* Wait read complete */<br>DM9000_iow(DM9000_EPCR, 0x0); /* Clear phyxcer read command */ //根据数据手册上描述，操作完成后需要清零<br>val = (DM9000_ior(DM9000_EPDRH) &lt;&lt; 8) | DM9000_ior(DM9000_EPDRL); //EEPROM &amp; PHY High Byte Data Register 读取高位和低位寄存器</p><p>/* The read data keeps on REG_0D &amp; REG_0E */<br>DM9000_DBG("phy_read(%d): %d\n", reg, val);<br>return val;<br>}</p><p>/*<br>&nbsp;&nbsp;  Write a word to phyxcer<br>&nbsp;&nbsp;  向phy芯片中写入16bit数据<br>*/<br>static void<br>phy_write(int reg, u16 value)<br>{</p><p>/* Fill the phyxcer register into REG_0C */<br>DM9000_iow(DM9000_EPAR, DM9000_PHY | reg);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //同上，确定地址</p><p>/* Fill the written data into REG_0D &amp; REG_0E */<br>DM9000_iow(DM9000_EPDRL, (value &amp; 0xff));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //先将数据放进入<br>DM9000_iow(DM9000_EPDRH, ((value &gt;&gt; 8) &amp; 0xff));<br>DM9000_iow(DM9000_EPCR, 0xa); /* Issue phyxcer write command */ //0b1010 先选中并进行写操作<br>udelay(500);&nbsp;&nbsp;  /* Wait write complete */<br>DM9000_iow(DM9000_EPCR, 0x0); /* Clear phyxcer write command */ //写时间长一点，延时500us，再清零<br>DM9000_DBG("phy_write(reg:%d, value:%d)\n", reg, value);<br>}</p><p>/*<br>Search DM9000 board, allocate space and register it<br>probe函数<br>*/<br>int<br>dm9000_probe(void)<br>{<br>u32 id_val;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //32bit变量<br>id_val = DM9000_ior(DM9000_VIDL);&nbsp;&nbsp;&nbsp;  //首先读VIDL vendor ID low byte<br>id_val |= DM9000_ior(DM9000_VIDH) &lt;&lt; 8;&nbsp;&nbsp;  //然后读VIDH vendor ID high byte<br>id_val |= DM9000_ior(DM9000_PIDL) &lt;&lt; 16; //再读PIDL Product ID low byte<br>id_val |= DM9000_ior(DM9000_PIDH) &lt;&lt; 24; //最后读PIDH Product ID high byte<br>if (id_val == DM9000_ID) {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //#define DM9000_ID&nbsp;&nbsp;  0x90000A46 和这个比较看看读出的对不对<br>&nbsp;&nbsp;  printf("dm9000 i/o: 0x%x, id: 0x%x \n", CONFIG_DM9000_BASE, //BASE地址应该是 0x18000000<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  id_val);<br>&nbsp;&nbsp;  return 0;<br>} else {<br>&nbsp;&nbsp;  printf("dm9000 not found at 0x%08x id: 0x%08x\n",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  CONFIG_DM9000_BASE, id_val);<br>&nbsp;&nbsp;  return -1;<br>}<br>}</p><p>/* Set PHY operationg mode<br>设置PHY的工作模式<br>*/<br>static void<br>set_PHY_mode(void)<br>{<br>u16 phy_reg4 = 0x01e1, phy_reg0 = 0x1000;<br>if (!(media_mode &amp; DM9000_AUTO)) {&nbsp;&nbsp;&nbsp;  //竟然用全局变量而不是传参，会被老板打批的<br>&nbsp;&nbsp;  switch (media_mode) {<br>&nbsp;&nbsp;  case DM9000_10MHD:<br>&nbsp;&nbsp;&nbsp;  phy_reg4 = 0x21;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //设置双工、半双工<br>&nbsp;&nbsp;&nbsp;  phy_reg0 = 0x0000;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //phy寄存器0是设置速度模式<br>&nbsp;&nbsp;&nbsp;  break;<br>&nbsp;&nbsp;  case DM9000_10MFD:<br>&nbsp;&nbsp;&nbsp;  phy_reg4 = 0x41;<br>&nbsp;&nbsp;&nbsp;  phy_reg0 = 0x1100;<br>&nbsp;&nbsp;&nbsp;  break;<br>&nbsp;&nbsp;  case DM9000_100MHD:<br>&nbsp;&nbsp;&nbsp;  phy_reg4 = 0x81;<br>&nbsp;&nbsp;&nbsp;  phy_reg0 = 0x2000;<br>&nbsp;&nbsp;&nbsp;  break;<br>&nbsp;&nbsp;  case DM9000_100MFD:<br>&nbsp;&nbsp;&nbsp;  phy_reg4 = 0x101;<br>&nbsp;&nbsp;&nbsp;  phy_reg0 = 0x3100;<br>&nbsp;&nbsp;&nbsp;  break;<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;  phy_write(4, phy_reg4); /* Set PHY media mode */ //写phy 04寄存器<br>&nbsp;&nbsp;  phy_write(0, phy_reg0); /* Tmp */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //写phy 00寄存器<br>}<br>DM9000_iow(DM9000_GPCR, 0x01); /* Let GPIO0 output */ //General Purpose Control Register (in 8-bit mode) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //奇怪，第0位应该是reserved，GPIO都应该是输入？<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //找到说明：GPIO0默认为输出做POWER_DOWN功能<br>DM9000_iow(DM9000_GPR, 0x00); /* Enable PHY */&nbsp;&nbsp;  //写0使能phy芯片<br>}<br>/*<br>Init HomeRun DM9801<br>*/<br>static void program_dm9801(u16 HPNA_rev)<br>{<br>//应该用不到9801，省略<br>}<br>/*<br>Init LongRun DM9802<br>*/<br>static void program_dm9802(void)<br>{<br>//应该用不到9802，省略<br>}</p><p>/* Identify NIC type 确定NIC类型<br>*/<br>static void identify_nic(void)<br>{<br>struct board_info *db = &amp;dmfe_info; /* Point a board information structure */<br>u16 phy_reg3;<br>DM9000_iow(DM9000_NCR, NCR_EXT_PHY);&nbsp;&nbsp;  //Network Control Register<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //#define NCR_EXT_PHY&nbsp;&nbsp;  (1&lt;&lt;7) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //奇怪，DM9000a的这一位又是reserved<br>phy_reg3 = phy_read(3);<br>switch (phy_reg3 &amp; 0xfff0) {&nbsp;&nbsp;&nbsp;&nbsp;  //读phyid，判断是不是9801或者9802，应该都不是，初始化时没看到<br>case 0xb900:<br>&nbsp;&nbsp;  if (phy_read(31) == 0x4404) {<br>&nbsp;&nbsp;&nbsp;  db-&gt;nic_type = HOMERUN_NIC;<br>&nbsp;&nbsp;&nbsp;  program_dm9801(phy_reg3);<br>&nbsp;&nbsp;&nbsp;  DM9000_DBG("found homerun NIC\n");<br>&nbsp;&nbsp;  } else {<br>&nbsp;&nbsp;&nbsp;  db-&gt;nic_type = LONGRUN_NIC;<br>&nbsp;&nbsp;&nbsp;  DM9000_DBG("found longrun NIC\n");<br>&nbsp;&nbsp;&nbsp;  program_dm9802();<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;  break;<br>default:<br>&nbsp;&nbsp;  db-&gt;nic_type = FASTETHER_NIC;&nbsp;&nbsp;&nbsp;  //type = 0<br>&nbsp;&nbsp;  break;<br>}<br>DM9000_iow(DM9000_NCR, 0);<br>}</p><p>/* General Purpose dm9000 reset routine */<br>static void dm9000_reset(void)<br>{<br>DM9000_DBG("resetting\n");<br>DM9000_iow(DM9000_NCR, NCR_RST);&nbsp;&nbsp;&nbsp;  //复位<br>udelay(1000);&nbsp;&nbsp;  /* delay 1ms */<br>}</p><p>/* Initilize dm9000 board<br>*/<br>int eth_init(bd_t * bd)<br>{<br>int i, oft, lnk;<br>DM9000_DBG("eth_init()\n");</p><p>/* RESET device */<br>dm9000_reset();&nbsp;&nbsp;  //复位<br>dm9000_probe();&nbsp;&nbsp;  //检测网络连接类型</p><p>/* NIC Type: FASTETHER, HOMERUN, LONGRUN */<br>identify_nic();&nbsp;&nbsp;  //检测NIC类型</p><p>/* GPIO0 on pre-activate PHY */<br>DM9000_iow(DM9000_GPR, 0x00); /*REG_1F bit0 activate phyxcer */</p><p>/* Set PHY */<br>set_PHY_mode();&nbsp;&nbsp;  //设置工作模式</p><p>/* Program operating register */<br>DM9000_iow(DM9000_NCR, 0x0); /* only intern phy supported by now */ //清零<br>DM9000_iow(DM9000_TCR, 0); /* TX Polling clear */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //清零<br>DM9000_iow(DM9000_BPTR, 0x3f); /* Less 3Kb, 200us */ //Back Pressure Threshold Register背压门限寄存器<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //当接收SRAM空闲空间低于该门限值，则MAC将产生一个拥挤状态。<br>DM9000_iow(DM9000_FCTR, FCTR_HWOT(3) | FCTR_LWOT(8)); /* Flow Control : High/Low Water */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //溢出控制门限寄存器（Flow Control Threshold Register）<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //7-4：HWOT：接收FIFO缓存溢出门限最高值。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //当接收SRAM空闲空间小于该门限值，则发送一个暂停时间（pause_time）为FFFFH的暂停包。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //若该值为0，则无接收空闲空间。1=1K字节。默认值为3H，即3K字节空闲空间。不要超过SRAM大小。</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //3-0：LWOT：接收FIFO缓存溢出门限最低值。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //当接收SRAM空闲空间大于该门限值，则发送一个暂停时间（pause_time）为0000H的暂停包。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //当溢出门限最高值的暂停包发送之后，溢出门限最低值的暂停包才有效。默认值为8K字节。不要超过SRAM大小。</p><p>DM9000_iow(DM9000_FCR, 0x0); /* SH FIXME: This looks strange! Flow Control */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //接收溢出控制寄存器（RX Flow Control Register）</p><p>DM9000_iow(DM9000_SMCR, 0); /* Special Mode */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //特殊模式控制寄存器（Special Mode Control Register）</p><p>DM9000_iow(DM9000_NSR, NSR_WAKEST | NSR_TX2END | NSR_TX1END); /* clear TX status */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //网络状态寄存器（Network Status Register ）清零TX<br>DM9000_iow(DM9000_ISR, 0x0f); /* Clear interrupt status */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //清空中断标志位，u-boot里也没有用中断</p><p>/* 从u-boot中读取MAC地址 */<br>&nbsp;&nbsp;  char *s, *e;<br>&nbsp;&nbsp;  s = getenv ("ethaddr");<br>&nbsp;&nbsp;  for (i = 0; i &lt; 6; ++i) {<br>&nbsp;&nbsp;&nbsp;  bd-&gt;bi_enetaddr[i] = s ?<br>&nbsp;&nbsp;&nbsp;&nbsp;  simple_strtoul (s, &amp;e, 16) : 0;<br>&nbsp;&nbsp;&nbsp;  if (s)<br>&nbsp;&nbsp;&nbsp;&nbsp;  s = (*e) ? e + 1 : e;<br>&nbsp;&nbsp;  }</p><p>/*输出MAC地址*/<br>printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", bd-&gt;bi_enetaddr[0],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  bd-&gt;bi_enetaddr[1], bd-&gt;bi_enetaddr[2], bd-&gt;bi_enetaddr[3],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  bd-&gt;bi_enetaddr[4], bd-&gt;bi_enetaddr[5]);<br>for (i = 0, oft = 0x10; i &lt; 6; i++, oft++)<br>&nbsp;&nbsp;  DM9000_iow(oft, bd-&gt;bi_enetaddr[i]);<br>for (i = 0, oft = 0x16; i &lt; 8; i++, oft++)<br>&nbsp;&nbsp;  DM9000_iow(oft, 0xff);</p><p>/* read back mac, just to be sure */<br>for (i = 0, oft = 0x10; i &lt; 6; i++, oft++)<br>&nbsp;&nbsp;  DM9000_DBG("%02x:", DM9000_ior(oft));<br>DM9000_DBG("\n");</p><p>/* Activate DM9000 */<br>DM9000_iow(DM9000_RCR, RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN); /* RX enable */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //RCR（05H）：接收控制寄存器（RX Control Register ）<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //丢弃长数据包，丢弃CRC校验错误数据包，接受使能<br>DM9000_iow(DM9000_IMR, IMR_PAR); /* Enable TX/RX interrupt mask 中断屏蔽寄存器（Interrupt Mask Register）*/<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //值使能了一个PAR中断，其他比如接受中断都没有使能<br>i = 0;<br><br>//获取网络类型<br>/* while (!(phy_read(1) &amp; 0x20)) { <br>&nbsp;&nbsp;  udelay(1000);<br>&nbsp;&nbsp;  i++;<br>&nbsp;&nbsp;  if (i == 10000) {<br>&nbsp;&nbsp;&nbsp;  printf("could not establish link\n");<br>&nbsp;&nbsp;&nbsp;  return 0;<br>&nbsp;&nbsp;  }<br>}<br>*/<br>/* see what we've got */</p><p>lnk = phy_read(17) &gt;&gt; 12;<br>/* printf("operating at ");<br>switch (lnk) {<br>case 1:<br>&nbsp;&nbsp;  printf("10M half duplex ");<br>&nbsp;&nbsp;  break;<br>case 2:<br>&nbsp;&nbsp;  printf("10M full duplex ");<br>&nbsp;&nbsp;  break;<br>case 4:<br>&nbsp;&nbsp;  printf("100M half duplex ");<br>&nbsp;&nbsp;  break;<br>case 8:<br>&nbsp;&nbsp;  printf("100M full duplex ");<br>&nbsp;&nbsp;  break;<br>default:<br>&nbsp;&nbsp;  printf("unknown: %d ", lnk);<br>&nbsp;&nbsp;  break;<br>}<br>printf("mode\n");<br>*/<br>return 0;<br>}</p><p>/*<br>Hardware start transmission.<br>Send a packet to media from the upper layer.<br>发送函数<br>*/<br>int eth_send(volatile void *packet, int length)<br>{<br>char *data_ptr;<br>u32 tmplen, i;<br>int tmo;<br>DM9000_DBG("eth_send: length: %d\n", length);&nbsp;&nbsp;&nbsp;  //数据包长度<br>for (i = 0; i &lt; length; i++) {<br>&nbsp;&nbsp;  if (i % 8 == 0)<br>&nbsp;&nbsp;&nbsp;  DM9000_DBG("\nSend: 02x: ", i);<br>&nbsp;&nbsp;  DM9000_DBG("%02x ", ((unsigned char *) packet)[i]);<br>} DM9000_DBG("\n");</p><p>/* Move data to DM9000 TX RAM */<br>data_ptr = (char *) packet;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //传递指针<br>DM9000_outb(DM9000_MWCMD, DM9000_IO);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //存储器读地址自动增加的读数据命令，选中地址<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //（Memory Data Write Command With Address Increment Register）<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //7-0：MWCMD：写数据到发送SRAM中，之后指向内部SRAM的读指针自动增加1、2或4，<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //根据处理器的操作模式而定（8位、16位或32位）。</p><p>tmplen = (length + 1) / 2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //16bit mode 重新计算长度<br>for (i = 0; i &lt; tmplen; i++)<br>&nbsp;&nbsp;  DM9000_outw(((u16 *) data_ptr)[i], DM9000_DATA); //开始发送数据</p><p>/* Set TX length to DM9000 */<br>DM9000_iow(DM9000_TXPLL, length &amp; 0xff);&nbsp;&nbsp;&nbsp;&nbsp;  //把发送长度写入TX寄存器<br>DM9000_iow(DM9000_TXPLH, (length &gt;&gt; 8) &amp; 0xff);</p><p>/* Issue TX polling command */<br>DM9000_iow(DM9000_TCR, TCR_TXREQ); /* Cleared after TX complete 发送控制寄存器（TX Control Register）*/<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //TXREQ：TX（发送）请求。发送完成后自动清零该位。<br>/* wait for end of transmission */<br>tmo = get_timer(0) + 5 * CFG_HZ;<br>while (DM9000_ior(DM9000_TCR) &amp; TCR_TXREQ) {&nbsp;&nbsp;&nbsp;  //判断是否发送完成<br>&nbsp;&nbsp;  if (get_timer(0) &gt;= tmo) {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //判断是否超时<br>&nbsp;&nbsp;&nbsp;  printf("transmission timeout\n");<br>&nbsp;&nbsp;&nbsp;  break;<br>&nbsp;&nbsp;  }<br>}<br>DM9000_DBG("transmit done\n\n");<br>return 0;<br>}</p><p>/*<br>Stop the interface.<br>The interface is stopped when it is brought.<br>停止网络功能，被我kill掉了，否则每次传输完成都要halt<br>*/<br>void eth_halt(void)<br>{<br>DM9000_DBG("eth_halt dummy by kyon\n");</p><p>/* RESET devie */<br>//phy_write(0, 0x8000); /* PHY RESET */<br>//DM9000_iow(DM9000_GPR, 0x01); /* Power-Down PHY */<br>//DM9000_iow(DM9000_IMR, 0x80); /* Disable all interrupt */<br>//DM9000_iow(DM9000_RCR, 0x00); /* Disable RX */<br>}</p><p>/*<br>Received a packet and pass to upper layer<br>最重要的接收函数<br>*/<br>int eth_rx(void)<br>{<br>u8 rxbyte, *rdptr = (u8 *) NetRxPackets[0];<br>u16 RxStatus, RxLen = 0;<br>u32 tmplen, i;</p><p>DM9000_ior(DM9000_MRRH); //kyon //存储器读地址寄存器高半字节，dummy read？这儿是我自己后加上<br>DM9000_ior(DM9000_MRRL);</p><p>do{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //do循环也是我自己后加的</p><p>/* Check packet ready or not */<br>DM9000_ior(DM9000_MRCMDX); /* Dummy read */ <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //存储器地址不变的读数据命令,这次是真的dummy read一下，怀疑这句要放在do 外面<br>rxbyte = DM9000_inb(DM9000_DATA); /* Got most updated data */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //不太理解这儿读到的是什么东西，应该是数据，如果读到0就返回，在网上搜了下：<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // DM9000A接收缓冲区中的数据格中格式是4字节的包头+真正的数据. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // 其中4字节包头分别位为: rxbyte, status, count_low, count_hight <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // 说明如下:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // rxbyte: 0-没有接收到数据, 1-有新的数据包<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // status: 状态<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // count_low, count_hight: 接收到的数据长度<br>if (rxbyte == 0)<br>&nbsp;&nbsp;  return 0;</p><p>/* Status check: this byte must be 0 or 1 */<br>if (rxbyte &gt; 1) {&nbsp;&nbsp;&nbsp;  //如果rxbyte大于1，关闭设备，也就是说正常的话rxbyte应该为1<br>&nbsp;&nbsp;  DM9000_iow(DM9000_RCR, 0x00); /* Stop Device */<br>&nbsp;&nbsp;  DM9000_iow(DM9000_ISR, 0x80); /* Stop INT request */<br>&nbsp;&nbsp;  DM9000_DBG("rx status check: %d\n", rxbyte);<br>}<br>DM9000_DBG("receiving packet\n");</p><p>/* A packet ready now &amp; Get status/length 如果一个数据包已经准备好，也就是说前面判断数据包是否准备好*/<br>DM9000_outb(DM9000_MRCMD, DM9000_IO);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //存储器读地址自动增加的读数据命令 准备IO地址<br>&nbsp;&nbsp;&nbsp;&nbsp;  /* */<br>RxStatus = DM9000_inw(DM9000_DATA); //获取RX状态<br>RxLen = DM9000_inw(DM9000_DATA); //获取RX数据包长度</p><p>&nbsp;&nbsp;&nbsp;&nbsp;  /* */<br>DM9000_DBG("rx status: 0x%04x rx len: %d\n", RxStatus, RxLen);</p><p>/* Move data from DM9000 */<br>/* Read received packet from RX SRAM */<br>tmplen = (RxLen + 1) / 2;&nbsp;&nbsp;&nbsp;  //重新计算16bit长度<br>for (i = 0; i &lt; tmplen; i++)&nbsp;&nbsp;  //获取数据<br>&nbsp;&nbsp;  {<br>&nbsp;&nbsp;&nbsp;  ((u16 *) rdptr)[i] = DM9000_inw(DM9000_DATA);<br>&nbsp;&nbsp;&nbsp;  //printf("%d ",((u16 *) rdptr)[i]);<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;&nbsp;&nbsp;  /* */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  //排错处理<br>if ((RxStatus &amp; 0xbf00) || (RxLen &lt; 0x40)<br>&nbsp;&nbsp;&nbsp;&nbsp;  || (RxLen &gt; DM9000_PKT_MAX)) {<br>&nbsp;&nbsp;  if (RxStatus &amp; 0x100) {<br>&nbsp;&nbsp;&nbsp;  printf("rx fifo error\n");<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;  if (RxStatus &amp; 0x200) {<br>&nbsp;&nbsp;&nbsp;  printf("rx crc error\n");<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;  if (RxStatus &amp; 0x8000) {<br>&nbsp;&nbsp;&nbsp;  printf("rx length error\n");<br>&nbsp;&nbsp;  }<br>&nbsp;&nbsp;  if (RxLen &gt; DM9000_PKT_MAX) {<br>&nbsp;&nbsp;&nbsp;  printf("rx length too big\n");<br>&nbsp;&nbsp;&nbsp;  dm9000_reset();<br>&nbsp;&nbsp;  }<br>} else {</p><p>&nbsp;&nbsp;  /* Pass to upper layer */<br>&nbsp;&nbsp;  DM9000_DBG("passing packet to upper layer\n");<br>&nbsp;&nbsp;  NetReceive(NetRxPackets[0], RxLen); //将数据包传递到上层，<br>&nbsp;&nbsp;  //return RxLen;<br>}<br>}<br>while (rxbyte == DM9000_PKT_RDY); //如果rxbyte == 1 就继续循环<br>//return 0;</p><p>return RxLen;<br>}</p><p>/*<br>以下两个函数没看到在哪使用的？？？<br>Read a word data from SROM<br>*/<br>u16 read_srom_word(int offset)<br>{<br>DM9000_iow(DM9000_EPAR, offset);<br>DM9000_iow(DM9000_EPCR, 0x4);<br>udelay(8000);<br>DM9000_iow(DM9000_EPCR, 0x0);<br>return (DM9000_ior(DM9000_EPDRL) + (DM9000_ior(DM9000_EPDRH) &lt;&lt; 8));<br>}</p><p>void write_srom_word(int offset, u16 val)<br>{<br>DM9000_iow(DM9000_EPAR, offset);<br>DM9000_iow(DM9000_EPDRH, ((val &gt;&gt; 8) &amp; 0xff));<br>DM9000_iow(DM9000_EPDRL, (val &amp; 0xff));<br>DM9000_iow(DM9000_EPCR, 0x12);<br>udelay(8000);<br>DM9000_iow(DM9000_EPCR, 0);<br>}</p><p> </p><p> </p><p> </p><p> </p> </div>        </div>                </div>  </div>  </div> </div> </section>                        <script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

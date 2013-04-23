@@ -1,0 +1,1185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0080)http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>使用 CDT 调试器，第 2 部分: 使用 Eclipse CDT 和 MI 访问 gdb</title>
+<meta http-equiv="PICS-Label" content="(PICS-1.1 &quot;http://www.icra.org/ratingsv02.html&quot; l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) &quot;http://www.rsac.org/ratingsv01.html&quot; l gen true r (n 0 s 0 v 0 l 0) &quot;http://www.classify.org/safesurf/&quot; l gen true r (SS~~000 1))">
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/">
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico">
+  <meta name="Owner" content="dw@cn.ibm.com">
+  <meta name="DC.Language" scheme="rfc1766" content="zh-CN">
+  <meta name="IBM.Country" content="CN">
+<meta name="Security" content="Public">
+<meta name="IBM.SpecialPurpose" content="SP001">
+<meta name="IBM.PageAttributes" content="sid=1003,1004">
+<meta name="Source" content="v16 Template Generator">
+<meta name="Robots" content="index,follow">
+<meta name="Abstract" content="Eclipse C/C++ 开发工具（C/C++ Development Tooling，CDT）提供了非常优秀的图形调试环境，它提供了断点（breakpoint）、检查点（watchpoint）、变量、寄存器、反汇编、信号和内存内容。您仍可以为这个环境添加新功能或者访问这些视图来显示定制调试器的输出。但首先应该了解 C/C++ 调试接口（C/C++ Debugger Interface，CDI）以及它如何与 Eclipse 通信。第 1 部分从较高的层次描述了 CDI，本文给出一个实际的例子：CDT 如何使用 CDI 和 Machine Interface（MI）与 GNU Debugger 交互。">
+<meta name="Description" content="Eclipse C/C++ 开发工具（C/C++ Development Tooling，CDT）提供了非常优秀的图形调试环境，它提供了断点（breakpoint）、检查点（watchpoint）、变量、寄存器、反汇编、信号和内存内容。您仍可以为这个环境添加新功能或者访问这些视图来显示定制调试器的输出。但首先应该了解 C/C++ 调试接口（C/C++ Debugger Interface，CDI）以及它如何与 Eclipse 通信。第 1 部分从较高的层次描述了 CDI，本文给出一个实际的例子：CDT 如何使用 CDI 和 Machine Interface（MI）与 GNU Debugger 交互。">
+<meta name="Keywords" content="Eclipse, CDT, java, debugging, gdb, cdi, mi, C/C++ Development Tooling, machine interface, open source, Matthew Scarpino, 调试, 机器接口, 开放源码, tttosca">
+<meta name="DC.Date" scheme="iso8601" content="2008-07-31">
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316">
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TT400">
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCOSRCN">
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2008">
+<meta name="IBM.Effective" scheme="W3CDTF" content="2008-07-31">
+<meta name="title" content="使用 CDT 调试器，第 2 部分: 使用 Eclipse CDT 和 MI 访问 gdb">
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/all.css" media="all" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/screen-uas.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/screen-fonts.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/handheld.css" media="handheld" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/print.css" media="print" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/overlay.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+
+<!-- dW-specific CSS -->
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-screen.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-local-site.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-screen-comments-ratings-signin.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/jquery.cluetip.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+
+<!-- JPP: LOCAL URL FOR TESTING V16 DEFIANT MASTHEAD/FOOTER -->
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-mf2012-01.css" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-mf-cn.css" rel="stylesheet" title="www" type="text/css">
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/ibmcommon.js" type="text/javascript">//</script><style type="text/css"></style><link rel="search" type="application/opensearchdescription+xml" href="http://www.ibm.com/search/opensearch/description.xml" title="IBM Search">
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dynamicnav.js" type="text/javascript">//</script>
+<script language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/urltactic.js" type="text/javascript"></script>
+<!-- Rating_START -->
+<script language="JavaScript" type="text/javascript">
+  // <![CDATA[
+
+ dwr = {};
+  dwr.clickhere = '点击评分';
+  dwr.starIntro = ''; 
+  dwr.stars = '星';
+  dwr.star = '星'; 
+  dwr.avgRatingOf = '平均分';
+  dwr.youRated = '您的评分是';
+  dwr.avgRating = '平均分';
+  dwr.basedOnVote = '共 {1} 个评分'; // {1} to be substitue by code
+  dwr.basedOnVotes = '共 {1} 个评分';
+  dwr.leftParen = '（'; 
+  dwr.rightParen = ' ）'; 
+  dwr.space = ' '; 
+  dwr.yourRating = '您的评分';
+dwr.avgRating2 = '总共 {1} 评分的平均分';
+dwr.avgRating3 = '平均分{1} 星';
+dwr.rateThisArticle = '为本文评分';
+dwr.votes = '{1}个评分';
+dwr.vote = '{1}个评分';
+dwr.submitErr = '错误：提交失败，请重试。';
+dwr.noRatingErr = '错误：请选择一个评分并重新提交。';
+dwr.submit = '提交';
+// ]]>
+</script>
+
+<!-- Rating_START -->
+<script language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/showrating.js" type="text/javascript"></script>
+<style type="text/css">
+  .metavalue {
+  display: none;
+  }
+</style>
+<!-- Rating_END --><!-- RESERVED_HEADER_INCLUDE -->
+<script language="javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/ajax1.js" type="text/javascript"></script>
+<script language="javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/search_counter-maverick.js" type="text/javascript"></script>
+<script language="javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/request_referer_capture-maverick.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ setDefaultQuery('dwchina');
+ //-->
+</script>
+<script language="JavaScript" type="text/javascript">
+ <!--
+ function openNewWindow(url,tar,arg){window.open(url,tar,arg);}
+ //-->
+</script>
+  <!-- Include file support -->
+  <script language="JavaScript" type="text/javascript">
+    (function($) {
+    jQuery.extend({
+    getInc: function(u,d){
+    if(u==null)return;
+    jQuery.ajax({
+    type: "GET",
+    url: u,
+    dataType: "text",
+    success: function(t) {
+    jQuery(d).html(t);
+    ibmCommon.initShowHide(jQuery(d).children()[0]);	
+    },
+    async: true
+    });
+    }
+    });
+    })(jQuery);
+  </script>
+<script id="flashdetect" type="text/javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/flash-detect.js" charset="UTF-8"></script><script id="mhMenu" type="text/javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/cnzh-utf8.js" charset="UTF-8"></script><script id="wiBundle" type="text/javascript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/Controller" charset="UTF-8"></script></head>
+
+<body id="ibm-com">
+<div id="ibm-top" class="ibm-landing-page">
+
+<!-- MASTHEAD_BEGIN -->
+<!-- MASTHEAD_BEGIN -->
+<div class="ibm-access"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-content">跳转到主要内容</a></div>
+<div id="ibm-masthead-dw">
+  
+    <!-- TOP ROW -->    
+    <div id="dw-masthead-top-row">
+    	<ul id="ibm-mast-options-dw" class="cn">
+    		<li id="dw-mast-top-0"> 	
+    			<a class="" href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&lang=zh&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html" title="">登录 (或注册)</a>
+    		</li>
+    		<li id="dw-mast-top-1" class="dw-mast-top-1-cn">
+    			<a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#SELECTLANG">中文</a><img class="dw-preload" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/arrow-down-active.gif" width="8" height="7" alt="">
+    		</li>
+    		<li id="dw-mast-top-2" class="dw-mf-hide">
+    			<a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/photo.do" alt="PHOTO" class="dw-mast-profimg" width="20" height="20"> [userid]</a>
+    		</li>
+    		<li id="dw-mast-top-3">
+    			<a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/ibm-smlogo.gif" width="44" height="16" alt="IBM®"></a>
+    		</li>
+    	</ul>
+	</div>
+    
+    <!-- TOP ROW SLIDER -->
+    <div id="ibm-my-menu-dw">    
+        <div class="ibm-ribbon-pane-dw">
+            <div class="ibm-ribbon-section-dw">
+                <!-- Sign-in -->
+                <div class="dw-mast-columns">                
+					<div class="dw-mast-col-1-1">
+						<div id="dw-mast-sso">
+							<!--<div id="dw-mast-sso-reg">
+								<p class="dw-mast-sso-reg-cn">如果您还没有注册到 IBM 注册系统，我们为给您带来的不便表示道歉，并请您马上注册。 							
+									<a href="#" onclick="(function () {window.location='/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh&amp;d='+encodeURIComponent(location.href);})();">现在注册</a>。</p>
+							</div>-->
+							<div id="signin_error_mf" class="no-display"></div>
+							<div id="dw-mast-sso-form">
+								<form id="sForm_mf" action="" method="post" name="sForm_name_mf" onsubmit="return false;">
+									<div id="dw-mast-sso-id" class="dw-mast-sso-id-cn">
+										<label for="ibmid_mf">IBM ID：</label>
+										<input id="ibmid_mf" type="text" value="" name="ibmid_name_mf" maxlength="100" onkeypress="handleEP(event,this.form,&#39;mf&#39;);" class="">
+									</div>
+									<div id="dw-mast-sso-pw" class="dw-mast-sso-pw-cn">
+										<label for="pw_mf">密码：</label>
+										<input id="pw_mf" type="password" value="" name="pw_name_mf" maxlength="100" onkeypress="handleEP(event,this.form,&#39;mf&#39;);" class="">
+									</div>
+									<div id="dw-mast-sso-target" class="dw-mast-sso-target-cn">
+										<p class="dw-mf-perm-box">
+											<input id="perm_mf" type="checkbox" name="perm_name_mf"><label for="perm_mf"> 保持登录。</label>
+										</p>
+									</div>
+									<div id="dw-mast-sso-terms">
+										<p class="dw-mast-sso-terms-cn">单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/mydeveloperworks/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+									<div>
+										<input class="dw-mf-submit-btn-cn" name="ibm_submit_name_mf" value="提交" onclick="signin(&#39;mf&#39;);return false;" type="submit">
+									</div>
+								</form>
+							</div>
+							<div id="dw-mast-sso-update">
+								<div id="dw-mast-sso-update-id">
+									<ul>
+										<li><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.href);})();">需要一个 IBM ID？</a></li>
+										
+									<li><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a></li>
+									</ul>
+								</div>
+								<div id="dw-mast-sso-update-pw">
+								<ul class="dw-mf-pwupdate">
+									<li><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Dzh_CN%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a></li>
+									<li><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></li>
+								</ul>
+									</div>
+							</div>
+							<div id="dw-mast-sso-text">
+								<p>当您初次登录到 developerWorks 时，将会为您创建一份概要信息。<strong>您在 developerWorks 概要信息中选择公开的信息将公开显示给其他人，但您可以随时修改这些信息的显示状态。</strong>您的姓名（除非选择隐藏）和昵称将和您在 developerWorks 发布的内容一同显示。</p>
+								<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+							</div>
+							<div class="dw-mast-close">
+								<ul>
+									<li><div class="dw-mast-close-sign-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+								</ul>
+							</div>	
+						</div>
+						
+						<div id="dw-mast-dname" class="dw-mf-hide">
+							<p>当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+							<div id="signin_dname_error_mf" class="no-display"></div>
+							<div id="dw-mast-dname-form">
+								<form id="dForm_mf" action="" method="post" name="dForm_name_mf" onsubmit="return false;">
+									<div id="dw-mast-dname-mf">
+										<label for="dname_mf">昵称：</label>
+										<input id="dname_mf" name="dname_name_mf" maxlength="31" size="25" value="" type="text" onkeypress="handleEP(event,this.form,&#39;mf&#39;);">
+									</div>
+									<div id="dw-mast-dname-terms">
+										<p class="dw-mast-dname-terms-cn">单击<strong>提交</strong>则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/mydeveloperworks/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+									<div>
+										<input class="dw-mf-submit-btn-cn" name="dname_submit_name_mf" value="提交" onclick="signin(&#39;mf&#39;);return false;" type="submit">
+									</div>
+								</form>								
+							</div>
+							<div id="dw-mast-dname-secure">
+								<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+							</div>
+							<div class="dw-mast-close">
+								<ul>
+									<li><div class="dw-mast-close-sign-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+								</ul>
+							</div>	
+						</div>
+	
+						<div id="dw-mast-auth" class="dw-mf-hide">
+							<div>
+
+								<h2>My developerWorks:</h2>
+								<ul>
+									<li><a id="dw-mast-top-0-0" href="http://www.ibm.com/developerworks/mydeveloperworks/profiles/html/myProfileView.do?lang=zh">我的概要信息</a></li>
+									<li><a href="http://www.ibm.com/developerworks/mydeveloperworks/homepage?lang=zh">我的首页</a></li>
+									<li><a href="http://www.ibm.com/developerworks/mydeveloperworks/groups/service/html/mycommunities?lang=zh">我的群组</a></li>
+								</ul>     
+							</div>
+							<div id="dw-mast-notify" class="dw-mf-hide">
+								<h2>我的通知：</h2>
+								<ul>
+									<li><a id="new_notify" href="http://www.ibm.com/developerworks/mydeveloperworks/homepage?lang=zh">{[num_notify] 个新通知}([num_notify] 个新通知)</a></li>
+									<li><a id="new_invite" href="http://www.ibm.com/developerworks/mydeveloperworks/profiles/html/wc.do?action=in&requireAuth=true&widgetId=friends&lang=[lang]">{[num_invite] 个网络请求}([num_invite] 个网络请求)</a></li>  
+								</ul>
+							</div>
+							<div class="dw-mast-more">
+								<ul class="ibm-link-list">
+									<li><a class="dw-more-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="signOut(); return false;"><strong>退出</strong></a></li>
+								</ul>
+							</div>
+							<div class="dw-mast-close">
+								<ul>
+									<li><div class="dw-mast-close-sign"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+								</ul>
+							</div>		
+						</div>
+						
+					</div>
+                	
+                </div>
+                <!-- Site selector --> 
+				<div class="dw-mast-columns">
+					<div class="dw-mast-col-2-1">
+						<h2>选择语言：</h2>
+						<ul>
+							<li><a id="dw-mast-top-1-0" href="http://www.ibm.com/developerworks/">English</a></li>
+							<li><a href="http://www.ibm.com/developerworks/cn/">中文</a></li>
+							<li><a href="http://www.ibm.com/developerworks/jp/">日本語</a></li>
+						    <li><a href="http://www.ibm.com/developerworks/ru/">Русский</a></li>
+						</ul>
+					</div>
+					<div class="dw-mast-col-2-2">
+						<ul>
+							<li><a href="http://www.ibm.com/developerworks/br/">Português (Brasil)</a></li>
+							<li><a href="http://www.ibm.com/developerworks/ssa/">Español</a></li>
+							<li><a href="http://www.ibm.com/developerworks/vn/">Việt</a></li>
+						</ul>
+					</div>
+					<div class="dw-mast-close">
+						<ul>
+							<li><div class="dw-mast-close-lang"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+						</ul>
+                    </div>
+                </div>
+                <div class="dw-mast-columns"><!-- Authenticated --></div>
+                <!-- IBM -->
+				<div class="dw-mast-columns">
+					<div class="dw-mast-col-2-1">
+						<ul>
+							<li><a id="dw-mast-top-3-0" href="http://www.ibm.com/cn/zh/">IBM 主页</a></li>
+							<li><a href="http://www.ibm.com/solutions/cn/zh/">解决方案</a></li>
+							<li><a href="http://www.ibm.com/software/cn/">软件</a></li>
+						</ul>
+					</div>
+					<div class="dw-mast-col-2-2 dw-mast-ibm">
+						<ul>
+							<li><a href="http://www.ibm.com/support/cn/zh/">支持门户</a></li>
+							<li><a href="http://www.ibm.com/support/documentation/cn/zh/">产品文档</a></li>
+							<li><a href="http://www.ibm.com/redbooks/">Redbooks（英文）</a></li>
+						</ul>
+					</div>
+					<div class="dw-mast-close">
+						<ul>
+							<li><div class="dw-mast-close-ibm-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+						</ul>
+                    </div> 
+				</div>
+			</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div id="ibm-universal-nav-dw">
+        <ul id="ibm-unav-links-dw">
+        	<li id="ibm-unav-home-dwlogo">
+        		<a href="http://www.ibm.com/developerworks/cn/"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw-wordmark.gif" width="218" height="32" alt="developerWorks®"></a>
+        	</li>
+        </ul>
+    	<ul id="ibm-menu-links-dw" class="ibm-menu-links-dw-cn">
+    		
+    		<li id="dw-mast-nav-0"><a href="http://www.ibm.com/developerworks/cn/topics">技术主题</a></li>
+    		<li id="dw-mast-nav-1"><a href="http://www.ibm.com/developerworks/cn/downloads/">软件下载</a></li>
+    		<li id="dw-mast-nav-2"><a href="https://www.ibm.com/developerworks/community/?lang=zh">社区</a></li>
+    		<li id="dw-mast-nav-3"><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh">技术讲座</a></li>
+    	</ul>   
+    	<form id="ibm-search-form" action="http://www.ibm.com/search/csass/search/" method="get" name="form1">
+    		<input type="hidden" name="sn" value="dw">
+    		<input type="hidden" name="lang" value="zh">
+    		<input type="hidden" name="cc" value="CN">
+    		<input type="hidden" name="en" value="utf">
+    		<input type="hidden" name="hpp" value="20">
+    		<input type="hidden" name="dws" value="cndw">
+    		<input type="hidden" name="lo" value="zh">
+    		<p>
+    			<label for="q"><img alt="查询:" height="1" width="1" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif"></label>
+    			<input type="text" value="搜索 developerWorks" name="q" maxlength="100" id="q">
+    			<input type="submit" id="ibm-search" class="ibm-btn-search ibm-btn-search-cn" name="Search" value="搜索">
+    		</p>
+    	</form>
+    </div>
+    
+    <!-- BOTTOM ROW SLIDER -->
+    <div id="ibm-common-menu-dw">
+        <div class="ibm-ribbon-pane-dw">
+            <div class="ibm-ribbon-section-dw">
+				<!-- Technical topics category -->
+  
+            	<div class="dw-mast-columns">
+            	<div class="dw-mast-col-5-1">
+            		<h2><a id="dw-mast-nav-0-0" href="http://www.ibm.com/developerworks/cn/topics/">技术主题</a></h2>
+            		
+            		<ul>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/agile/">Agile
+            			    transformation</a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/aix/">AIX and UNIX</a></li>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/bigdata/">Big data</a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/cloud/">Cloud computing</a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/ibmi/">IBM i</a></li>
+            			
+            		</ul>     
+            	</div>
+            	<div class="dw-mast-col-5-2">
+            		
+            		<ul>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/data/">Information management</a></li>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/java/">Java technology</a></li>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/linux/">Linux</a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/lotus/">Lotus</a></li>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/mobile/">Mobile
+            		        development</a></li>
+           			
+            		</ul>
+            	</div>
+            	<div class="dw-mast-col-5-3">
+            		
+            		<ul>
+          			<li><a href="http://www.ibm.com/developerworks/cn/opensource/">Open source</a></li>
+            		    <li><a href="http://www.ibm.com/developerworks/cn/rational/">Rational</a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/webservices/">SOA and web services</a></li>
+             			<li><a href="http://www.ibm.com/developerworks/cn/web/">Web development</a></li>  
+            			<li><a href="http://www.ibm.com/developerworks/cn/websphere/">WebSphere</a></li>     
+    
+            		</ul>
+            		
+            	</div>
+            	<div class="dw-mast-col-5-4">
+            		<ul>
+           			<li><a href="http://www.ibm.com/developerworks/cn/xml/">XML</a></li>
+            		</ul>        
+            	</div>
+            	<div class="dw-mast-col-5-5">
+            		<ul>
+            			<li><a href="http://www.ibm.com/developerworks/cn/library/"><strong>文档库</strong></a></li>
+            			<li><a href="http://www.ibm.com/developerworks/cn/products/"><strong>产品 A - Z</strong></a></li>				    
+            		</ul>        
+            	</div>
+            	<div class="dw-mast-close">
+            		<ul>
+            			<li><div class="dw-mast-close-tech-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+            		</ul>
+            	</div>
+            </div>
+            	<!-- Evaluation software category -->
+            	<div class="dw-mast-columns">
+            		<div class="dw-mast-col-2-1">
+            			<h2><a id="dw-mast-nav-1-0" href="http://www.ibm.com/developerworks/cn/downloads">软件下载</a></h2>
+            			<ul>
+            				<li><a href="http://www.ibm.com/developerworks/cn/downloads/#data">Information management</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/cn/downloads/#lotus">Lotus</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/cn/downloads/#rational">Rational</a></li>
+            			</ul>            
+            		</div>
+            		<div class="dw-mast-col-2-2">
+            			<ul>
+            				<li><a href="http://www.ibm.com/developerworks/cn/downloads/#tivoli">Tivoli</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/cn/downloads/#websphere">WebSphere</a></li>
+            				
+            			</ul>            
+            		</div>
+            		<div class="dw-mast-close">
+            			<ul>
+            				<li><div class="dw-mast-close-eval-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+            			</ul>
+            		</div>
+            	</div>
+            	<!-- Community category -->
+            	<div class="dw-mast-columns">
+            		<div class="dw-mast-col-2-1">
+            			<h2><a id="dw-mast-nav-2-0" href="https://www.ibm.com/developerworks/community/?lang=zh">社区</a></h2>
+            			<ul>
+            				<li><a href="https://www.ibm.com/developerworks/community/homepage/?lang=zh">我的首页</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/community/profiles/home.do?lang=zh">概要信息</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/community/groups/service/html/allcommunities?lang=zh">群组</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/?lang=zh">博客</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/community/bookmarks/html?lang=zh">书签</a></li>  
+            			</ul>     
+            		</div>
+            		<div class="dw-mast-col-2-2">
+            			<ul>
+            				<!--	<li><a href="">Forums</a></li> -->
+            				<li><a href="https://www.ibm.com/developerworks/mydeveloperworks/wikis/home?lang=zh">Wiki</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/community/files/app?lang=zh">文件</a></li>
+            				<li><a href="https://www.ibm.com/developerworks/community/activities/service/html/mainpage?lang=zh#dashboard,myactivities">活动</a></li>
+            				<!--	<li><a href="">Podcasts</a></li> -->    
+            			</ul>
+            		</div>
+            		<div class="dw-mast-close">
+            			<ul>
+            				<li><div class="dw-mast-close-comm-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+            			</ul>
+            		</div>
+            	</div>
+            	<!-- Events category -->
+            	<div class="dw-mast-columns">
+            		<div class="dw-mast-col-1-1">
+            			<h2><a id="dw-mast-nav-3-0" href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh">技术讲座</a></h2>
+            			<ul>
+            				<li><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh">技术讲座</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/cn/swi/">多媒体课堂</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/find/webcasts/">网络广播（英文）</a></li>
+            				<li><a href="http://www.ibm.com/developerworks/find/events/">查找活动（技术讲座，网络广播，会议等）（英文）</a></li> 
+            			</ul>            
+            		</div>
+            		<div class="dw-mast-close">
+            			<ul>
+            				<li><div class="dw-mast-close-event-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10" border="0"></a></div></li>
+            			</ul>
+            		</div>
+            	</div>
+            </div>
+        </div>
+    </div>
+	
+</div>
+<div id="fdiv" class="ibm-access"><embed type="application/x-shockwave-flash" src="https://www.ibm.com/developerworks/js/dw-mf/connect.swf" width="1" height="1" id="sflash" name="sflash" quality="high" menu="false" wmode="window" movie="https://www.ibm.com/developerworks/js/dw-mf/connect.swf" swliveconnect="true" allowscriptaccess="always"></div>
+<!-- MASTHEAD_END --><!-- MASTHEAD_END -->
+
+<div id="ibm-pcon">
+
+<!-- CONTENT_BEGIN -->
+<div id="ibm-content">
+
+<!-- Navigation_Trail_BEGIN -->
+<!-- &nbsp; -->
+      <div id="ibm-content-head"><ul id="ibm-navigation-trail"><li class="ibm-first"><a href="http://www.ibm.com/developerworks/cn/">developerWorks 中国</a></li><li><a href="http://www.ibm.com/developerworks/cn/opensource/">Open source</a></li><li><a href="http://www.ibm.com/developerworks/cn/views/opensource/libraryview.jsp">文档库</a></li></ul></div>
+<!-- Navigation_Trail_END -->
+
+<!-- dW_Summary Area_START -->
+<div id="dw-summary-article">
+
+<div class="dw-content-head">
+<h1>使用 CDT 调试器，第 2 部分: 使用 Eclipse CDT 和 MI 访问 gdb </h1><p><em>C/C++ Development Tooling 如何使用 C/C++ Debugger Interface 处理 GNU 调试器的机器接口 </em></p>
+</div>
+
+<div class="ibm-container-body ibm-two-column">
+
+<div class="ibm-column ibm-first">
+<div class="author"><a class="dwauthor" rel="#authortip1" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#author1">Matthew Scarpino</a>, Java 开发人员, Eclipse Engineering, LLC</div><div id="authortip1" class="dwauthor-onload-state ibm-no-print" style="display: none;">Matthew Scarpino 是 Eclipse Engineering LLC 的一名项目经理兼 Java 开发人员。他是 <em>SWT/JFace in Action</em> 的首席作家，并对标准部件工具包（Standard Widget Toolkit，SWT）做过一次较小的但非常重要的贡献。他喜欢爱尔兰民间音乐、马拉松赛跑、William Blake 的诗歌以及图形化编辑框架（Graphical Editing Framework，GEF）。 </div>
+<p></p>
+  <p><strong>简介：</strong>&nbsp;Eclipse C/C++ 开发工具（C/C++ Development Tooling，CDT）提供了非常优秀的图形调试环境，它提供了断点（breakpoint）、检查点（watchpoint）、变量、寄存器、反汇编、信号和内存内容。您仍可以为这个环境添加新的性能或者访问这些视图来显示定制调试器的输出。但首先应该了解 C/C++ 调试接口（C/C++ Debugger Interface，CDI）以及它如何与 Eclipse 通信。“<a href="http://www.ibm.com/developerworks/views/opensource/libraryview.jsp?search_by=interfacing+CDT+debugger">使用 CDT 调试器</a>” 系列的第 1 部分从较高的层次描述了 CDI。第 2 部分将学习 CDT 如何与 GNU Debugger（gdb）对话。具体指 CDT 如何使用 CDI 和 Machine
+Interface（MI）与 gdb 交互。</p>
+<p class="ibm-no-print"><a href="http://www.ibm.com/developerworks/cn/views/opensource/libraryview.jsp?search_by=%E4%BD%BF%E7%94%A8+CDT+%E8%B0%83%E8%AF%95%E5%99%A8">查看本系列更多内容</a></p>
+ 
+</div>
+
+<div class="ibm-column ibm-second">
+
+<p class="leading"><b>发布日期：</b>&nbsp;2008 年 7 月 31 日
+  
+<br><b>级别：</b>&nbsp;中级
+  <br class="ibm-ind-link"><b>其他语言版本：</b>&nbsp;<a onmouseover="linkQueryAppend(this)" href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug2/">英文</a>  
+
+<br><strong>访问情况 ：</strong>&nbsp;4728 次浏览
+  <br><strong>评论：</strong>&nbsp;<span id="nCmts">0&nbsp;(<a class="dw-view-comment" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#icomments">查看</a>&nbsp;|&nbsp;<a onclick="showSignIn();return false;" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">添加评论</a> - 登录)</span>
+  <!-- Rating_Area_Begin -->
+  </p><div id="art-rating-summary"><img alt="平均分 2 星 共 3 个评分" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-2b.jpg" class="dw-avg-rating"> 平均分 (3个评分)<br><a class="dw-view-comment" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#iratings">为本文评分</a></div>
+  <!-- Rating_Area_End -->
+  <br>
+<p></p>
+</div>
+
+</div>
+</div>
+<!-- dW_Summary_Area_END -->
+
+<!-- CONTENT_BODY -->
+<div id="ibm-content-body">
+
+<!-- MAIN_COLUMN_BEGIN -->
+<div id="ibm-content-main">
+
+<!-- Related_Searches_Area_And_Overlays_Begin -->
+
+<!-- MAIN_COLUMN_CONTAINER_BEGIN -->
+<div class="ibm-container">
+
+<!-- MAIN_COLUMN_CONTENT_BEGIN -->
+<p>GNU Debugger（gdb）是目前最受欢迎的开源调试器。它最初是为 C 语言设计的，后来被移植到各种计算系统（从小型嵌入式设备到大型超级计算机）中调试多种语言的代码。gdb 通常被用作命令行可执行文件，但可以通过使用不太著名的 MI 协议的软件访问 gdb。本文解释了 MI 的工作原理以及 CDT 如何使用 MI 与 gdb 通信。CDT 调试器交互的具体示例应该对学习定制的 C/C++ 调试器很有帮助。</p>
+            <p>此处讨论的 Java™ 类以 CDI 提供的类和接口为基础，这些在 “<a href="http://www.ibm.com/developerworks/cn/views/opensource/libraryview.jsp?search_by=%E4%BD%BF%E7%94%A8+CDT+%E8%B0%83%E8%AF%95%E5%99%A8">使用 CDT 调制器</a>” 系列的 <a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug1/">第 1 部分 </a> 中介绍过。为了避免混淆，再次解释一下 CDI 和 MI 之间的区别：</p>
+            <ul>
+                <li>CDI 由 Eclipse/CDT 开发人员创建，因此 CDT 可以访问外部调试器。</li>
+                <li>MI 由 gdb 开发人员创建，因此外部应用程序可以访问 gdb。</li>
+            </ul>
+            <p>这似乎是一个简单的区别，但我将展示的许多类在 CDI 和 MI 中均有涉及，有时很难界定一个接口的结束和下一个接口的开始。如果了解 CDI 和 MI 如何一起工作，您能更好地链接定制调试器工具和 CDT，不管它们是否基于 gdb。</p>
+            <p><a name="N1007F"><span class="atitle">了解 GNU Debugger Machine Interface（gdb/MI）</span></a></p>
+            <p>大多数人使用诸如 <code>run</code>、<code>print</code> 和 <code>info</code> 这样的简单指令由命令行访问 gdb。这是 gdb 与<em>人类一方的</em> 接口。访问 gdb 的第二个方法旨在通过软件与调试器交互：Machine
+Interface（MI）。调试器执行的任务和以前相同，但命令和输出响应有很大的不同。 </p>
+            <p>示例能清楚地说明这一点。比如说您想要调试一个基于以下代码的应用程序。</p>
+            <br><a name="listing1"><b>清单 1. 一个简单的 C 语言应用程序：simple.c</b></a><br><table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td class="code-outline"><pre class="displaycode">                
+int main() {
+    int x = 4;
+	x += 6;		// x = 10
+	x *= 5;		// x = 50
+    return (0);
+}
+</pre></td></tr></tbody></table><br>
+            <p>用 <code>gcc -g -O0 simple.c -o
+simple</code> 编译代码后，一个常规的调试会话如清单 2 所示。</p>
+            <br><a name="listing2"><b>清单 2. 调试会话</b></a><br><table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td class="code-outline"><pre class="displaycode">                
+                <strong>         $ gdb -q simple</strong>
+                <strong>         (gdb) break main</strong>
+                <strong>         (gdb) run</strong>
+1	int main() {
+<strong>(gdb) step</strong>
+2	int x = 4;
+<strong>(gdb) step</strong>
+3	x += 6;     // x = 10
+<strong>(gdb) print x</strong>
+$1 = 4
+<strong>(gdb) step</strong>
+4	x *= 5;     // x = 50
+<strong>(gdb) print x</strong>
+$2 = 10
+<strong>(gdb) quit</strong>
+            </pre></td></tr></tbody></table><br>
+            <p>清单 3 显示使用 MI 命令的同一个 gdb 会话（以粗体显示）。</p>
+            <br><a name="listing3"><b>清单 3. 使用 MI 的调试会话</b></a><br><table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td class="code-outline"><pre class="displaycode">                
+                <strong>$ gdb -q -i mi simple</strong>
+(gdb)
+<strong>-break-insert-main</strong>
+^done,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x00401075",
+func="main",file="simple.c",fullname="/home/mscarpino/simple.c",line="1",times="0"}
+(gdb)
+<strong>-exec-run</strong>
+^running
+(gdb)
+*stopped,reason="breakpoint-hit",bkptno="1",thread-id="1",frame={addr="0x00401075",
+func="main",args=[],file="simple.c",fullname="/home/mscarpino/simple.c",line="1"}
+(gdb)
+<strong>-exec-step</strong>
+^running
+(gdb)
+*stopped,reason="end-stepping-range",thread-id="1",frame={addr="0x0040107a",
+func="main",args=[],file="simple.c",fullname="/home/mscarpino/simple.c",line="2"}
+(gdb)
+<strong>-exec-step</strong>
+^running
+(gdb)
+*stopped,reason="end-stepping-range",thread-id="1",frame={addr="0x00401081",
+func="main",args=[],file="simple.c",fullname="/home/mscarpino/simple.c",line="3"}
+(gdb)
+<strong>-var-create x_name * x</strong>
+^done,name="x_name",numchild="0",type="int"
+(gdb)
+<strong>-var-evaluate-expression x_name</strong>
+^done,value="4"
+(gdb)
+<strong>-exec-step</strong>
+^running
+(gdb)
+*stopped,reason="end-stepping-range",thread-id="1",frame={addr="0x00401081",
+func="main",args=[],file="simple.c",fullname="/home/mscarpino/simple.c",line="4"}
+(gdb)
+<strong>-var-update x_name</strong>
+^done,changelist=[{name="x_name",in_scope="true",type_changed="false"}]
+(gdb)
+<strong>-var-evaluate-expression x_name</strong>
+^done,value="10"
+(gdb)
+<strong>-var-delete x_name</strong>
+^done,ndeleted="1"
+(gdb)
+<strong>-gdb-exit</strong>
+            </pre></td></tr></tbody></table><br>
+            <p>
+                <code>-i mi</code> 标志告诉 gdb 使用 MI 协议通信，您可以看到显著的区别。命令名称和输出性质都有了显著改变。输出记录的第一行是 <code>^running</code> 或 <code>^done</code>，接下来是结果信息。这个输出被称为<em>结果记录</em> ，它包括 <code>^error</code> 和错误消息。</p>
+            <p>在许多情况下，MI 结果记录之后是 <code>(gdb)</code> 和带外（out-of-band，OOB）记录。这些记录提供目标状态或调试环境的额外信息。<code>-exec-step</code> 后的 <code>*stopped</code> 消息是一个 OOB 记录，它提供关于断点、检查点和目标暂停或结束原因的信息。在先前的会话中，gdb 在每个 <code>-exec-step</code> 后返回 <code>*stopped,reason="end-stepping-range"</code> 和目标状态。</p>
+            <p>gdb/MI 很难理解，但非常适合软件进程间的通信。CDT 通过创建发送和接收数据的伪终端（pseudo-terminal，pty）来实现通信。然后，它启动 gdb 并创建两个会话对象来管理调试数据。</p>
+            <div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><p><a name="N10132"><span class="atitle">启动调试器</span></a></p>
+            <p>正如 <a href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug1/" onmouseover="linkQueryAppend(this)">第 1 部分</a> 中所描述的，当用户单击 <strong>Debug</strong> 时，CDT 访问 <code>ICDebugger2</code> 实例并调用它来创建 <code>ICDISession</code>。该调试器类必须在扩展 org.eclipse.cdt.debug.core.CDebugger 扩展点的插件中标识出。清单 4 显示了 CDT 中这个扩展的样子。</p>
+            <br><a name="listing4"><b>清单 4. CDT 默认的调试器扩展</b></a><br><table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td class="code-outline"><pre class="displaycode">                
+   &lt;extension point="org.eclipse.cdt.debug.core.CDebugger"&gt;
+      &lt;debugger
+            class="org.eclipse.cdt.debug.mi.core.GDBCDIDebugger2"
+            cpu="native"
+            id="org.eclipse.cdt.debug.mi.core.CDebuggerNew"
+            modes="run,core,attach"
+            name="gdb Debugger"
+            platform="*"&gt;
+         &lt;buildIdPattern
+               pattern="cdt\.managedbuild\.config\.gnu\..*"&gt;
+         &lt;/buildIdPattern&gt;
+      &lt;/debugger&gt;
+   &lt;/extension&gt;
+</pre></td></tr></tbody></table><br>
+            <p>这说明 GDBCDIDebugger2 执行开始调试进程的 <code>createSession()</code> 方法。当 CDT 调用该方法时，它提供给调制器包含配置参数的启动对象、即将调试的可执行文件的名称和进程监视器。GDBCDIDebugger2 使用这些信息形成启动 gdb 可执行文件的字符串：</p>
+            <p>
+                <code>gdb -q -nw -i <em>mi-version</em> -tty <em>pty-slave</em>
+                    <em>executable-name</em>
+                </code>。</p>
+            <p> GDBCDIDebugger2 为正运行的 gdb 可执行文件创建 <code>MIProcess</code>，然后创建两个会话对象来管理剩余的调试进程：<code>MISession</code> 和 <code>Session</code>。<code>MISession</code> 对象管理与 gdb 的通信，<code>Session</code> 对象把 gdb 会话连接到 <a href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug1/" onmouseover="linkQueryAppend(this)">第 1 部分</a> 中描述的 CDI。本文接下来具体讨论这些会话对象。 </p>
+            <p><a name="N10189"><span class="smalltitle">
+                <code>MISession</code>
+            </span></a></p>
+            <p>启动 gdb 后，GDBCDIDebugger2 首先要做的就是创建一个 <code>MISession</code> 对象。这个对象使用三对对象处理所有对 gdb 调试器的访问： </p>
+            <ul>
+                <li>
+                    <code>OutputStream</code>（向 gdb 进程发送数据）和 <code>InputStream</code>（接收响应）</li>
+                <li>输入和输出 <code>CommandQueue</code>（持有 MI 命令）</li>
+                <li>
+                    <code>TxThread</code>（把输出 <code>CommandQueue</code> 的命令发送到 <code>OutputStream</code>）和 <code>RxThread</code>（发送 <code>InputStream</code> 的接收命令并将其放到输入 <code>CommandQueue</code>）
+                </li>
+            </ul>
+            <p>示例将验证这些对象如何一起工作。如果远程执行调试会话，CDT 通过向 gdb 发送 <code>remotebaud</code> 命令（后跟波特率）发起通信。为了完成该过程，它调用 <code>MISession</code> 的 <code>postCommand</code> 方法，该方法把 <code>remotebaud</code> 命令添加到会话的输出 <code>CommandQueue</code> 中。这会唤醒 <code>TxThread</code>，它将命令写入与 gdb 进程连接的 <code>OutputStream</code> 中。它还将命令添加到会话的输入 <code>CommandQueue</code> 中。</p>
+            <p>同时，<code>RxThread</code> 不断读取来自 gdb 进程的 <code>InputStream</code>。当新输出可用时，<code>RxThread</code> 通过 <code>MIParser</code> 发送新输出来获得结果记录和 OOB 记录。然后搜寻输入 <code>CommandQueue</code> 以查找触发输出的 gdb 命令。如果 <code>RxThread</code> 包含 gdb 的输出和相应的命令，它将创建一个 <code>MIEvent</code> 来传播调试器状态的改变。</p>
+            <p> 当数据在 gdb 中来回传输时，<code>TxThread</code> 和 <code>RxThread</code> 创建并触发 <code>MIEvent</code>。例如，如果 <code>TxThread</code> 发送一个将断点切换到 gdb 的命令，它将创建一个 <code>MIBreakpointChangedEvent</code>。如果 <code>RxThread</code> 接收到来自 gdb 的结果记录为 <code>^running</code> 的响应，则将创建一个 <code>MIRunningEvent</code>。这些事件<em>不是</em>
+                <a href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug1/" onmouseover="linkQueryAppend(this)">第 1 部分</a> 所描述的 <code>ICDIEvent</code> 接口的实现。要搞清 <code>MIEvent</code> 和 <code>ICDIEvent</code> 之间如何联系，您应该理解 <code>Session</code> 对象。</p>
+            <p><a name="N10248"><span class="smalltitle">
+                <code>Session</code>、<code>Target</code> 和 <code>EventManager</code>
+            </span></a></p>
+            <p>创建 <code>MISession</code> 后，GDBCDIDebugger2 创建一个 <code>Session</code> 对象来管理 CDI 的操作。当其构造器被调用时，<code>Session</code> 创建许多对象来协助进行管理。有两个对象尤其重要：<code>Target</code>（管理 CDI 模型并向调试器发送命令）和 <code>EventManager</code>（侦听由调试器创建的 <code>MIEvent</code>）。</p>
+            <p>正如 <a href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug1/" onmouseover="linkQueryAppend(this)">第 1 部分</a> 中解释的一样，<code>Target</code> 接收来自 CDT 的调试命令并为调试器打包命令。例如，当您单击 <strong>Step Over</strong> 按钮时，CDT 查找当前的 <code>Target</code> 并调用 <code>stepOver</code> 方法。<code>Target</code> 的响应方式是创建 <code>MIExecNext</code> 命令和调用 <code>MISession.postCommand()</code> 执行步骤。<code>MISession</code> 将命令添加到其输出 <code>CommandQueue</code> 中，在这里使用上面描述的方式把命令传输给调试器。</p>
+            <p>会话的 <code>EventManager</code> 接收 gdb 输出（被打包到一个 <code>MIEvent</code> 中）。当创建这个对象时，将其作为运行中的 <code>MISession</code> 的一个 <em>Observer</em> 添加。当 <code>MISession</code> 触发 <code>MIEvent</code> 时，<code>EventManager</code> 进行解释并创建相应的 <code>ICDIEvents</code>。例如，当 <code>MISession</code> 触发 <code>MIRegisterChangedEvent</code> 时，<code>EventManager</code> 创建一个称为 <code>ChangedEvent</code> 的 CDI 事件。创建 CDI 事件后，<code>EventManager</code> 告诉所有相关的侦听器状态发生了改变。许多侦听器是 CDI 模型的元素，但一个重要的例外是一个称为 <code>CDebugTarget</code> 的对象。这是另一个模型层次结构（接下来将解释）的一部分。 </p>
+            <div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><p><a name="N102DB"><span class="atitle"> CDI 和 Eclipse 调试模型</span></a></p>
+
+            <p>对于与 Eclipse 调试视图（比如 Register View 和 Variable View）交互的调试插件，您必须遵守 Eclipse 的规则：必须使用从 Eclipse 调试平台获得的事件和元素。Eclipse 调试模型的根元素是一个 <code>IDebugTarget</code>，其它元素包括 <code>IVariable</code>、<code>IExpression</code> 和 <code>IThread</code>。这些名称很相似，是因为 CDI 模型层次结构是在 Eclipse 调试模型层次结构之后构造的。但 CDI 模型与 Eclipse 调试模型之间不能直接对话。</p>
+
+            <p>鉴于这个原因，CDT 包含一组类，将 CDI 类封装起来，从而将 CDI 模型和 Eclipse 调试模型联系起来。<code>CDebugTarget</code> 是这个包装器模型层次结构的根，它侦听由 CDI <code>EventManager</code> 触发的事件。当它接收到新事件时，<code>CDebugTarget</code> 处理大量的 <code>if</code> 和 <code>switch</code> 语句来决定如何响应。例如，如果 CDI 事件是 <code>ICDIResumedEvent</code>，<code>CDebugTarget</code> 将执行清单 5 中的代码。 </p>
+            <br><a name="listing5"><b>清单 5. 将 CDI 事件转换为 <code>DebugEvents</code>
+                </b></a><br><table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td class="code-outline"><pre class="displaycode">                
+switch( event.getType() ) {
+	case ICDIResumedEvent.CONTINUE:
+		detail = DebugEvent.CLIENT_REQUEST;
+		break;
+	case ICDIResumedEvent.STEP_INTO:
+	case ICDIResumedEvent.STEP_INTO_INSTRUCTION:
+		detail = DebugEvent.STEP_INTO;
+		break;
+	case ICDIResumedEvent.STEP_OVER:
+	case ICDIResumedEvent.STEP_OVER_INSTRUCTION:
+	 detail = DebugEvent.STEP_OVER;
+		break;
+	case ICDIResumedEvent.STEP_RETURN:
+		detail = DebugEvent.STEP_RETURN;
+		break;
+}
+</pre></td></tr></tbody></table><br>
+            <p>
+                <code>CDebugTarget</code> 通过创建 <code>DebugEvents</code> 来响应 CDI 事件，这个过程通常涉及单步调试、中断、重新执行。创建这些事件后，它访问 Eclipse <code>DebugPlugin</code> 并调用 <code>fireDebugEventSet</code> 方法。这通知所有 Eclipse 调试侦听器状态发生了改变。即所有将其自身作为
+  <code>DebugEventListener</code> 添加的对象接收到 <code>DebugEvent</code>。这包括 Eclipse 调试视图，比如 Memory View 和 Variables View。</p>
+            <div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><p><a name="N1033D"><span class="atitle"> CDT 调试视图</span></a></p>
+            <p>只有使用适当的数据更新 Eclipse 的图形化显示时，MI-CDI-wrapper-Eclipse 通信才是有用的。图 1 显示 CDT 调试透视图，您可以看到许多呈现目标执行状态的视图。许多视图 — Breakpoints、Modules 和 Expressions — 都由 Eclipse 提供，但 CDT 在透视图中添加了三个视图：Executables
+  View、Disassembly View 和 Signals。</p>
+            
+                <br><a name="fig1"><b>图 1. CDT 调试透视图</b></a><br>
+                <img alt="CDT 调试透视图" height="510" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/figure1.gif" width="572">
+            <br>
+            <br>
+
+            <p>这些视图以相似的方式创建和接收调试事件。本节将解释 Signals 视图。该视图（上面已突出显示）列出所有目标能接收到的信号并显示哪些信号可以传递给进程。视图第一次出现时，<code>SignalsViewContentProvider</code> 调用 <code>CDebugTarget</code> 来提供一系列信号，这个目标访问 CDI 目标并在其 CDI 模型层次结构中请求信号。当返回 <code>ICDISignals</code> 数组后，<code>CDebugTarget</code> 更新它自身的模型元素并将它们发送至
+  <code>SignalsViewContentProvider</code>，<code>SignalsViewContentProvider</code> 使用这些模型元素来填充 Signals 视图。</p>
+
+            <p>当右键单击 Signals 视图中的条目时，<strong>Resume with Signal</strong> 上下文菜单选项允许您继续执行目标并将选定的信号发送到进程。这个选项调用 <code>SignalsActionDelegate</code>。当选中该选项时，delegate 调用 CDI 目标并使用与所选信号相对应的 <code>ICDISignal</code> 恢复执行。这个目标为信号创建一个 MI 命令并调用 <code>MISession.postCommand()</code> 向 gdb 发送命令。</p>
+            <p>当 gdb 响应后，更新 Signals 视图的过程需要五个步骤：</p>
+            <ol>
+                <li>
+                    <code>MISession</code> 分析来自 gdb 的 MI 输出并判断某个信号设置是否被改变。如果是的话，触发 <code>MISignalChangedEvent</code>。</li>
+                <li>CDI <code>EventManager</code> 侦听 <code>MISignalChangedEvent</code> 并通过创建一个 CDI 事件 <code>ChangedEvent</code> 进行响应。然后触发事件并警告所有 <code>ICDIEventListeners</code>。</li>
+                <li>
+                    <code>CDebugTarget</code> 接收来自 <code>EventManager</code> 的事件并判断 <code>ChangedEvent</code> 是否和信号改变有关。如果是的话，调用它的 <code>CSignalManager</code> 来处理 CDI 事件。</li>
+                <li>
+                    <code>CSignalManager</code> 更新它的模型元素并触发 <code>DebugEvent</code>，后者的类型由 <code>DebugEvent.CHANGE</code> 给定。</li>
+                <li>
+                    <code>SignalViewEventHandler</code> 接收 <code>DebugEvent</code>，检查并确保它处理信号和刷新 Signals 视图。</li>
+            </ol>
+            <p>了解 Signals 视图的相关操作非常重要，原因有二：它可以作为一个具体的示例演示各种不同的模型元素如何协同工作，另外它展示了如何构建与 Eclipse、gdb、CDI 交互的相似视图。</p>
+            <div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><p><a name="N103DD"><span class="atitle">结束语</span></a></p>
+            <p>两个会话对象（<code>MISession</code> 和 <code>Session</code>），两个目标（<code>CDebugTarget</code> 和 <code>Target</code>）和两个层次结构完全不同的模型元素 — CDT 调试器的操作非常复杂，您可能怀疑开发人员是否会使用这么复杂的工具。然而 CDT 调试器的代码是通过模块化的方式编写的，对其内部工作原理的理解越透彻，就越容易插入自己的模块。记住：学习的过程虽然艰难，但为 CDT 添加新特性要比从头构建定制调试应用程序简单得多。</p>
+        <!-- CMA ID: 326090 --> <!-- Site ID: 10 --> <!-- XSLT stylesheet used to transform this file:  dw-article-6.0-beta.xsl -->
+<br>
+<p><a name="resources"><span class="atitle">参考资料 </span></a></p><p><b>学习</b></p><ul><li> 您可以参阅本文在 developerWorks 全球站点上的 <a href="http://www.ibm.com/developerworks/opensource/library/os-eclipse-cdt-debug2/?S_TACT=105AGX52&S_CMP=cn-a-os" target="_blank">英文原文</a>。<br><br></li><li> 
+  访问 <a href="http://www.eclipse.org/">Eclipse.org</a> 中的 <a href="http://www.eclipse.org/cdt">Eclipse CDT</a>。<br><br></li><li> 
+  阅读 <a href="http://cdtdoug.blogspot.com/">CDT 项目主管的博客</a>。<br><br></li><li>
+查阅 “<a href="http://www.ibm.com/developerworks/cn/opensource/os-ecl-read"> Eclipse 推荐读物列表</a>”。<br><br></li><li>
+浏览 developerWorks 中所有 <a href="http://www.ibm.com/developerworks/cn/views/opensource/libraryview.jsp?search_by=eclipse">Eclipse 内容</a>。<br><br></li><li>
+您是 Eclipse 新用户吗？请阅读 developerWorks 文章 “<a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-platform/"> Eclipse 平台入门</a>” 以了解它的起源和架构，以及如何用插件扩展 Eclipse。<br><br></li><li>
+查看 IBM developerWorks 的 <a href="http://www.ibm.com/developerworks/cn/eclipse/index.html">Eclipse 项目资源</a> 以扩展 Eclipse 技巧。<br><br></li><li>
+收听针对软件开发人员的有趣访谈和讨论，一定要访问 <a href="http://www.ibm.com/developerworks/podcast/" onmouseover="linkQueryAppend(this)">developerWorks  podcasts</a>。<br><br></li><li>
+随时关注 developerWorks 的 <a href="http://www.ibm.com/developerworks/offers/techbriefings/" onmouseover="linkQueryAppend(this)">技术活动和网络广播</a>。<br><br></li><li>
+查看免费的 <a href="http://www.ibm.com/developerworks/offers/lp/demos/" onmouseover="linkQueryAppend(this)">developerWorks On demand demos</a> 观看并了解 IBM 及开源技术和产品功能。<br><br></li><li>
+查阅最近将在全球举办的面向 IBM 开放源码开发人员的研讨会、交易展览、网络广播和其他 <a href="http://www.ibm.com/developerworks/views/opensource/events.jsp" onmouseover="linkQueryAppend(this)">活动</a>。<br><br></li><li>
+访问 developerWorks <a href="http://www.ibm.com/developerworks/cn/opensource">开放源码专区</a> 获得丰富的 how-to 信息、工具和项目更新，帮助您用开放源码技术进行开发，并与 IBM 产品结合使用。<br><br></li></ul><p><b>获得产品和技术</b></p><ul><li>
+在 IBM <a href="http://www.alphaworks.ibm.com/">alphaWorks</a> 中查看最新的 <a href="http://www.alphaworks.ibm.com/eclipse">Eclipse 技术下载</a>。<br><br></li><li> 
+从 Eclipse Foundation 下载 <a href="http://www.eclipse.org/downloads/">Eclipse Platform 和其他项目 </a> 。<br><br></li><li>
+下载 <a href="http://www.ibm.com/developerworks/downloads/" onmouseover="linkQueryAppend(this)">IBM 产品评估版</a>，并开始使用来自 DB2®、Lotus®、Rational®、Tivoli® 和 WebSphere® 的应用程序开发工具和中间件产品。<br><br></li><li>
+使用 <a href="http://www.ibm.com/developerworks/downloads/" onmouseover="linkQueryAppend(this)">IBM 试用软件</a> 改进您的下一个开源开发项目，可以下载或从 DVD 获得。<br><br></li></ul><p><b>讨论</b></p><ul><li>
+                <a href="news://news.eclipse.org/eclipse.platform">Eclipse Platform 新闻组</a> 是讨论关于 Eclipse 的问题的第一站（选择此链接将启动默认的 Usenet 新闻阅读器应用程序并打开 eclipse.platform）。<br><br></li><li>
+                <a href="http://www.eclipse.org/newsgroups/">Eclipse 新闻组</a> 中有很多参考资料适用于对使用和扩展 Eclipse 感兴趣的人员。<br><br></li><li>
+参与 <a href="http://www.ibm.com/developerworks/blogs" onmouseover="linkQueryAppend(this)">developerWorks blogs</a> 并加入 developerWorks 社区。<br><br></li></ul>
+<p><a name="author"><span class="atitle">关于作者</span></a></p><div class="ibm-container ibm-portrait-module ibm-alternate-two"><div class="ibm-container-body"><p><a name="author1"> </a>Matthew Scarpino 是 Eclipse Engineering LLC 的一名项目经理兼 Java 开发人员。他是 <em>SWT/JFace in Action</em> 的首席作家，并对标准部件工具包（Standard Widget Toolkit，SWT）做过一次较小的但非常重要的贡献。他喜欢爱尔兰民间音乐、马拉松赛跑、William Blake 的诗歌以及图形化编辑框架（Graphical Editing Framework，GEF）。 </p></div></div>
+<!-- MAIN_COLUMN_CONTENT_END -->
+  <!-- OVERLAYS_START -->
+  <!-- Report_Abuse_Start -->
+  <div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlay">
+    <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">关闭 [x]</a></p></div>
+    <div class="ibm-body">
+      <div class="ibm-main">
+        <a class="ibm-access" name="reportabuseoverlay">关于报告滥用的帮助</a>   
+        <div class="ibm-title"><h1>报告滥用</h1></div>
+        <div class="ibm-container ibm-alternate">
+          <p><strong>谢谢!</strong>  此内容已经标识给管理员注意。</p>
+          <div class="ibm-overlay-rule"><hr></div>
+          <div class="ibm-buttons-row">
+            <input type="button" onclick="ibmCommon.Overlays.hide(&#39;reportabuseoverlay&#39;);return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="关闭">
+          </div>
+        </div>
+      </div> 
+    </div>
+    <div class="ibm-footer"></div>
+  </div>
+  <!-- Report_Abuse_Error_Start -->
+  <div class="ibm-common-overlay ibm-no-print" id="reportabuseoverlayerror">
+    <div class="ibm-head"><p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">关闭 [x]</a></p></div>
+    <div class="ibm-body">
+      <div class="ibm-main">
+        <a class="ibm-access" name="reportabuseoverlayerror">关于报告滥用的帮助</a>   
+        <div class="ibm-title"><h1>报告滥用</h1></div>
+        <div class="ibm-container ibm-alternate">
+          <p class="ibm-ind-error"><strong>报告滥用提交失败。  请稍后重试。</strong></p>
+          <div class="ibm-overlay-rule"><hr></div>
+          <div class="ibm-buttons-row">
+            <input type="button" onclick="ibmCommon.Overlays.hide(&#39;reportabuseoverlayerror&#39;);return false;" class="ibm-btn-cancel-sec dw-btn-cancel-sec" name="ibm-cancel" value="关闭">
+          </div>
+        </div>
+      </div> 
+    </div>
+    <div class="ibm-footer"></div>
+  </div>
+  <!-- Sign in OVERLAY STARTS HERE --> 
+  <div class="ibm-common-overlay" id="signin_overlay">
+    <div class="ibm-head">
+      <p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="clearForm();">关闭 [x]</a></p>
+    </div>
+    <div class="ibm-body">
+      <div class="ibm-main">
+        <div class="ibm-title ibm-subtitle">
+          <h1>developerWorks：登录</h1>
+          <div id="ibm-overlay-error-signin" class="no-display"></div>
+        </div>
+        
+        <div class="ibm-container ibm-alternate ibm-buttons-last">
+          <div class="ibm-container-body">
+
+            <form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+              <p><label for="ibmid">IBM ID：</label><span><input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="handleEP(event,this.form);">
+                <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.href);})();">需要一个 IBM ID？</a>
+                <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a></span>   
+              </p> 
+              <p><label for="password">密码：</label><span><input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="handleEP(event,this.form);"><br>
+                <a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Dzh_CN%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a><br>
+                <a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></span></p> 
+
+              <p class="dw-perm-box">
+                <span><input id="perm" type="checkbox" name="perm_name"><label for="perm"> 保持登录。</label></span>
+              </p>
+
+              <p>单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/mydeveloperworks/terms?lang=zh">使用条款</a></p>
+              <div class="ibm-buttons-row">
+                <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+                  <input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide(&#39;signin_overlay&#39;);return false;"></p>
+              </div>
+            </form>
+            <div class="ibm-overlay-rule"><hr></div>
+            <p>当您初次登录到 developerWorks 时，将会为您创建一份概要信息。<strong>您在 developerWorks 概要信息中选择公开的信息将公开显示给其他人，但您可以随时修改这些信息的显示状态。</strong>您的姓名（除非选择隐藏）和昵称将和您在 developerWorks 发布的内容一同显示。</p>
+            <div class="dw-overlay-legal"><p>所有提交的信息确保安全。</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ibm-footer"></div>
+  </div>
+  <!-- Sign in OVERLAY ENDS HERE --> 
+  
+  
+  <!-- Display name OVERLAY STARTS HERE --> 
+  <div class="ibm-common-overlay" id="displayname_overlay">
+    <div class="ibm-head">
+      <p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="clearForm();">关闭 [x]</a></p>
+    </div>
+    <div class="ibm-body">
+      <div class="ibm-main">
+        <div class="ibm-title ibm-subtitle">
+          <h1>请选择您的昵称：</h1>
+          <div id="ibm-overlay-error-dname" class="no-display"></div>
+        </div>
+        <div class="ibm-container ibm-alternate ibm-buttons-last">
+          <div class="ibm-container-body">
+            <p class="ibm-overlay-intro">当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+            <form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+              <p><label for="displayname">昵称：</label><span><input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="handleEP(event,this.form);"></span><span class="ibm-form-note">（长度在 3 至 31 个字符之间）</span>
+              </p>
+              
+              <div class="ibm-overlay-rule"><hr>
+              </div>
+              <p>单击<strong>提交</strong>则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/mydeveloperworks/terms?lang=zh">使用条款</a>.</p>
+              <div class="ibm-buttons-row">
+                <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+                  <input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="clearForm();ibmCommon.Overlays.hide(&#39;displayname_overlay&#39;);return false;"></p>
+              </div>
+            </form>
+            <div class="ibm-overlay-rule"><hr></div>
+            <div class="dw-overlay-legal"><p>所有提交的信息确保安全。</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ibm-footer"></div>
+  </div>
+  <!-- Display name OVERLAY ENDS HERE -->
+  <!-- OVERLAYS_END -->
+  <!-- RATINGS START -->
+  <p class="ibm-no-print"><span class="atitle"><a name="iratings">为本文评分</a></span></p>
+  <input id="art-rating" name="ratinga" type="hidden" value="2"><div id="art-rating-module"><p id="submitErr" class="ibm-ind-error" style="display: none;"><strong>错误：提交失败，请重试。</strong></p><p><span id="ratingSectUI"><img alt="平均分 2 星 共 3 个评分" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-2gw.jpg" class="dw-avg-rating"> 平均分 (3个评分)</span></p><div class="ibm-container" id="ratingForm"><div class="ibm-container-body dw-container-ratings"><form class="dw-ratings-form" onsubmit="artRating.submitRating(); return false;"><input type="radio" name="ratingstars" id="rat-1" value="1"><label class="rating-label" id="star1" for="rat-1">1 星</label><img id="rat-1-img" alt="1 星" title="1 星" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-1w.jpg" class="rating-image"><span class="dw-rating-text">1 星</span><br><input type="radio" name="ratingstars" id="rat-2" value="2"><label class="rating-label" id="star2" for="rat-2">2 星</label><img id="rat-2-img" alt="2 星" title="2 星" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-2w.jpg" class="rating-image2"><span class="dw-rating-text">2 星</span><br><input type="radio" name="ratingstars" id="rat-3" value="3"><label class="rating-label" id="star3" for="rat-3">3 星</label><img id="rat-3-img" alt="3 星" title="3 星" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-3w.jpg" class="rating-image2"><span class="dw-rating-text">3 星</span><br><input type="radio" name="ratingstars" id="rat-4" value="4"><label class="rating-label" id="star4" for="rat-4">4 星</label><img id="rat-4-img" alt="4 星" title="4 星" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-4w.jpg" class="rating-image2"><span class="dw-rating-text">4 星</span><br><input type="radio" name="ratingstars" id="rat-5" value="5"><label class="rating-label" id="star5" for="rat-5">5 星</label><img id="rat-5-img" alt="5 星" title="5 星" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stars120x20-5w.jpg" class="rating-image2"><span class="dw-rating-text">5 星</span><div class="ibm-buttons-row"><p class="ibm-first"><input value="提交" type="submit" name="ibm-submit" class="ibm-btn-arrow-pri dw-ratings-submit"></p></div></form></div></div></div>
+  <script language="JavaScript" type="text/javascript">
+    // <![CDATA[
+   // widget div id and article id as args
+   window.artRating.init('art-rating-module','art-rating-summary');
+// ]]>
+  </script>
+  <!-- RATINGS END --> 
+  
+  <!-- INLINE_COMMENTS_START -->
+  <p class="ibm-no-print"><span class="atitle"><a name="icomments">评论</a></span></p>
+    <script language="JavaScript" type="text/javascript">
+      // <![CDATA[
+dwc = {};
+dwc.cmts = '条评论';
+dwc.signInPreText = '请';
+dwc.signIn = '登录';
+dwc.or = '或';
+dwc.register = '注册';
+dwc.signInPostText = '';
+dwc.leaveCmt = '后发表评论。';
+dwc.view = '查看';
+dwc.totalCmts = '共有评论';
+dwc.postYourCmt = '添加您的评论';
+dwc.show = '显示：';
+dwc.recentCmts = '最新评论';
+dwc.allCmts = '所有评论';
+dwc.tooLongCmt = '您的评论超过了 1000 字符限制';
+dwc.numCharsLeft = '剩余 <span id="charCount">{1}</span> 字符';
+dwc.reportAbuse = '报告滥用';
+dwc.notifyMsg = '有新评论时提醒我';
+dwc.htmlWarning = '注意：评论中不支持 HTML 语法'; 
+dwc.cmt = '评论：';
+dwc.addCmts = '添加评论';
+dwc.addCmt = '添加评论';
+dwc.doNotErase = '--在下方添加评论--'; 
+dwc.viewOrAddCmts = '查看或添加评论';
+dwc.reportInapprCont = '举报不良信息';
+dwc.reportInapprContLink = 'http://www.ibm.com/developerworks/forums/forum.jspa?forumID=1834';
+dwc.postingCmt = '正在发布评论……';
+dwc.noCmt = '快来添加第一条评论';
+dwc.netwkErr = '在检索评论时出错，请稍后刷新。';
+dwc.addACmt = '添加评论';
+dwc.instructCmt = '标有星号（<span class="ibm-required">*</span>）的是必填项目。';
+dwc.btnPost = '发布';
+dwc.btnPostAnon = '匿名发布';
+dwc.btnClrCmt = '清除评论';
+dwc.btnCancel = '取消';
+dwc.showRecent = '显示最新的 {1} 条评论'; // {1} is the count to be substituted
+dwc.showNext = '显示后 {1} 条评论'; // {1} is the count to be substituted
+dwc.showAllCmts = '显示所有评论';
+dwc.enterCmt = '请输入评论内容。';
+dwc.loginErr = '暂时无法验证您的登录状态，请稍后再试。';
+dwc.postErr = '暂时无法发布您的评论，请稍后再试。';
+dwc.postBy = '由 <strong>{1}</strong>  于 {2} '; // {1} is the author to be substituted; {2} is the date
+dwc.siteId = 10;
+dwc.lang = 'zh_CN';
+dwc.viperLang = 'zh';
+// ]]>
+    </script>
+    <div id="threadShow"><div id="cmtTog" style=""><div class="ibm-container ibm-alternate-two dw-commentbox dw-noborder"><p id="cmtHead"><label for="newCmt"><strong>添加评论:</strong></label></p><div class="ibm-container-body dw-commentbox dw-noborder"><p id="signInSect" style="">请 <a onclick="showSignIn();return false;" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">登录</a> 或 <a href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=register&lang=zh_CN&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html%23icomments">注册</a>  后发表评论。</p><p>注意：评论中不支持 HTML 语法</p><span id="infoCmt"></span><form focus="name" enctype="multipart/form-data" method="post" action="" name="form" class="ibm-column-form"><p><textarea cols="120" rows="5" name="newCmt" id="newCmt" class="dw-inoperable" disabled=""></textarea><br></p><span class="ibm-input-group"><input type="checkbox" value="1" name="comment_notification" id="comment_notification" disabled=""><label id="notifyText" class="ibm-form-note dw-btn-cancel-sec" for="comment_notification">有新评论时提醒我</label></span><span class="ibm-form-note dw-btn-cancel-sec notifySection" id="maxCharsCount">剩余 <span id="charCount">1000</span> 字符</span><br><br><p></p><p class="ibm-buttons-row"><input type="button" value="发布" jquery1275054459750="11" name="postCmt" id="postCmt" class="ibm-btn-arrow-sec dw-btn-arrow-sec" alt="添加您的评论" disabled=""><br><br></p></form></div></div><div id="topControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments" method="get" action=""><p><span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts">0</span>)</strong></span><span><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" width="100" height="10" alt=""></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts"><label for="howManyComments">显示：</label>&nbsp;<select name="comments" id="howManyComments" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/short-btn.gif" alt="Go"><br></span></p></form></div></div><div id="cmtSect"><div class="comment"><div class="dw-icomment-container"><table class="dw-icomment-body" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><p>快来添加第一条评论</p></td></tr></tbody></table></div></div></div></div><div id="bottomControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments2" method="get" action=""><p><span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts2">0</span>)</strong></span><span><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" width="100" height="10" alt=""></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts2"><label for="howManyComments2">显示：</label>&nbsp;<select name="comments" id="howManyComments2" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/short-btn.gif" alt="Go"><br></span></p></form></div></div></div>
+  <!-- INLINE_COMMENTS_END -->
+  
+
+  <p class="ibm-ind-link ibm-back-to-top"><a class="ibm-anchor-up-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#ibm-pcon">回页首</a></p>
+
+<!-- Overlays -->
+<!-- lk - pull in overlays from ww when required on cn -->
+  </div>
+<!-- MAIN_COLUMN_CONTAINER_END -->
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=10</div><div class="metavalue">Zone=Open source</div><div class="metavalue">ArticleID=326090</div><div class="metavalue">ArticleTitle=使用 CDT 调试器，第 2 部分: 使用 Eclipse CDT 和 MI 访问 gdb </div><div class="metavalue">publish-date=07312008</div><div class="metavalue">author1-email=mattscar@yahoo.com</div><div class="metavalue">author1-email-cc=</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace(/</g, '%3C')+'</div>');</script><div class="metavalue">url=http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html</div><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- MAIN_COLUMN_END-->
+
+<!-- RIGHT_COLUMN_BEGIN -->
+<div id="ibm-content-sidebar">
+
+<!-- RIGHT_COLUMN_CONTENT_BEGIN --> 
+<div class="ibm-container"><h2>内容</h2><div class="ibm-container-body"><img alt="" height="1" width="1" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c(1).gif"><ul class="ibm-bullet-list"><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#N1007F">了解 GNU Debugger Machine Interface（gdb/MI）</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#N10132">启动调试器</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#N102DB"> CDI 和 Eclipse 调试模型</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#N1033D"> CDT 调试视图</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#N103DD">结束语</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#resources">参考资料 </a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#author">关于作者</a></li><li><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#icomments">建议</a></li></ul></div></div>
+
+ 
+
+
+<!-- Dig_Deeper -->
+
+<!-- High_Visibility_Offer -->
+
+<!-- Special_Offers -->
+
+<!-- RIGHT_COLUMN_CONTENT_END -->
+
+</div>
+<!-- RIGHT_COLUMN_END -->
+
+<!-- CONTENT_BODY_END -->
+</div>
+
+</div>
+<!-- CONTENT_END -->
+
+ <!-- END_IBM-PCON -->
+</div>
+
+<!-- FOOTER_BEGIN -->
+<div id="ibm-footer">
+<!-- IBM footer container; disabled -->
+</div>
+
+<div id="ibm-page-tools-dw">
+	<div id="dw-footer-top-row">
+		<ul id="dw-foot-options">
+			<li id="dw-print"><a class="ibm-print-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">打印此页面</a></li>
+		</ul>
+		<ul id="ibm-foot-options-dw">
+			<li id="dw-foot-0" class="dw-foot-0-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">分享此页面</a></li>
+			<li id="dw-foot-1" class="dw-foot-1-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">关注 developerWorks</a></li>
+		</ul>
+	</div>       
+	
+	
+	<!-- TOP ROW SLIDER -->
+    <div id="dw-page-tools-menu">    
+        <div class="ibm-ribbon-pane-dw">
+            <div class="ibm-ribbon-section-dw">
+				<!-- Share this page -->			
+                <div class="dw-footer-columns">
+                    <div class="dw-footer-col-4-1">
+                    	<h2>分享此页面：</h2>                            
+						<ul class="ibm-link-list">
+						  <!--<li><a id="dw-foot-0-0" class="dwcn-sina-link"
+						        href="#"
+						        onClick="javascript:location.href='http://hits.sinajs.cn/A1/weiboshare.html?&amp;appkey=&amp;title='+escape(document.title)+'&amp;url='+escape(location.href)'+'&amp;pic=&ralateUid&amp;language=zh_cn;
+						        ">新浪微博</a></li> -->
+						   <li><a id="dw-foot-0-0" class="dwcn-sina-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="javascript:location.href=&#39;http://service.weibo.com/share/share.php?title=&#39;+encodeURIComponent(document.title)+&#39;&amp;url=&#39;+escape(location.href)+&#39;&amp;language=zh_cn&#39;
+						        ; ">新浪微博</a></li> 
+						   <li><a class="dwcn-renren-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="javascript:location.href=&#39;http://share.renren.com/share/buttonshare?title=&#39;+encodeURIComponent(document.title)+&#39;&amp;link=&#39;+escape(location.href);
+						        ">人人网</a></li> 
+						    <li><a class="dwcn-tencent-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="javascript:location.href=&#39;http://v.t.qq.com/share/share.php?title=&#39;+encodeURIComponent(document.title)+&#39;&amp;url=&#39;+escape(location.href);
+						        ">腾讯微博</a></li> 
+						   				
+						</ul>
+                    </div>
+                    <div class="dw-footer-col-4-2">
+						<ul class="ibm-link-list">
+						    <li><a class="dwcn-sohu-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="javascript:location.href=&#39;http://t.sohu.com/third/post.jsp?title=&#39;+encodeURIComponent(document.title)+&#39;&amp;link=&#39;+escape(location.href);
+						        ">搜狐微博</a></li>
+						    
+						    <li><a class="dwcn-netease-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#" onclick="javascript:location.href=&#39;http://t.163.com/article/user/checkLogin.do?info=&#39;+encodeURIComponent(document.title)+ &#39;&#39; +escape(location.href);
+						        ">网易微博</a></li>
+						    <li><a class="ibm-facebook-link" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html&t=%E4%BD%BF%E7%94%A8%20CDT%20%E8%B0%83%E8%AF%95%E5%99%A8%EF%BC%8C%E7%AC%AC%202%20%E9%83%A8%E5%88%86%3A%20%E4%BD%BF%E7%94%A8%20Eclipse%20CDT%20%E5%92%8C%20MI%20%E8%AE%BF%E9%97%AE%20gdb">Facebook</a></li>
+						</ul>
+                </div>
+                    <div class="dw-footer-col-4-3">
+						<ul class="ibm-link-list">
+						 <li><a class="ibm-linkedin-link" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html&title=%E4%BD%BF%E7%94%A8%20CDT%20%E8%B0%83%E8%AF%95%E5%99%A8%EF%BC%8C%E7%AC%AC%202%20%E9%83%A8%E5%88%86%3A%20%E4%BD%BF%E7%94%A8%20Eclipse%20CDT%20%E5%92%8C%20MI%20%E8%AE%BF%E9%97%AE%20gdb">LinkedIn</a></li>   
+						 <li><a class="ibm-twitter-link" href="http://twitter.com/home?status=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html%20-%20%E4%BD%BF%E7%94%A8%20CDT%20%E8%B0%83%E8%AF%95%E5%99%A8%EF%BC%8C%E7%AC%AC%202%20%E9%83%A8%E5%88%86%3A%20%E4%BD%BF%E7%94%A8%20Eclipse%20CDT%20%E5%92%8C%20MI%20%E8%AE%BF%E9%97%AE%20gdb">Twitter</a></li>   
+						 <li><a class="ibm-delicious-link" href="http://delicious.com/post?url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html&title=%E4%BD%BF%E7%94%A8%20CDT%20%E8%B0%83%E8%AF%95%E5%99%A8%EF%BC%8C%E7%AC%AC%202%20%E9%83%A8%E5%88%86%3A%20%E4%BD%BF%E7%94%A8%20Eclipse%20CDT%20%E5%92%8C%20MI%20%E8%AE%BF%E9%97%AE%20gdb">Delicious</a></li>
+						
+						</ul>
+                    </div>
+                   <div class="dw-footer-col-4-4">
+						<ul class="ibm-link-list">
+						 <li><a class="ibm-digg-link" href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fopensource%2Fos-eclipse-cdt-debug2%2Findex.html&title=%E4%BD%BF%E7%94%A8%20CDT%20%E8%B0%83%E8%AF%95%E5%99%A8%EF%BC%8C%E7%AC%AC%202%20%E9%83%A8%E5%88%86%3A%20%E4%BD%BF%E7%94%A8%20Eclipse%20CDT%20%E5%92%8C%20MI%20%E8%AE%BF%E9%97%AE%20gdb">Digg</a></li>   
+						 <li><a class="ibm-email-link" href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#">发送此页面</a></li>
+						</ul>
+                    </div>
+                    <div class="dw-footer-close">
+						<ul>
+							<li><div class="dw-footer-close-share"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10"></a></div></li>
+						</ul>
+                    </div>
+                </div>
+                  <!-- Follow developerWorks -->
+                <div class="dw-footer-columns">
+                    <div class="dw-footer-col-1-1 dw-footer-col-1-1-cn">
+                    	<h2>关注 developerWorks 中国网站：</h2>
+						<ul class="ibm-link-list">
+							<!--<li><a id="dw-foot-1-0" class="ibm-twitter-link" href="http://www.twitter.com/dwchina">Twitter</a></li>-->
+						    <li><a id="dw-foot-1-0" class="dwcn-sina-link" href="http://weibo.com/ibmdw/">新浪微博</a></li>
+						</ul>
+                    </div>
+                    <div class="dw-footer-close">
+						<ul>
+							<li><div class="dw-footer-close-follow-cn"><a href="http://www.ibm.com/developerworks/cn/opensource/os-eclipse-cdt-debug2/index.html#"><img src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/c.gif" alt="关闭 [x]" width="20" height="10"></a></div></li>
+						</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ibm-footer-module-dw">
+	<div class="dw-footer-columns">
+		<div class="dw-footer-col-6-1">
+			<ul>
+				<!--<li><a href="http://www.ibm.com/developerworks/aboutdw/">About</a></li>-->
+				<li><a href="https://www.ibm.com/developerworks/secure/feedback.jsp?domain=dwchina">帮助</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/author/">联系编辑</a></li>
+				<li><a href="https://www.ibm.com/developerworks/secure/myideas2.jsp?domain=dwchina&start=true">提交内容</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/sitemap/">网站导航</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-6-2">
+			<ul>
+				<li><a href="http://www.ibm.com/developerworks/cn/rss/">订阅源</a></li>
+				<li><a href="http://www.ibm.com/vrm/newsletter/10104?S_TACT=105AGX52&S_CMP=dwcntop">在线浏览每周时事通讯</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-6-3">
+			<ul>
+				<li><a href="https://www.ibm.com/developerworks/community/report?lang=zh">报告滥用</a></li>
+				<li><a href="https://www.ibm.com/developerworks/community/terms?lang=zh">使用条款</a></li>
+				<li><a href="http://www.ibm.com/privacy/cn/zh/">隐私条约</a></li>
+				<li><a href="http://www.ibm.com/ibm/accessibility/cn/">浏览辅助</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-6-4-cn">
+			<ul>
+				<li><a href="http://www-900.ibm.com/cn/ai/">IBM 教育学院教育培养计划</a></li>
+				<li><a href="http://www.ibm.com/partnerworld/isv/">ISV 资源 (英语)</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-6-5">
+		</div>
+		<div class="dw-footer-col-6-6">
+		</div>
+	</div>
+	<!-- Language selector no-script -->
+	<noscript>
+	&lt;div id="dw-footer-selectlang"&gt;
+		&lt;h2&gt;&lt;a name="SELECTLANG"&gt;选择语言：&lt;/a&gt;&lt;/h2&gt;
+		&lt;ul&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/"&gt;English&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/cn/"&gt;中文&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/jp/"&gt;日本語&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ru/"&gt;Русский&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/br/"&gt;Português (Brasil)&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ssa/"&gt;Español&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/vn/"&gt;Việt&lt;/a&gt;&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+	</noscript>
+</div><!-- FOOTER_END -->
+
+ <!-- END_IBM-TOP -->
+<div id="ibm-overlay-top"></div></div>
+ 
+ <!-- SCRIPTS_INCLUDE_BEGIN -->
+<!-- JQuery start -->
+<script type="text/javascript" language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript" language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/jquery.cluetip.js"></script>
+<!-- xM Masthead/Footer -->
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/jquery.tools.min.js" type="text/javascript">//</script>
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/jquery.jscroll.js" type="text/javascript">//</script>
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dw_v16.js" type="text/javascript">//</script>
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/flash-detect(1).js" type="text/javascript">//</script>
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/dwsi.js" type="text/javascript">//</script>
+<script type="text/javascript" language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/showcomments.js">//</script>
+<script language="JavaScript" type="text/javascript">
+	// <![CDATA[
+ jQuery('threadShow').showComments('95%',5,'nCmts','icomments');
+// ]]>
+</script>
+<script type="text/javascript" language="JavaScript">
+	jQuery.noConflict();     
+	// Put all your code in your document ready area
+	jQuery(document).ready(function(jQuery) {
+	// Do jQuery stuff using jQuery 
+	jQuery('a.dwauthor').cluetip({
+	local: true,
+	showTitle: false,
+	positionBy: 'bottomTop',
+	sticky: true,	
+	mouseOutClose: true,
+	closeText: '<img src="//dw1.s81c.com/developerworks/js/jquery/cluetip98/i/x.gif" alt="Close" />',
+	arrows: false,
+	dropShadow: true,
+	cluetipClass: 'dwbasic'
+	});
+
+	rBHash = {};
+	rBHash['viperLang'] = 'zh';
+	rBHash['urlLang'] = 'cn';
+
+	// si
+	initSI();
+	});
+</script>
+<!-- JQuery end -->
+<!-- Overlay js -->
+<script language="JavaScript" src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/overlay.js" type="text/javascript"></script><!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=667&ibmRole=710&ibmCmaId=326090";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="./使用 CDT 调试器，第 2 部分  使用 Eclipse CDT 和 MI 访问 gdb_files/stats.js" type="text/javascript">//</script>
+</div>
+
+
+
+<div id="cluetip-waitimage" style="position: absolute; z-index: 95; display: none;"></div><div id="cluetip" style="z-index: 96; display: none; position: absolute;"><div style="z-index: 95; opacity: 0.1; top: 1px; left: 1px; position: absolute; background-color: rgb(0, 0, 0);"></div><div style="z-index: 94; opacity: 0.1; top: 2px; left: 2px; position: absolute; background-color: rgb(0, 0, 0);"></div><div style="z-index: 93; opacity: 0.1; top: 3px; left: 3px; position: absolute; background-color: rgb(0, 0, 0);"></div><div style="z-index: 92; opacity: 0.1; top: 4px; left: 4px; position: absolute; background-color: rgb(0, 0, 0);"></div><div style="z-index: 91; opacity: 0.1; top: 5px; left: 5px; position: absolute; background-color: rgb(0, 0, 0);"></div><div style="z-index: 90; opacity: 0.1; top: 6px; left: 6px; position: absolute; background-color: rgb(0, 0, 0);"></div><div id="cluetip-outer" style="position: relative; z-index: 97;"><div id="cluetip-title"></div><div id="cluetip-inner"></div></div><div id="cluetip-extra"></div><div id="cluetip-arrows" class="cluetip-arrows" style="z-index: 97;"></div></div><div><object id="ClCache" click="sendMsg" host="" width="0" height="0"></object></div></body></html>

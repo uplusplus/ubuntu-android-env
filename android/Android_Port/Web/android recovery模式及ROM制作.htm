@@ -1,0 +1,641 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0056)http://blog.csdn.net/jingwen3699/article/details/8276249 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./android recovery模式及ROM制作_files/android recovery模式及ROM制作.htm">
+        android recovery模式及ROM制作
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+
+<h1 align="left"><a name="t0"></a>1 总述</h1>
+<p align="left">为了方便客户日后的固件升级，本周研究了一下android的recovery模式。网上有不少这类的资料，但都比较繁杂，没有一个系统的介绍与认识，在这里将网上所找到的和自己通过查阅代码所掌握的东西整理出来，给大家一个参考！</p>
+<h1 align="left"><a name="t1"></a>2 Android启动过程</h1>
+<p align="left">在这里有必要理一下android的启动过程：</p>
+<p align="center"></p>
+<p><img alt="" src="./android recovery模式及ROM制作_files/2012032414283778.png" style="margin-right:auto; margin-left:auto; display:block"></p>
+<p align="center">图1 android启动过程</p>
+<p align="left">系统上电之后，首先是完成一系列的初始化过程，如cpu、串口、中断、timer、DDR等等硬件设备，然后接着加载boot default environmet，为后面内核的加载作好准备。在一些系统启动必要的初始完成之后，将判断是否要进入recovery模式，从图1中可以看出，进入recovery模式有两种情况。一种是检测到有组合按键按下时；另一种是检测到cache/recovery目录下有command这个文件，这个文件有内容有它特定的格式，将在后面讲到。</p>
+<h1 align="left"><a name="t2"></a>3 Uboot启动</h1>
+<p align="left">下面来看看uboot中lib_arm/board.c这个文件中的start_armboot这个函数，这个函数在start.s这个汇编文件中完成堆栈等一些基础动作之后被调用，进入到c的代码中，start_armboot部分代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">void</span> start_armboot (<span style="color:rgb(0,0,255)">void</span>)
+{
+       .
+       .
+       .
+       <span style="color:rgb(0,0,255)">for</span> (init_fnc_ptr = init_sequence; *init_fnc_ptr; ++init_fnc_ptr) {
+              <span style="color:rgb(0,0,255)">if</span> ((*init_fnc_ptr)() != <span style="color:rgb(128,0,128)">0</span>) {
+                     hang ();
+              }
+#ifdef CONFIG_ANDROID_RECOVERY
+       check_recovery_mode();
+<span style="color:rgb(0,0,255)">#endif</span>
+       <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> main_loop() can return to retry autoboot, if so just run it again. </span><span style="color:rgb(0,128,0)">*/</span>
+       <span style="color:rgb(0,0,255)">for</span> (;;) {
+              main_loop ();
+       }
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">init_sequence是一个函数结构体指针，里面存放的是一些必备的初始化函数，其代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre>init_fnc_t *init_sequence[] = {
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_ARCH_CPU_INIT)
+       arch_cpu_init,            <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> basic arch cpu dependent setup </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#endif</span>
+       board_init,           <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> basic board dependent setup </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_USE_IRQ)
+       interrupt_init,             <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> set up exceptions </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#endif</span>
+       timer_init,           <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> initialize timer </span><span style="color:rgb(0,128,0)">*/</span>
+       env_init,              <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> initialize environment </span><span style="color:rgb(0,128,0)">*/</span>
+       init_baudrate,            <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> initialze baudrate settings </span><span style="color:rgb(0,128,0)">*/</span>
+       serial_init,           <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> serial communications setup </span><span style="color:rgb(0,128,0)">*/</span>
+       console_init_f,           <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> stage 1 init of console </span><span style="color:rgb(0,128,0)">*/</span>
+       display_banner,          <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> say that we are here </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_DISPLAY_CPUINFO)
+       print_cpuinfo,             <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> display cpu info (and speed) </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#endif</span>
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_DISPLAY_BOARDINFO)
+       checkboard,         <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> display board info </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#endif</span>
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_HARD_I2C) || defined(CONFIG_SOFT_I2C)
+       init_func_i2c,
+<span style="color:rgb(0,0,255)">#endif</span>
+       dram_init,            <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> configure available RAM banks </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">#if</span> defined(CONFIG_CMD_PCI) || defined (CONFIG_PCI)
+       arm_pci_init,
+<span style="color:rgb(0,0,255)">#endif</span>
+       display_dram_config,
+       NULL,
+};</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">我们来看看env_init这个函数，其代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">int</span> env_init(<span style="color:rgb(0,0,255)">void</span>)
+{
+       <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> use default </span><span style="color:rgb(0,128,0)">*/</span>
+       gd-&gt;env_addr = (<span style="color:rgb(0,0,255)">ulong</span>)&amp;default_environment[<span style="color:rgb(128,0,128)">0</span>];
+       gd-&gt;env_valid = <span style="color:rgb(128,0,128)">1</span>;
+#ifdef CONFIG_DYNAMIC_MMC_DEVNO
+       <span style="color:rgb(0,0,255)">extern</span> <span style="color:rgb(0,0,255)">int</span> get_mmc_env_devno(<span style="color:rgb(0,0,255)">void</span>);
+       mmc_env_devno = get_mmc_env_devno();
+<span style="color:rgb(0,0,255)">#else</span>
+       mmc_env_devno = CONFIG_SYS_MMC_ENV_DEV;
+<span style="color:rgb(0,0,255)">#endif</span>
+       <span style="color:rgb(0,0,255)">return</span> <span style="color:rgb(128,0,128)">0</span>;
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">可以看出在这里将default_environment加载进入系统，default_environment对应的部分代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre>uchar default_environment[] = {
+       .
+       .
+       .
+#ifdef  CONFIG_EXTRA_ENV_SETTINGS
+       CONFIG_EXTRA_ENV_SETTINGS
+<span style="color:rgb(0,0,255)">#endif</span>
+       <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">\0</span><span style="color:rgb(128,0,0)">"</span>
+};</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">而CONFIG_EXTRA_ENV_SETTINGS则是在我们对应的BSP的头文件中定义了，如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">#define</span>  CONFIG_EXTRA_ENV_SETTINGS                                 \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">netdev=eth0\0</span><span style="color:rgb(128,0,0)">"</span>                                    \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">ethprime=FEC0\0</span><span style="color:rgb(128,0,0)">"</span>                                \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootfile=uImage\0</span><span style="color:rgb(128,0,0)">"</span>  \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">loadaddr=0x70800000\0</span><span style="color:rgb(128,0,0)">"</span>                            \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">rd_loadaddr=0x70D00000\0</span><span style="color:rgb(128,0,0)">"</span>        \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootargs=console=ttymxc0 init=/init </span><span style="color:rgb(128,0,0)">"</span> \
+                     <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">androidboot.console=ttymxc0 video=mxcdi1fb:RGB666,XGA </span><span style="color:rgb(128,0,0)">"</span> \
+                     <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">ldb=di1 di1_primary pmem=32M,64M fbmem=5M gpu_memory=64M\0</span><span style="color:rgb(128,0,0)">"</span> \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootcmd_SD=mmc read 0 ${loadaddr} 0x800 0x2000;</span><span style="color:rgb(128,0,0)">"</span> \
+                     <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">mmc read 0 ${rd_loadaddr} 0x3000 0x300\0</span><span style="color:rgb(128,0,0)">"</span> \
+              <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootcmd=run bootcmd_SD; bootm ${loadaddr} ${rd_loadaddr}\0</span><span style="color:rgb(128,0,0)">"</span> \</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">再来看看check_recovery_mode这个函数中的代码，具体代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> export to lib_arm/board.c </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">void</span> check_recovery_mode(<span style="color:rgb(0,0,255)">void</span>)
+{
+       <span style="color:rgb(0,0,255)">if</span> (check_key_pressing())
+              setup_recovery_env();
+       <span style="color:rgb(0,0,255)">else</span> <span style="color:rgb(0,0,255)">if</span> (check_recovery_cmd_file()) {
+              puts(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Recovery command file founded!\n</span><span style="color:rgb(128,0,0)">"</span>);
+              setup_recovery_env();
+       }
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">可以看到在这里通过check_key_pressing这个函数来检测组合按键，当有对应的组合按键按下时，将会进入到recovery模式，这也正是各大android论坛里讲到刷机时都会提到的power+音量加键进入recovery模式的原因。那么check_recovery_cmd_file又是在什么情况下执行的呢？这个也正是这篇文章所要讲的内容之处。</p>
+<p align="left">先来看看check_recovery_cmd_file这个函数中的如下这段代码：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">int</span> check_recovery_cmd_file(<span style="color:rgb(0,0,255)">void</span>)
+{
+       .
+       .
+       .
+       <span style="color:rgb(0,0,255)">switch</span> (get_boot_device()) {
+       <span style="color:rgb(0,0,255)">case</span> MMC_BOOT:
+       <span style="color:rgb(0,0,255)">case</span> SD_BOOT:
+              {
+                     <span style="color:rgb(0,0,255)">for</span> (i = <span style="color:rgb(128,0,128)">0</span>; i &lt; <span style="color:rgb(128,0,128)">2</span>; i++) {
+                            block_dev_desc_t *dev_desc = NULL;
+                            <span style="color:rgb(0,0,255)">struct</span> mmc *mmc = find_mmc_device(i);
+                            dev_desc = get_dev(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">mmc</span><span style="color:rgb(128,0,0)">"</span>, i);
+                            <span style="color:rgb(0,0,255)">if</span> (NULL == dev_desc) {
+                                   printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">** Block device MMC %d not supported\n</span><span style="color:rgb(128,0,0)">"</span>, i);
+                                   <span style="color:rgb(0,0,255)">continue</span>;
+                            }
+                            mmc_init(mmc);
+                            <span style="color:rgb(0,0,255)">if</span> (get_partition_info(dev_desc, CONFIG_ANDROID_CACHE_PARTITION_MMC,
+                                                 &amp;info)) {
+                                   printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">** Bad partition %d **\n</span><span style="color:rgb(128,0,0)">"</span>,CONFIG_ANDROID_CACHE_PARTITION_MMC);
+                                   <span style="color:rgb(0,0,255)">continue</span>;
+                            }
+                            part_length = ext2fs_set_blk_dev(dev_desc, CONFIG_ANDROID_CACHE_PARTITION_MMC);
+                            <span style="color:rgb(0,0,255)">if</span> (part_length == <span style="color:rgb(128,0,128)">0</span>) {
+                                   printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">** Bad partition - mmc %d:%d **\n</span><span style="color:rgb(128,0,0)">"</span>, i, CONFIG_ANDROID_CACHE_PARTITION_MMC);
+                                   ext2fs_close();
+                                   <span style="color:rgb(0,0,255)">continue</span>;
+                            }
+                            <span style="color:rgb(0,0,255)">if</span> (!ext2fs_mount(part_length)) {
+                                   printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">** Bad ext2 partition or </span><span style="color:rgb(128,0,0)">"</span>
+                                          <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">disk - mmc %d:%d **\n</span><span style="color:rgb(128,0,0)">"</span>,
+                                          i, CONFIG_ANDROID_CACHE_PARTITION_MMC);
+                                   ext2fs_close();
+                                   <span style="color:rgb(0,0,255)">continue</span>;
+                            }
+                            filelen = ext2fs_open(CONFIG_ANDROID_RECOVERY_CMD_FILE);
+                            ext2fs_close();
+                            <span style="color:rgb(0,0,255)">break</span>;
+                     }
+              }
+              <span style="color:rgb(0,0,255)">break</span>;
+       .
+       .
+       .
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">主要来看看下面这个ext2fs_open所打开的内容，CONFIG_ANDROID_RECOVERY_CMD_FILE，这个正是上面所提到的rocovery cmd file的宏定义，内容如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color:rgb(0,0,255)">#define</span> CONFIG_ANDROID_RECOVERY_CMD_FILE  "/recovery/command"</pre>
+</div>
+<p align="left">当检测到有这个文件存在时，将会进入到setup_recovery_env这个函数中，其相应的代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">void</span> setup_recovery_env(<span style="color:rgb(0,0,255)">void</span>)
+{
+       <span style="color:rgb(0,0,255)">char</span> *env, *boot_args, *boot_cmd;
+       <span style="color:rgb(0,0,255)">int</span> bootdev = get_boot_device();
+       boot_cmd = supported_reco_envs[bootdev].cmd;
+       boot_args = supported_reco_envs[bootdev].args;
+       <span style="color:rgb(0,0,255)">if</span> (boot_cmd == NULL) {
+              printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Unsupported bootup device for recovery\n</span><span style="color:rgb(128,0,0)">"</span>);
+              <span style="color:rgb(0,0,255)">return</span>;
+       }
+       printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">setup env for recovery..\n</span><span style="color:rgb(128,0,0)">"</span>);
+       env = getenv(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootargs_android_recovery</span><span style="color:rgb(128,0,0)">"</span>);
+       <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> Set env to recovery mode </span><span style="color:rgb(0,128,0)">*/</span>
+       <span style="color:rgb(0,128,0)">/*</span><span style="color:rgb(0,128,0)"> Only set recovery env when these env not exist, give user a
+        * chance to change their recovery env </span><span style="color:rgb(0,128,0)">*/</span>
+       <span style="color:rgb(0,0,255)">if</span> (!env)
+              setenv(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootargs_android_recovery</span><span style="color:rgb(128,0,0)">"</span>, boot_args);
+       env = getenv(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootcmd_android_recovery</span><span style="color:rgb(128,0,0)">"</span>);
+       <span style="color:rgb(0,0,255)">if</span> (!env)
+              setenv(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootcmd_android_recovery</span><span style="color:rgb(128,0,0)">"</span>, boot_cmd);
+       setenv(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">bootcmd</span><span style="color:rgb(128,0,0)">"</span>, <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">run bootcmd_android_recovery</span><span style="color:rgb(128,0,0)">"</span>);
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">在这里主要是将bootcmd_android_recovery这个环境变量加到uboot启动的environment中，这样当系统启动加载完root fs之后将不会进入到android的system中，而是进入到了recovery这个轻量级的小UI系统中。</p>
+<p align="left">下面我们来看看为什么在uboot的启动环境变量中加入bootcmd_android_recovery这些启动参数的时候，系统就会进入到recovery模式下而不是android system，先看看bootcmd_android_recovery相应的参数：</p>
+<div class="cnblogs_code">
+<pre><span style="color:rgb(0,0,255)">#define</span> CONFIG_ANDROID_RECOVERY_BOOTARGS_MMC \
+       <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">setenv bootargs ${bootargs} init=/init root=/dev/mmcblk1p4</span><span style="color:rgb(128,0,0)">"</span>     \
+       <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">rootfs=ext4 video=mxcdi1fb:RGB666,XGA ldb=di1 di1_primary</span><span style="color:rgb(128,0,0)">"</span>
+<span style="color:rgb(0,0,255)">#define</span> CONFIG_ANDROID_RECOVERY_BOOTCMD_MMC  \
+       <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">run bootargs_android_recovery;</span><span style="color:rgb(128,0,0)">"</span>  \
+       <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">mmc read 0 ${loadaddr} 0x800 0x2000;bootm</span><span style="color:rgb(128,0,0)">"</span></pre>
+</div>
+<p align="left">可以看到在进入recovery模式的时候这里把root的分区设置成了/dev/mmcblk1p4，再来看看在系统烧录的时候对整个SD卡的分区如下：</p>
+<div class="cnblogs_code">
+<pre>sudo mkfs.vfat -F <span style="color:rgb(128,0,128)">32</span> ${NODE}${PART}<span style="color:rgb(128,0,128)">1</span> -n sdcards
+sudo mkfs.ext4 ${NODE}${PART}<span style="color:rgb(128,0,128)">2</span> -O ^extent -L system
+sudo mkfs.ext4 ${NODE}${PART}<span style="color:rgb(128,0,128)">4</span> -O ^extent -L recovery
+sudo mkfs.ext4 ${NODE}${PART}<span style="color:rgb(128,0,128)">5</span> -O ^extent -L data
+sudo mkfs.ext4 ${NODE}${PART}<span style="color:rgb(128,0,128)">6</span> -O ^extent -L cache</pre>
+</div>
+<p align="left">这里NODE = /dev/mmcblk1为挂载点，PART = p或者为空，作为分区的检测。可以看出上面在给recovery分区的时候，用的是/dev/mmcblk1p4这个分区，所以当设置了recovery启动模式的时候，root根目录就被挂载到/dev/mmcblk1p4这个recovery分区中来，从而进入recovery模式。</p>
+<h1 align="left"><a name="t3"></a>4 recovery</h1>
+<p align="left">关于android的recovery网上有各种版本的定义，这里我总结一下：所谓recovery是android下加入的一种特殊工作模式，有点类似于windows下的gost，系统进入到这种模式下时，可以在这里通过按键选择相应的操作菜单实现相应的功能，比如android系统和数据区的快速格式化(wipe)；系统和用户数据的备份和恢复；通过sd卡刷新的rom等等。典型的recovery界面如下：</p>
+<p><img alt="" src="./android recovery模式及ROM制作_files/2012032318142686.jpg" style="margin-right:auto; margin-left:auto; display:block"></p>
+<p align="center">图2 recovery界面</p>
+<p align="left">Recovery的源代码在bootable/recovery这个目录下面，主要来看看recovery.c这个文件中的main函数：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre>Int main(<span style="color:rgb(0,0,255)">int</span> argc, <span style="color:rgb(0,0,255)">char</span> **argv) {
+       .
+       .
+       .
+    ui_init();
+    ui_set_background(BACKGROUND_ICON_INSTALLING);
+    load_volume_table();
+       .
+       .
+       .
+    <span style="color:rgb(0,0,255)">while</span> ((arg = getopt_long(argc, argv, <span style="color:rgb(128,0,0)">""</span>, OPTIONS, NULL)) != -<span style="color:rgb(128,0,128)">1</span>) {
+        <span style="color:rgb(0,0,255)">switch</span> (arg) {
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">p</span><span style="color:rgb(128,0,0)">'</span>: previous_runs = atoi(optarg); <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">s</span><span style="color:rgb(128,0,0)">'</span>: send_intent = optarg; <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">u</span><span style="color:rgb(128,0,0)">'</span>: update_package = optarg; <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">w</span><span style="color:rgb(128,0,0)">'</span>: wipe_data = wipe_cache = <span style="color:rgb(128,0,128)">1</span>; <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">c</span><span style="color:rgb(128,0,0)">'</span>: wipe_cache = <span style="color:rgb(128,0,128)">1</span>; <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">e</span><span style="color:rgb(128,0,0)">'</span>: encrypted_fs_mode = optarg; toggle_secure_fs = <span style="color:rgb(128,0,128)">1</span>; <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">t</span><span style="color:rgb(128,0,0)">'</span>: ui_show_text(<span style="color:rgb(128,0,128)">1</span>); <span style="color:rgb(0,0,255)">break</span>;
+        <span style="color:rgb(0,0,255)">case</span> <span style="color:rgb(128,0,0)">'</span><span style="color:rgb(128,0,0)">?</span><span style="color:rgb(128,0,0)">'</span>:
+            LOGE(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Invalid command argument\n</span><span style="color:rgb(128,0,0)">"</span>);
+            <span style="color:rgb(0,0,255)">continue</span>;
+        }
+    }
+    device_recovery_start();
+       .
+       .
+       .
+    <span style="color:rgb(0,0,255)">if</span> (update_package)
+       {
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> For backwards compatibility on the cache partition only, if
+        </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> we're given an old 'root' path "CACHE:foo", change it to
+        </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> "/cache/foo".</span>
+        <span style="color:rgb(0,0,255)">if</span> (strncmp(update_package, <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">CACHE:</span><span style="color:rgb(128,0,0)">"</span>, <span style="color:rgb(128,0,128)">6</span>) == <span style="color:rgb(128,0,128)">0</span>)
+              {
+            <span style="color:rgb(0,0,255)">int</span> len = strlen(update_package) + <span style="color:rgb(128,0,128)">10</span>;
+            <span style="color:rgb(0,0,255)">char</span>* modified_path = malloc(len);
+            strlcpy(modified_path, <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/cache/</span><span style="color:rgb(128,0,0)">"</span>, len);
+            strlcat(modified_path, update_package+<span style="color:rgb(128,0,128)">6</span>, len);
+            printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">(replacing path \"%s\" with \"%s\")\n</span><span style="color:rgb(128,0,0)">"</span>,
+                   update_package, modified_path);
+            update_package = modified_path;
+        }
+              <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">for update from "/mnt/sdcard/update.zip",but at recovery system is "/sdcard" so change it to "/sdcard"
+              </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">ui_print("before:[%s]\n",update_package);</span>
+        <span style="color:rgb(0,0,255)">if</span> (strncmp(update_package, <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/mnt</span><span style="color:rgb(128,0,0)">"</span>, <span style="color:rgb(128,0,128)">4</span>) == <span style="color:rgb(128,0,128)">0</span>)
+        {
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">jump the "/mnt"</span>
+                     update_package +=<span style="color:rgb(128,0,128)">4</span>;
+              }
+              ui_print(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">install package from[%s]\n</span><span style="color:rgb(128,0,0)">"</span>,update_package);
+     }
+    printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">\n</span><span style="color:rgb(128,0,0)">"</span>);
+    property_list(print_property, NULL);
+    printf(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">\n</span><span style="color:rgb(128,0,0)">"</span>);
+    <span style="color:rgb(0,0,255)">int</span> status = INSTALL_SUCCESS;
+       .
+       .
+       .
+<span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> Recovery strategy: if the data partition is damaged, disable encrypted file systems.
+        </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> This preventsthe device recycling endlessly in recovery mode.</span>
+       .
+       .
+       .
+    <span style="color:rgb(0,0,255)">if</span> (update_package != NULL)
+    {
+        status = install_package(update_package);
+        <span style="color:rgb(0,0,255)">if</span> (status != INSTALL_SUCCESS)
+                     ui_print(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Installation aborted.\n</span><span style="color:rgb(128,0,0)">"</span>);
+              <span style="color:rgb(0,0,255)">else</span>
+              {
+                     erase_volume(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/data</span><span style="color:rgb(128,0,0)">"</span>);
+                     erase_volume(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/cache</span><span style="color:rgb(128,0,0)">"</span>);
+              }
+    } <span style="color:rgb(0,0,255)">else</span> <span style="color:rgb(0,0,255)">if</span> (wipe_data) {
+        <span style="color:rgb(0,0,255)">if</span> (device_wipe_data()) status = INSTALL_ERROR;
+        <span style="color:rgb(0,0,255)">if</span> (erase_volume(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/data</span><span style="color:rgb(128,0,0)">"</span>)) status = INSTALL_ERROR;
+        <span style="color:rgb(0,0,255)">if</span> (wipe_cache &amp;&amp; erase_volume(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/cache</span><span style="color:rgb(128,0,0)">"</span>)) status = INSTALL_ERROR;
+        <span style="color:rgb(0,0,255)">if</span> (status != INSTALL_SUCCESS) ui_print(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Data wipe failed.\n</span><span style="color:rgb(128,0,0)">"</span>);
+    } <span style="color:rgb(0,0,255)">else</span> <span style="color:rgb(0,0,255)">if</span> (wipe_cache) {
+        <span style="color:rgb(0,0,255)">if</span> (wipe_cache &amp;&amp; erase_volume(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/cache</span><span style="color:rgb(128,0,0)">"</span>)) status = INSTALL_ERROR;
+        <span style="color:rgb(0,0,255)">if</span> (status != INSTALL_SUCCESS) ui_print(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Cache wipe failed.\n</span><span style="color:rgb(128,0,0)">"</span>);
+    } <span style="color:rgb(0,0,255)">else</span> {
+        status = INSTALL_ERROR;  <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> No command specified</span>
+    }
+    <span style="color:rgb(0,0,255)">if</span> (status != INSTALL_SUCCESS) ui_set_background(BACKGROUND_ICON_ERROR);
+       <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">Xandy modify for view the install infomation
+    </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">if (status != INSTALL_SUCCESS || ui_text_visible())</span>
+    <span style="color:rgb(0,0,255)">if</span>(status != INSTALL_SUCCESS)
+       {
+        prompt_and_wait();
+    }
+    <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> Otherwise, get ready to boot the main system...</span>
+    finish_recovery(send_intent);
+    ui_print(<span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">Rebooting...\n</span><span style="color:rgb(128,0,0)">"</span>);
+    sync();
+    reboot(RB_AUTOBOOT);
+    <span style="color:rgb(0,0,255)">return</span> EXIT_SUCCESS;
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">在这里首先完成recovery模式轻量级的UI系统初始化，设置背景图片，然后对输入的参数格式化，最后根据输入的参数进行相应的操作，如：安装新的ROM、格式化(wipe)data及cache分区等等；值得注意的是刷新ROM的时候，要制作相应的update.zip的安装包，这个在最后一章节讲述，这里遇到的一个问题是在recovery模式下sd卡的挂载点为/sdcard而不是android系统下的/mnt/sdcard，所以我在这里通过：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">for update from "/mnt/sdcard/update.zip",but at recovery system is "/sdcard" so change it to "/sdcard"
+              </span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">ui_print("before:[%s]\n",update_package);</span>
+        <span style="color:rgb(0,0,255)">if</span> (strncmp(update_package, <span style="color:rgb(128,0,0)">"</span><span style="color:rgb(128,0,0)">/mnt</span><span style="color:rgb(128,0,0)">"</span>, <span style="color:rgb(128,0,128)">4</span>) == <span style="color:rgb(128,0,128)">0</span>)
+        {
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)">jump the "/mnt"</span>
+                     update_package +=<span style="color:rgb(128,0,128)">4</span>;
+              }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left"><br>
+<br>
+</p>
+<p align="left">这样的操作跳过了上层传过来的/mnt这四个字符。另外一个值得一提的是，传入这里的这些参数都是从/cache/recovery/command这个文件中提取。具体对command文件的解析过程这里不再讲述，可能通过查看recovery.c这个文件中的get_args函数。</p>
+<p align="left">那么command这个文件是在什么情况下创建的呢？下面我们就来看看吧！</p>
+<h1><a name="t4"></a>5 恢复出厂设置和固件升级</h1>
+<p>在android的系统设备中进入“隐私权-&gt;恢复出厂设置-&gt;重置手机”将为进入到恢复出厂设置的状态，这时将会清除data、cache分区中的所有用户数据，使得系统重启后和刚刷机时一样了。另外为了方便操作我们还可在“隐私权-&gt;固件升级-&gt;刷新ROM”这里加入了固件升级这一项。</p>
+<p>在讲述这些内容之前，我们有必要来看看/cache/recovery/command这个文件相应的一些recovery命令，这些命令都由android系统写入。所有的命令如下：</p>
+<div class="cnblogs_code">
+<pre>*      --send_intent=anystring ―― write the text <span style="color:rgb(0,0,255)">out</span> to recovery.intent
+*      --update_package=root:path —— verify install an OTA package file
+*      --wipe_data —— erase user data (and cache), then reboot
+*      --wipe_cache —— wipe cache (but not user data), then reboot</pre>
+</div>
+<h2><a name="t5"></a>5.1 恢复出厂设置</h2>
+<p align="left">在frameworks/base/services/java/com/android/server/masterClearReceiver.java</p>
+<p align="left">这个文件中有如下代码：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">class</span> MasterClearReceiver <span style="color:rgb(0,0,255)">extends</span> BroadcastReceiver {
+    <span style="color:rgb(0,0,255)">private</span> <span style="color:rgb(0,0,255)">static</span> <span style="color:rgb(0,0,255)">final</span> String TAG = "MasterClear";
+    @Override
+    <span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">void</span> onReceive(<span style="color:rgb(0,0,255)">final</span> Context context, <span style="color:rgb(0,0,255)">final</span> Intent intent) {
+        <span style="color:rgb(0,0,255)">if</span> (intent.getAction().equals(Intent.ACTION_REMOTE_INTENT)) {
+            <span style="color:rgb(0,0,255)">if</span> (!"google.com".equals(intent.getStringExtra("from"))) {
+                Slog.w(TAG, "Ignoring master clear request -- not from trusted server.");
+                <span style="color:rgb(0,0,255)">return</span>;
+            }
+        }
+        Slog.w(TAG, "!!! FACTORY RESET !!!");
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> The reboot call is blocking, so we need to do it on another thread.</span>
+        Thread thr = <span style="color:rgb(0,0,255)">new</span> Thread("Reboot") {
+            @Override
+            <span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">void</span> run() {
+                <span style="color:rgb(0,0,255)">try</span> {
+                    <span style="color:rgb(0,0,255)">if</span> (intent.hasExtra("enableEFS")) {
+                        RecoverySystem.rebootToggleEFS(context, intent.getBooleanExtra("enableEFS", <span style="color:rgb(0,0,255)">false</span>));
+                    } <span style="color:rgb(0,0,255)">else</span> {
+                        RecoverySystem.rebootWipeUserData(context);
+                    }
+                    Log.wtf(TAG, "Still running after master clear?!");
+                } <span style="color:rgb(0,0,255)">catch</span> (IOException e) {
+                    Slog.e(TAG, "Can't perform master clear/factory reset", e);
+                }
+            }
+        };
+        thr.start();
+    }
+}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">当app中操作了“恢复出厂设置”这一项时，将发出广播，这个广播将在这里被监听，然后进入到恢复出厂设置状态，我们来看看rebootWipeUserData这个方法的代码:</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">static</span> <span style="color:rgb(0,0,255)">void</span> rebootWipeUserData(Context context) <span style="color:rgb(0,0,255)">throws</span> IOException {
+        <span style="color:rgb(0,0,255)">final</span> ConditionVariable condition = <span style="color:rgb(0,0,255)">new</span> ConditionVariable();
+        Intent intent = <span style="color:rgb(0,0,255)">new</span> Intent("android.intent.action.MASTER_CLEAR_NOTIFICATION");
+        context.sendOrderedBroadcast(intent, android.Manifest.permission.MASTER_CLEAR,
+                <span style="color:rgb(0,0,255)">new</span> BroadcastReceiver() {
+                    @Override
+                    <span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">void</span> onReceive(Context context, Intent intent) {
+                        condition.open();
+                    }
+                }, <span style="color:rgb(0,0,255)">null</span>, 0, <span style="color:rgb(0,0,255)">null</span>, <span style="color:rgb(0,0,255)">null</span>);
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> Block until the ordered broadcast has completed.</span>
+        condition.block();
+        bootCommand(context, "--wipe_data");
+    }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">我们可以看到在这里参入了“--wipe_data”这个参数，并把这条命令写入到command这个文件中去了，在进入recovery模式的时候解析到这条命令时就会清除data和cache中的数据了。</p>
+<p align="left">再来看看bootCommand这个方法里的代码：</p>
+<p align="left"></p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">private</span> <span style="color:rgb(0,0,255)">static</span> <span style="color:rgb(0,0,255)">void</span> bootCommand(Context context, String arg) <span style="color:rgb(0,0,255)">throws</span> IOException {
+        RECOVERY_DIR.mkdirs();  <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> In case we need it</span>
+        COMMAND_FILE.delete();  <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> In case it's not writable</span>
+        LOG_FILE.delete();
+        FileWriter command = <span style="color:rgb(0,0,255)">new</span> FileWriter(COMMAND_FILE);
+        <span style="color:rgb(0,0,255)">try</span> {
+            command.write(arg);
+            command.write("\n");
+        } <span style="color:rgb(0,0,255)">finally</span> {
+            command.close();
+        }
+        <span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> Having written the command file, go ahead and reboot</span>
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        pm.reboot("recovery");
+        <span style="color:rgb(0,0,255)">throw</span> <span style="color:rgb(0,0,255)">new</span> IOException("Reboot failed (no permissions?)");
+    }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left"></p>
+<p align="left">其中COMMAND_FILE这个成员的定义如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color:rgb(0,128,0)">/**</span><span style="color:rgb(0,128,0)"> Used to communicate with recovery.  See bootable/recovery/recovery.c. </span><span style="color:rgb(0,128,0)">*/</span>
+<span style="color:rgb(0,0,255)">private</span> <span style="color:rgb(0,0,255)">static</span> File RECOVERY_DIR = <span style="color:rgb(0,0,255)">new</span> File("/cache/recovery");
+<span style="color:rgb(0,0,255)">private</span> <span style="color:rgb(0,0,255)">static</span> File COMMAND_FILE = <span style="color:rgb(0,0,255)">new</span> File(RECOVERY_DIR, "command");</pre>
+</div>
+<p align="left">至此恢复出厂设置的命令就写入了recovery cmd file中去了，通过pm.reboot(“recovery”);重启系统，系统就自动进入到recovery模式自动清除用户数据后再重启系统。</p>
+<h2><a name="t6"></a>5.2 固件升级</h2>
+<p align="left">固件升级的流程和恢复出厂设置差不多，不同之处是入command这个文件中写入的命令不一样，下面是恢复出厂设置时的写命令的代码：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre><span style="color:rgb(0,0,255)">public</span> <span style="color:rgb(0,0,255)">static</span> <span style="color:rgb(0,0,255)">void</span> installPackage(Context context, File packageFile)
+      <span style="color:rgb(0,0,255)">throws</span> IOException {
+      String filename = packageFile.getCanonicalPath();
+      Log.w(TAG, "!!! REBOOTING TO INSTALL " + filename + " !!!");
+      String arg = "--update_package=" + filename;
+      bootCommand(context, arg);
+  }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p align="left">这里的packageFile是由上层app传入的，内容如下：</p>
+<div class="cnblogs_code">
+<pre>File packageFile = <span style="color:rgb(0,0,255)">new</span> File("/sdcard/update.zip");
+RecoverySystem.installPackage(context, packageFile);</pre>
+</div>
+<p align="left">这样当系统重启进入到recovery模式时将会自动查找sdcard的根目录下是否有update.zip这个文件，如果有将会进入到update状态，否则会提示无法找到update.zip！</p>
+<p align="left">至此我们已经明白了android的整个recovery流程，下面将讲讲update.zip也就是各大论坛里讲到的ROM的制作过程。</p>
+<h1><a name="t7"></a>6 ROM的制作</h1>
+<p align="left">我们解压update.zip这个文件，可发现它一般打包了如下这几个文件： </p>
+<p><img alt="" src="./android recovery模式及ROM制作_files/2012032318203293.jpg" style="margin-right:auto; margin-left:auto; display:block"></p>
+<p align="center">图3 ROM包中的内容</p>
+<p>或者没有updates而是system这个目录，不同的原因是我这里在updates里放置的是system.img等镜像文件，这些文件都由源码编译而来。而如果是system目录，这里一般放的是android系统的system目录下的内容，可以是整个android系统的system目录，也可以是其中的一部分内容，如一些so库等等，这样为补丁的发布提供了一个很好的解决办法，不需要更新整个系统，只需要更新一部分内容就可以了！</p>
+<p>来看看META-INF/com/google/android这个目录下的内容，在这里就两个文件，一个是可执行的exe文件update-binary，这个文件在进入update状态的用于控制ROM的烧入，具体的代码在recovery下的install.c文件中的try_update_binary这个函数中；另一个是updater-script，这个文件里是一些脚本程序，具体的代码如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre># Mount system <span>for</span> check figurepoint etc.
+# mount("ext4", "EMMC","/dev/block/mmcblk0p2", "/system");
+# Make sure Check system image figurepoint first.
+# uncomment below lines to check
+# <span>assert</span>(file_getprop("/system/build.prop", "ro.build.fingerprint") == "freescale/imx53_evk/imx53_evk/imx53_evk:2.2/FRF85B/eng.b33651.20100914.145340:eng/test-keys");
+# <span>assert</span>(getprop("ro.build.platform) == "imx5x");
+# unmount("/system");
+
+show_progress(0.1, 5);
+package_extract_dir("updates", "/tmp");
+#Format system/data/cache partition
+ui_print("Format disk...");
+format("ext4","EMMC","/system");
+format("ext4","EMMC","/data");
+format("ext4","EMMC","/cache");
+show_progress(0.2, 10);
+# Write u-boot to 1K position.
+# u-boot binary should be a no padding uboot!
+# For eMMC(iNand) device, needs to unlock boot partition.
+ui_print("writting u-boot...");
+sysfs_file_write(" /sys/class/mmc_host/mmc0/mmc0:0001/boot_config", "1");
+package_extract_file("files/u-boot.bin", "/tmp/u-boot.bin");
+#ui_print("Clean U-Boot environment...");
+show_progress(0.2, 5);
+#simple_dd("/dev/zero","/dev/block/mmcblk0",2048);
+simple_dd("/tmp/u-boot.bin", "/dev/block/mmcblk0", 2048);
+#access user partition,and enable boot partion1 to boot
+sysfs_file_write("/sys/class/mmc_host/mmc0/mmc0:0001/boot_config", "8");</pre>
+<pre>#Set boot width is 8bits
+sysfs_file_write("/sys/class/mmc_host/mmc0/mmc0:0001/boot_bus_config", "2");
+show_progress(0.2, 5);</pre>
+<pre>ui_print("extract kernel image...");
+package_extract_file("files/uImage", "/tmp/uImage");
+# Write uImage to 1M position.
+ui_print("writting kernel image");
+simple_dd("/tmp/uImage", "/dev/block/mmcblk0", 1048576);
+
+ui_print("extract uramdisk image...");
+package_extract_file("files/uramdisk.img", "/tmp/uramdisk.img");
+# Write uImage to 1M position.
+ui_print("writting uramdisk image");
+simple_dd("/tmp/uramdisk", "/dev/block/mmcblk0", 6291456);
+show_progress(0.2, 50); 
+
+# You can use two way to update your system which using ext4 system.
+# dd hole system.img to your mmcblk0p2 partition.
+package_extract_file("files/system.img", "/tmp/system.img");
+ui_print("upgrading system partition...");
+simple_dd("/tmp/system.img", "/dev/block/mmcblk0p2", 0);
+show_progress(0.1, 5);</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p>相应的脚本指令可在说明可对应源码可在recovery包中的install.c这个文件中找到。</p>
+<p>在bootable/recovery/etc下有原始版的脚本代码update-script，但在recovery下的updater.c这个文件中有如下定义：</p>
+<div class="cnblogs_code">
+<pre><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> Where in the package we expect to find the edify script to execute.
+</span><span style="color:rgb(0,128,0)">//</span><span style="color:rgb(0,128,0)"> (Note it's "updateR-script", not the older "update-script".)</span>
+#define SCRIPT_NAME "META-INF/com/google/android/updater-script"</pre>
+</div>
+<p>所在使用这个原版的脚本的时候要将update-script更成updater-script，需要注意！</p>
+<p>我们可以发现在bootable/recovery/etcMETA-INFO/com/google/android目录下少了一个update-binary的执行文件，在out/target/product/YOU_PRODUCT/system/bin下面我们可以找到updater，只要将其重名字为update-binary就可以了！</p>
+<p>有了这些准备工作，我们就可以开始制作一个我们自己的ROM了，具体步骤如下：</p>
+<div class="cnblogs_code">
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+<pre>*      Xandy@ubuntu:~$ mkdir recovery
+*      Xandy@ubuntu:~$ cd recovery 然后将上面提到的bootable/recovery/etc下的所有内容拷贝到当前目录下并删掉init.rc这个文件
+*      编译./META-INF/com/google/android/updater-script这个文件使达到我们想要的烧写控制，如果是烧写system.img这样的镜像文件，可以直接用我上面提到的updater-script这个脚本代码。
+*      拷贝相应的需要制作成ROM的android文件到updates目录或者system目录下，这个得根据系统的需要决定。
+*      Xandy@ubuntu:~/recovery$ mkdir res
+*      Xandy@ubuntu:~/recovery$ ~/myandroid/out/host/linux-x86/framework/dumpkey.jar ~/myandroid/build/target/product/security/testkey.x509.pem &gt; res/keys 这里创建一个目录用于存储系统的key值
+*      zip /tmp/recovery.zip -r ./META-INF ./updates ./res 将所有文件打包
+*      java -jar ./tools/signapk.jar -w ./tools/testkey.x509.pem ./tools/testkey.pk8 /tmp/recovery.zip update.zip 我在recovery目录下创建了一个tools目录，里面放置了sygnapk.jar、testkey.pk8、testkey.x509.pem这几个文件用于java签名时用</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a title="复制代码" href=""><img alt="复制代码" src="./android recovery模式及ROM制作_files/copycode.gif"></a></span></div>
+</div>
+<p>经过上面这几步之后就会在recovery目录生成一个update.zip的文件，这个就是我们自己制作的ROM文件，将它拷到sdcard的根目录下，在系统设置里操作进入到“固件升级状态”，等到系统重启时，就会看到已经开始自行格式化data和cache分区，稍后就开始出现进度条向相应分区里烧写uboot、kernel、android system的文件了！</p>
+<p><img alt="" src="./android recovery模式及ROM制作_files/2012032318263356.jpg" style="margin-right:auto; margin-left:auto; display:block"></p>
+<p align="center">图4 烧入新ROM</p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

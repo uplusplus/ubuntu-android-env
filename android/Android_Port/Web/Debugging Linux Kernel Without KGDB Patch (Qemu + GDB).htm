@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0052)http://blog.sina.com.cn/s/blog_792c23280100q4dc.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+		
+
+
+
+<div class="sinabloga" id="sinabloga">
+	<div id="sinablogb" class="sinablogb">
+
+	   
+ 
+    
+    
+    <div class="sinablogbody" id="sinablogbody">
+		
+	
+    
+	
+	
+	
+	<div id="column_2" class="SG_colW73">	
+<div id="module_920" class="SG_conn">
+	
+    <div class="SG_connBody" id="module_920_SG_connBody">
+<!--博文正文 begin -->
+	<div id="articlebody" class="artical" favmd5="{&quot;792c23280100q4dc&quot;:&quot;960630ff451d194b9977bb4bb97cbec9&quot;}">
+		
+		
+						<!-- 正文开始 -->
+		<div id="sina_keyword_ad_area2" class="articalContent  ">
+			<div style="TexT-ALiGn: center">
+<div>
+<div>
+<div><a href="http://memyselfandtaco.blogspot.com/2008/06/debugging-linux-kernel-without-kgdb.html">
+<font style="FonT-siZe: 24px">Debugging Linux Kernel Without KGDB
+Patch (Qemu + GDB</font>)</a></div>
+</div>
+</div>
+</div>
+<div>
+<div>
+<div>
+<div>
+<div>
+<div>
+<div>
+<div>
+<div></div>
+<div>
+<p><b>1)</b> <b>Get Linux kernel source
+code</b> <span style="FonT-WeiGHT: bold">&amp;</span>
+<b>Qemu package</b><br>
+要debug Linux kernel首先當然要先拿到原始碼，可以從官方網頁取得[1]，也可以從package
+repository取得，如[2]中第十個步驟所述。<br>
+安裝Qemu套件的指令為：<br>
+<span style="CoLor: rgb(255,255,255)"><span style="BACKGroUnD-CoLor: rgb(0,0,0)">$ sudo aptitude install
+qemu qemu-launcher qemubuilder qemuctl</span></span><br>
+<b>2)</b> <b>Prepare Qemu disk
+image</b><br>
+接下來是設定debug環境，由於我們借助Qemu進行kernel debugging，因此首先要建立Qemu的磁碟映像檔。<br>
+<br></p>
+<div style="TexT-ALiGn: center" width="300px" height="300px"><a href="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEeyKoMtrcI/AAAAAAAAAqA/-pED-3twYD0/s1600-h/qemu_create_disk_image.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer width:300px" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_create_disk_image.PNG" real_src="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEeyKoMtrcI/AAAAAAAAAqA/-pED-3twYD0/s320/qemu_create_disk_image.PNG" name="BLOGGER_PHOTO_ID_5208327389736447426" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+利用Qemu
+launcher[3]可以很輕鬆的在指定路徑建立磁碟映像檔，這裡我們使用raw格式的磁碟映像以便稍後如果有轉換需要的話可以進行轉換。<br>
+
+此範例將Qemu disk
+image存放於~/Qemu中（請先行建立此資料夾），命名為kernel-hacking，容量為1000MB，完整路徑為：<br>
+<span style="CoLor: rgb(255,255,255)"><span style="BACKGroUnD-CoLor: rgb(0,0,0)">~/Qemu/kernel-hacking</span></span><br>
+<b>3)</b> <b>Prepare debugging
+environment</b><br>
+磁碟準備好之後我們需要在磁碟中安裝minimum
+install的Linux，在這裡我們需要下載debian的安裝光碟[4]。<br>
+等安裝光碟下載完成之後就可以使用Qemu
+launcher指定使用CD-ROM開機，當然要記得將CD-ROM指到剛剛下載的安裝光碟。<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEYNDTNaipI/AAAAAAAAAoQ/DeShjNc466w/s1600-h/qemu_launcher_01.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; WiDTH: 320px; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_launcher_01.PNG" real_src="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEYNDTNaipI/AAAAAAAAAoQ/DeShjNc466w/s320/qemu_launcher_01.PNG" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br>
+</div>
+為了壓低硬碟使用量，安裝過程中我們只要選擇安裝base
+system即可。安裝完畢之後將開機選項改為使用硬碟開機再重新開機確認安裝完成。<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEYNFLXYMWI/AAAAAAAAAoY/dJ2KG0nRhuU/s1600-h/qemu_launcher_02.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; WiDTH: 320px; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_launcher_02.PNG" real_src="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEYNFLXYMWI/AAAAAAAAAoY/dJ2KG0nRhuU/s320/qemu_launcher_02.PNG" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br>
+</div>
+完成此步驟的用意是方便以後置換target Linux kernel (要被debug的Linux kernel)<br>
+<b>4) Compile target Linux kernel</b><span style="FonT-WeiGHT: bold"><br></span>* 以下的所有步驟都在原本的機器上進行，非Qemu中。<br>
+現在我們要準備編譯即將被debug的Linux kernel，假設我們將Linux kernel
+source解壓縮至"~/src/linux-source/v2.6.24"，而目前正在運行的Linux版本為2.6.24-18。<br>
+
+首先我們需要設定kernel，指令為：<br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ cp
+/boot/config-2.6.24-18-generic .config</span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ sudo aptitude install
+ncurses-dev kernel-package build-essential</span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ make menuconfig</span><br>
+設定畫面看起來會像下面這張圖：<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEey2q28ZNI/AAAAAAAAAqI/8Qg-qlv8-VQ/s1600-h/make_menuconfig.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/make_menuconfig.PNG" real_src="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEey2q28ZNI/AAAAAAAAAqI/8Qg-qlv8-VQ/s320/make_menuconfig.PNG" name="BLOGGER_PHOTO_ID_5208328146364687570" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+我們先到選單最下面選擇Load an Alternate Configuration
+File，讀取.config中的預設值。<br>
+接著在介面中先選擇進入Device Drivers，先將ATA/ATAPI/MFM/RLL
+support設定為編入kernel中（按空白鍵改變模式直到看到"<b>*</b>"符號）再選擇它（利用TAB鍵將由標移到Select上按Enter）進入下一層選單將Enhanced
+IDE/MFM/RLL disk/cdrom/tape/floppy support設定為編入kernel中，接著將Include
+IDE/ATA-2 DISK support也設定為編入kernel中。<br>
+最後回到最上層的目錄選擇進入File systems將Ext3 journalling file system
+support設定為編入kernel中。<br>
+現在離開make menuconfig的操作介面，離開時可以選擇儲存設定檔。<br>
+將Device Drivers與File
+systems的那些選項編入kernel中的好處是我們在稍後的作業中可以省去製作ramdisk [5]的步驟。<br>
+在編譯kernel之前先將Makefile打開：<br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ vim Makefile</span><br>
+將EXTRAVERSION = .3 --改為--&gt; EXTRAVERSION =
+.3-Qemu<br>
+方便之後開機時辨識。<br>
+完成以上程序之後便可以開始編譯target Linux kernel，指令為：<br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ make</span><br>
+稍微等待一陣子之後我們便可以在~/src/linux-source/v2.6.24/arch/x86/boot下找到bzImage，這便是我們的
+target Linux
+kernel，而我們可以將存在於~/src/linux-source/v2.6.24/下的vmlinux視為稍後debug過程中使用到的
+symbol table。<br>
+<b>5) Copy target Linux kernel to Qemu disk
+image</b><br>
+現在我們先在家目錄下建立名為tmp的空資料夾，然後將Qemu disk
+image掛載到tmp上讓我們可以將步驟4最後產生出來的target Linux kernel複製到Qemu disk
+image中並且修改掌控開機選單的menu.list，指令為：<br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ mkdir ~/tmp</span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ sudo mount -o
+loop,offset=32256 ~/Qemu/kernel-hacking ~/tmp</span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ sudo cp
+arch/x86/boot/bzImage ~/tmp/boot/bzImage-2.6.24.3</span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ sudo vim
+~/tmp/boot/grub/menu.list</span><br>
+在menu.list中（放在## ## End Default Options ##的下一行）新增：<br>
+title Qemu Linux, kernel 2.6.24<br>
+root (hd0,0)<br>
+kernel /boot/bzImage-2.6.24.3 root=/dev/hda1 ro<br>
+savedefault<br>
+存檔離開之後啟動Qemu launcher選擇使用硬碟開機，開機的時候選擇剛剛複製的Qemu Linux, kernel
+2.6.24，開機完成之後輸入<span style="CoLor: rgb(255,255,255)"><span style="BACKGroUnD-CoLor: rgb(0,0,0)">uname
+-a</span></span>確認版本無誤，如下圖：<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://2.bp.blogspot.com/_rQtQ8dROuIs/SEey3bCH6wI/AAAAAAAAAqQ/4UOgLGEkGJQ/s1600-h/target_linux_kernel_version.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/target_linux_kernel_version.PNG" real_src="http://2.bp.blogspot.com/_rQtQ8dROuIs/SEey3bCH6wI/AAAAAAAAAqQ/4UOgLGEkGJQ/s320/target_linux_kernel_version.PNG" name="BLOGGER_PHOTO_ID_5208328159296482050" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+<b>6) Attach GDB to Qemu</b><br>
+最後一個步驟是開啟Qemu並讓它等候GDB連線進行除錯，開啟Qemu
+launcher之後點選Emulator頁面，在Additonal arguments中輸入<b>-S
+-s</b>如下圖：<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEey4HKfqFI/AAAAAAAAAqY/aL66CbT2rKs/s1600-h/qemu_stop_and_wait_gdb.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_stop_and_wait_gdb.PNG" real_src="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEey4HKfqFI/AAAAAAAAAqY/aL66CbT2rKs/s320/qemu_stop_and_wait_gdb.PNG" name="BLOGGER_PHOTO_ID_5208328171142752338" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+點選Launch之後會看到名為QEMU [Stopped]的新console出現，如下圖：<br>
+<br>
+<div style="TexT-ALiGn: center"><a href="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEey4-CAd6I/AAAAAAAAAqg/d5CnkbgMeVE/s1600-h/qemu_waiting_gdb.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_waiting_gdb.PNG" real_src="http://1.bp.blogspot.com/_rQtQ8dROuIs/SEey4-CAd6I/AAAAAAAAAqg/d5CnkbgMeVE/s320/qemu_waiting_gdb.PNG" name="BLOGGER_PHOTO_ID_5208328185871103906" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+這時候在剛剛編譯target Linux kernel的那個console中輸入指令：<br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0); CoLor: rgb(255,255,255)">~/src/linux-source/v2.6.24$ gdb ./vmlinux</span><br>
+以下為進入GDB之後的指令對話：<br>
+<span style="CoLor: rgb(255,255,255)"><span style="BACKGroUnD-CoLor: rgb(0,0,0)">(gdb) target remote
+localhost:1234</span></span><br>
+<span style="BACKGroUnD-CoLor: rgb(0,0,0)"><span style="CoLor: rgb(255,255,255)">Remote debugging using
+localhost:1234</span><br>
+<span style="CoLor: rgb(255,255,255)">0x0000fff0 in ??
+()</span><br>
+<span style="CoLor: rgb(255,255,255)">(gdb) c</span><br>
+<span style="CoLor: rgb(255,255,255)">Continuing</span>.</span><br>
+Continuing出現之後原本一片漆黑的QEMU [Stopped]視窗開始運作最後出現kernel選單，如下圖：<br>
+<div style="TexT-ALiGn: center"><a href="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEey5ikITUI/AAAAAAAAAqo/32_1Jlo93Ck/s1600-h/qemu_select_kernel.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_select_kernel.PNG" real_src="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEey5ikITUI/AAAAAAAAAqo/32_1Jlo93Ck/s320/qemu_select_kernel.PNG" name="BLOGGER_PHOTO_ID_5208328195677900098" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+若是在GDB環境中在最後一個指令<b>c</b>之前插入設定breakpoint指令如<b>b
+start_kernel</b>，則在我們選擇kernel版本之後Qemu會停在start_kernel函式的第一行程式碼，如下圖：<br>
+
+<br>
+<div style="TexT-ALiGn: center"><a href="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEeziaa10pI/AAAAAAAAAqw/1pPZWH0SUxY/s1600-h/qemu_breakpoint.PNG">
+<img style="MArGin: 0pt 10px 10px 0pt; CUrsor: pointer" border="0" alt="" src="./Debugging Linux Kernel Without KGDB Patch (Qemu + GDB)_files/qemu_breakpoint.PNG" real_src="http://4.bp.blogspot.com/_rQtQ8dROuIs/SEeziaa10pI/AAAAAAAAAqw/1pPZWH0SUxY/s320/qemu_breakpoint.PNG" name="BLOGGER_PHOTO_ID_5208328897866093202" title="Debugging &lt;wbr&gt;Linux &lt;wbr&gt;Kernel &lt;wbr&gt;Without &lt;wbr&gt;KGDB &lt;wbr&gt;Patch &lt;wbr&gt;(Qemu &lt;wbr&gt;+ &lt;wbr&gt;GDB)"></a><br></div>
+<br>
+恭喜你已經可以進行source code level Linux kernel debugging！<br>
+<br>
+<br>
+<br>
+[1] <a title="http://www.kernel.org/" href="http://www.kernel.org/" name="zqlk"><font color="#336688">http://www.kernel.org/</font></a><br>
+[2] <a title="http://memyselfandtaco.blogspot.com/2008/06/technical-writings-rule-of-thumb-local.html" href="http://memyselfandtaco.blogspot.com/2008/06/technical-writings-rule-of-thumb-local.html" name="rcb7"><font color="#336688">http://memyselfandtaco.blogspot.com/2008/06/technical-writings-rule-of-thumb-local.html</font></a><br>
+
+[3] <a title="http://memyselfandtaco.blogspot.com/2008/06/qemu-and-its-launcher.html" href="http://memyselfandtaco.blogspot.com/2008/06/qemu-and-its-launcher.html" name="sokc"><font color="#336688">http://memyselfandtaco.blogspot.com/2008/06/qemu-and-its-launcher.html</font></a><br>
+
+[4] <a title="http://cdimage.debian.org/debian-cd/4.0_r3/i386/iso-cd/debian-40r3-i386-CD-1.iso" href="http://cdimage.debian.org/debian-cd/4.0_r3/i386/iso-cd/debian-40r3-i386-CD-1.iso" name="d21x"><font color="#336688">http://cdimage.debian.org/debian-cd/4.0_r3/i386/iso-cd/debian-40r3-i386-CD-1.iso</font></a><br>
+
+[5] <a title="http://www.ibm.com/developerworks/linux/library/l-initrd.html" href="http://www.ibm.com/developerworks/linux/library/l-initrd.html" name="m_to"><font color="#336688">http://www.ibm.com/developerworks/linux/library/l-initrd.html</font></a>
+<p>&nbsp;<wbr></p>
+<div style="CLeAr: both"></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>							
+		</div>
+						
+		
+		
+		
+		
+		
+		
+							
+		
+				
+				
+		
+				
+		
+				
+	</div>
+	
+		
+
+            </div>       
+            
+          </div>
+</div>
+	
+	
+	
+	
+	
+
+	
+    </div>
+   
+  
+
+	
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</body></html>

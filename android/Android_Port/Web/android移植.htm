@@ -1,0 +1,1382 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:st1="urn:schemas-microsoft-com:office:smarttags"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="android移植.files/filelist.xml">
+<title> android移植</title>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="PlaceType"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="PlaceName"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="place"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="chsdate"/>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>微软中国</o:Author>
+  <o:LastAuthor>微软中国</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>2</o:TotalTime>
+  <o:Created>2013-01-29T05:58:00Z</o:Created>
+  <o:LastSaved>2013-01-29T05:58:00Z</o:LastSaved>
+  <o:Pages>6</o:Pages>
+  <o:Words>2142</o:Words>
+  <o:Characters>12213</o:Characters>
+  <o:Company>www.xunchi.com</o:Company>
+  <o:Lines>101</o:Lines>
+  <o:Paragraphs>28</o:Paragraphs>
+  <o:CharactersWithSpaces>14327</o:CharactersWithSpaces>
+  <o:Version>11.9999</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:FormsDesign/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]--><!--[if !mso]><object
+ classid="clsid:38481807-CA0E-42D2-BF39-B33AF135CC4D" id=ieooui></object>
+<style>
+st1\:*{behavior:url(#ieooui) }
+</style>
+<![endif]-->
+<style>
+<!--@import url("http://blog.chinaunix.net/css/nav.css");
+-->
+</style>
+<link rel=Stylesheet type="text/css" media=all
+href="file:///F:\blog\image\editor\code\css\fck_editorarea.css">
+<style>
+<!--.LIST0223 li
+	{float:left;}
+
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:SimSun;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:center;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	border:none;
+	mso-border-bottom-alt:solid windowtext .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 1.0pt 0cm;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.bor0223, li.bor0223, div.bor0223
+	{mso-style-name:bor0223;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.bor0223tit, li.bor0223tit, div.bor0223tit
+	{mso-style-name:bor0223_tit;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	line-height:21.0pt;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:dashed #CCCCCC .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 0cm 0cm;
+	font-size:10.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+p.list0223, li.list0223, div.list0223
+	{mso-style-name:list0223;
+	margin-top:7.5pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:9.0pt;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+ /* Page Definitions */
+ @page
+	{mso-footnote-separator:url("android移植.files/header.htm") fs;
+	mso-footnote-continuation-separator:url("android移植.files/header.htm") fcs;
+	mso-endnote-separator:url("android移植.files/header.htm") es;
+	mso-endnote-continuation-separator:url("android移植.files/header.htm") ecs;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:42.55pt;
+	mso-footer-margin:49.6pt;
+	mso-even-header:url("android移植.files/header.htm") eh1;
+	mso-header:url("android移植.files/header.htm") h1;
+	mso-even-footer:url("android移植.files/header.htm") ef1;
+	mso-footer:url("android移植.files/header.htm") f1;
+	mso-first-header:url("android移植.files/header.htm") fh1;
+	mso-first-footer:url("android移植.files/header.htm") ff1;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:447971324;
+	mso-list-template-ids:1543644004;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:535579861;
+	mso-list-template-ids:-1663371288;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:618877863;
+	mso-list-template-ids:-679720998;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:816803431;
+	mso-list-template-ids:1626219762;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4
+	{mso-list-id:1239629908;
+	mso-list-template-ids:1420994484;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5
+	{mso-list-id:1549998165;
+	mso-list-template-ids:1635526312;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:普通表格;
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<meta http-equiv=X-UA-Compatible content="IE=EmulateIE7">
+<meta name=description
+content="试验平台：芯晟CSM1201老内核版本：2.6.12.5第一步，先升级芯晟内核到Android1.0的内核版本－2.6.25第二步，移植Android先总结一下第一步的移植过程以及遇到问题的解决办法。首先是拿到原版2.6.12.5内核，与芯晟内核作比较，将芯晟修改和加入的部分，先做简单">
+<link rel=StyleSheet href="file:///F:\theme\default\style.css" type="text/css"
+media=screen>
+<link rel=StyleSheet href="file:///F:\css\default.css" type="text/css"
+media=screen>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_cookie.js">
+</script>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_common.js">
+</script>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_menu.js">
+</script>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_ajax.js">
+</script>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_face.js">
+</script>
+
+<script language="JavaScript"  type="text/javascript" src="/source/script_manage.js">
+</script>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2049"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=ZH-CN link=blue vlink=blue style='tab-interval:21.0pt'>
+
+<div class=Section1>
+
+<div id=Content>
+
+<div style='position:relative' id="blog_center">
+
+<div>
+
+<div>
+
+<div id=detail>
+
+<div style='border-style:initial;border-color:initial'>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='font-size:10.5pt;mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>试验平台：芯晟</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Verdana;color:red;background:
+white'>CSM1201</span><span lang=EN-US style='font-size:10.5pt;font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='font-size:10.5pt;mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>老内核版本：</span><st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on"><span
+ lang=EN-US style='font-size:10.5pt;font-family:Verdana;color:red;background:
+ white'>2.6.12</span></st1:chsdate><span lang=EN-US style='font-size:10.5pt;
+font-family:Verdana;color:red;background:white'>.5</span><span lang=EN-US
+style='font-size:10.5pt;font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='font-size:10.5pt;mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>第一步，先升级芯晟内核到</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Verdana;color:red;background:
+white'>Android1.0</span><span style='font-size:10.5pt;mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>的内核版本－</span><st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on"><span
+ lang=EN-US style='font-size:10.5pt;font-family:Verdana;color:red;background:
+ white'>2.6.25</span></st1:chsdate><span lang=EN-US style='font-size:10.5pt;
+font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='font-size:10.5pt;mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>第二步，移植</span><span
+lang=EN-US style='font-size:10.5pt;font-family:Verdana;color:red;background:
+white'>Android&nbsp;</span><span lang=EN-US style='font-size:10.5pt;font-family:
+Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-size:10.5pt;font-family:
+Verdana;color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+</div>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>先总结一下第一步的移植过程以及遇到问题的解决办法。</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>首先是拿到原版</span><st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on"><span
+ lang=EN-US style='font-family:Verdana;color:#595959;background:white'>2.6.12</span></st1:chsdate><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>.5</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核，与芯晟内核作比较，将芯晟修改和加入的部分，先做简单的拷贝到</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>2.6.25</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核，这里需要注意有几个目录或目录下下的文件是编译过程中生成的，不要预先拷贝，如</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>script</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>下的一些</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>.cmd</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>arch/asm</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>目录，</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>include/asm</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>等。芯晟在</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>12.5</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核中主要修改了</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>arch</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>和</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>driver</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>目录，重点关注相应的</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>Kbuild</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>和</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>Makefile</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>然后同时开两个</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>shell</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>窗口，分别进入</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>25</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>内核和芯晟内核做</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>make
+menuconfig</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>操作，对比芯晟内核的配置来作</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>25</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核的配置，其中有些老内核的配置选项在新内核中已经不再支持或者位置变了，需要灵活处理。另外如果上一步的</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>Kbuild</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>修改是正确的，那么芯晟加入的内核配置选项在两版内核的</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>menuconfig</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中应该是基本相同的。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>内核配置完后就开始编译。遇到的问题记录如下：</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>1.entry_armv.S</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>汇编出错，提示的错误是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>bad
+command 'get_irqnr_preamble r5, lr'</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>google</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>之发现只要把这条指令引掉即可；</span><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>2.</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>还是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>emtry_armv.S,</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>出现错误</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>internal relocation (type:OFFSET_IMM) not fixed
+up</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;
+color:#595959;background:white'>，</span><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>google</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>、百度了三天，有的说是编译器问题，有的说是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>constant.h</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>问题，我还换了新版编译器试了仍然不行。就在几乎绝望的时候，最后发现是有个该汇编文件中</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>#include
+&lt;asm/arch/entry-macro.S&gt;</span><span style='mso-ascii-font-family:Verdana;
+mso-hansi-font-family:Verdana;color:#595959;background:white'>，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>entr_macro.S</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中有个宏</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>VA_VIC_BASE</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>没定义，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>#include
+&lt;asm/hardware.h&gt;</span><span style='mso-ascii-font-family:Verdana;
+mso-hansi-font-family:Verdana;color:#595959;background:white'>之后解决了。</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>3.arch/arm/kernel/head.S</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，错误提示：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>arch/arm/kernel/head.S:267: Error: missing ')'<br>
+arch/arm/kernel/head.S:267: Error: garbage following instruction -- `ldr r4<span
+class=GramE>,=</span>(((0xc0000000UL)+0x00008000)-0x4000)'<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>是我的</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>include/asm-arm/orion2/memory.h</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中定义了</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>#define PHYS_OFFSET (0x00000000UL),</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>但是</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>UL</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>已经被</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>include/asm-arm/memory.h</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>定义成</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>#define UL(x) (x##UL)<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>因而导致编译器出现错误。将</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>include/asm-arm/orion2/memory.h</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>#define PHYS_OFFSET (0x00000000UL)</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>改为</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>#define PHYS_OFFSET UL(0x00000000)</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>后解决。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>4.arch\arm\kernel\entry-common.S,bad command
+'&nbsp;arch_ret_to_user r1, lr',</span><span style='mso-ascii-font-family:Verdana;
+mso-hansi-font-family:Verdana;color:#595959;background:white'>原因同</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>1</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，引掉即可</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>接下来就是芯晟加入的驱动在新版内核上的修改了，有一些宏定义、数据结构以及函数已经变化了，做了不少修改。修改了大概两天时间，最后终于编译通过，生成了</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>Uimage</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>以下是内核运行过程中出现的错误及解决办法：</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>1.</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>在</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>starting
+kernel...</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>的位置停下了</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>解决办法：重新配置内核，在</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>kernel hacking</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中加上</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>debug</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>和</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>lowlevel
+debug</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>功能。重新编译</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>uImage</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，重新内核启动发现是</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>machineID</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>不对，于是修改</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>arch/arm/tools/mach-types</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>文件，将芯晟的</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>machineID</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>改为</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>719</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>重启</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>kernel</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，停在</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>done, booting the kernel.<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>打开</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>printk.c</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中的</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>VIRGO_EARLY_PRINTK</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>宏，出现打印：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&lt;4&gt;[&nbsp;&nbsp;&nbsp; 0.000000] Linux
+version <st1:chsdate IsROCDate="False" IsLunarDate="False" Day="30" Month="12"
+Year="1899" w:st="on">2.6.25</st1:chsdate> (root@ubuntu) (gcc version 4.4.1
+(Sourcery G++ Lite 2010q1-202) ) #20 Tue Aug 17<br>
+20:29:47 PDT 2010<br>
+&lt;4&gt;[&nbsp;&nbsp;&nbsp; 0.000000] start_kernel............13<br>
+&lt;4&gt;[&nbsp;&nbsp;&nbsp; 0.000000] CPU: ARM926EJ-S [41069265] revision 5
+(ARMv5TEJ), cr=00053177<br>
+&lt;4&gt;[&nbsp;&nbsp;&nbsp; 0.000000] Machine: ORION<br>
+&lt;4&gt;[&nbsp;&nbsp;&nbsp; 0.000000] Memory policy: ECC disabled, Data cache
+writeback<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000] On node 0 totalpages: 25600<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000]&nbsp;&nbsp; DMA zone: 200 pages used for
+memmap<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000]&nbsp;&nbsp; DMA zone: 0 pages reserved<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000]&nbsp;&nbsp; DMA zone: 25400 pages, LIFO
+batch:7<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000]&nbsp;&nbsp; Normal zone: 0 pages used
+for memmap<br>
+&lt;7&gt;[&nbsp;&nbsp;&nbsp; 0.000000]&nbsp;&nbsp; Movable zone: 0 pages used
+for memmap<br>
+&lt;3&gt;[&nbsp;&nbsp;&nbsp; 0.000000] MM: CPU does not support supersection
+mapping for 0x10140000000 at 0xf1140000<br>
+&lt;3&gt;[&nbsp;&nbsp;&nbsp; 0.000000] MM: CPU does not support supersection
+mapping for 0x101f1000000 at 0xf11f1000<br>
+&lt;3&gt;[&nbsp;&nbsp;&nbsp; 0.000000] MM: CPU does not support supersection
+mapping for 0x101e0000000 at 0xf11e0000<br>
+&lt;3&gt;[&nbsp;&nbsp;&nbsp; 0.000000] MM: CPU does not support supersection
+mapping for 0x35000000000 at 0xf8000000<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>问题出在哪呢？</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>原来是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>16</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>版本内核之后，</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>map_desc</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>结构发生了变化，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;</span><span lang=EN-US style='font-family:
+Verdana;color:blue;background:white'>struct</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>&nbsp;<strong><span
+style='font-family:Verdana;mso-bidi-font-family:宋体'>map_desc</span></strong>&nbsp;</span><span
+lang=EN-US style='font-family:Verdana;color:red;background:white'>{------------------------------<st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on">2.6.16</st1:chsdate></span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><br>
+&nbsp;unsigned long virtual;---------------</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:red;background:white'>虚地址</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><br>
+&nbsp;unsigned long&nbsp;<strong><span style='font-family:Verdana;mso-bidi-font-family:
+宋体'>pfn</span></strong>;-------------------</span><span lang=EN-US
+style='font-family:Verdana;color:red;background:white'>Page Frame Number </span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:red;
+background:white'>页帧号</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><br>
+&nbsp;unsigned long length;<br>
+&nbsp;unsigned int type;<br>
+&nbsp;};<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;</span><span lang=EN-US style='font-family:
+Verdana;color:blue;background:white'>struct</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>&nbsp;<strong><span
+style='font-family:Verdana;mso-bidi-font-family:宋体'>map_desc</span></strong>&nbsp;{------------------------------</span><st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on"><span
+ lang=EN-US style='font-family:Verdana;color:red;background:white'>2.6.9</span></st1:chsdate><br>
+<span lang=EN-US style='font-family:Verdana;color:#595959;background:white'>&nbsp;unsigned
+long virtual;<br>
+&nbsp;unsigned long&nbsp;<strong><span style='font-family:Verdana;mso-bidi-font-family:
+宋体'>physical</span></strong>;------------</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>物理地址</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><br>
+&nbsp;unsigned long length;<br>
+&nbsp;unsigned int type;<br>
+&nbsp;};<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><br>
+</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;
+color:#595959;background:white'>根据以上变化，修改后的物理内存－</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>&gt;</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>虚拟地址的映射关系如下：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;static struct map_desc virgo_io_desc[6]
+__initdata = {<br>
+&nbsp;{&nbsp;<br>
+&nbsp;&nbsp;.virtual = VA_VIC_BASE ,&nbsp;<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_VIC_BASE),//PA_VIC_BASE,<br>
+&nbsp;&nbsp;.length = SZ_64K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;},<br>
+&nbsp;{&nbsp;<br>
+&nbsp;&nbsp;.virtual = VA_UARTS_BASE, &nbsp;<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_UARTS_BASE),//PA_UARTS_BASE,<br>
+&nbsp;&nbsp;.length = SZ_16K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;},<br>
+&nbsp;{&nbsp;<br>
+&nbsp;&nbsp;.virtual = VA_TIMERS_BASE,&nbsp;<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_TIMERS_BASE),//PA_TIMERS_BASE,<br>
+&nbsp;&nbsp;.length = SZ_64K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;},<br>
+&nbsp;{&nbsp;<br>
+&nbsp;&nbsp;.virtual = VA_ETH_BASE,<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_ETH_BASE),//PA_ETH_BASE&nbsp;,<br>
+&nbsp;&nbsp;.length = SZ_64K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;},<br>
+&nbsp;{<br>
+&nbsp;&nbsp;.virtual = VA_ATA_BASE, &nbsp;&nbsp;<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_ATA_BASE),//PA_ATA_BASE&nbsp;,<br>
+&nbsp;&nbsp;.length = SZ_16K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;},<br>
+&nbsp;{&nbsp;<br>
+&nbsp;&nbsp;.virtual = VA_PCMCIA_BASE,<br>
+&nbsp;&nbsp;.pfn = __phys_to_pfn(PA_PCMCIA_BASE),//PA_PCMCIA_BASE,<br>
+&nbsp;&nbsp;.length = SZ_16K,&nbsp;<br>
+&nbsp;&nbsp;.type = MT_DEVICE&nbsp;<br>
+&nbsp;}<br>
+};&nbsp;// Data from Virgo MemoryMap&nbsp;<br>
+</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;
+color:#595959;background:white'>修改后停在</span><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>calibrate_delay</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，说明</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>timer</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>有问题，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>jiffs</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>没好用。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>仔细查了一下</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>25</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核其他</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>cpu</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>架构下的</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>timer</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>驱动，发现跟</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>12</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>内核有很大差别。于是找来芯晟</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>32</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核中的</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>timer</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>部分加以修改，添加到</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>25</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核中，并修改</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>arch/arm/Kconfig</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>，</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>config</span></span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'> GENERIC_TIME<br>
+&nbsp;bool<br>
+&nbsp;default y<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>config</span></span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'> GENERIC_CLOCKEVENTS<br>
+&nbsp;bool<br>
+&nbsp;default y<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>编译生成</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>uImage</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>后重新启动内核，跑到</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>local_irq_enable</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>又死了（假死机，因为</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>timer</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中断里还有打印）。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>继续调试的时候发现如果把</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>timer</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>初始化去掉就可以往下跑，说明还是</span><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>timer</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>中断有问题。仔细对比芯晟</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>32</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核中</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>timer</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>部分的修改发现是我把</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>PA_TIMER0_BASE</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>定义错了，也就是定时器</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>0</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>的硬件地址不对，改正后</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>&nbsp;local_irq_enable</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>过去了。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>然后跑到挂载根文件系统的时候再次出现</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>kernel
+panic</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>，估计是我之前改了一些跟</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>MTD block driver</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>和</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>fs</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>的东西造成的。因为目前只能通过</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>NFS</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>方式挂载</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>android</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>文件系统，因此我决定先将</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>boot
+argument</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>改为</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>nfs</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>方式挂载。这么改完后仍然出现</span><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>kernel panic</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>PC</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>指针停在了</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>cn100_interrupt</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>的位置，这是</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>CSM1201</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>板子上的以太网中断服务程序。仔细检查发现是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>cn100_interrupt</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>中有一个指针搞错了。但是矫正后内核仍然无法启动。因为我之前将</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>cn100</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>的驱动针对新版内核做了一些改动，就是这部分导致网络不好用。最后对比芯晟</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>32</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核中</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>cn100</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>驱动进行修改，网络驱动终于好用了。</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>接下来我还是继续调试</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>MTD block</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>驱动部分。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>首先配置内核，将</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>MTD block</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>驱动的</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>debug log</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>放开，打印出：</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:red;background:white'>mtd</span></span><span lang=EN-US
+style='font-family:Verdana;color:red;background:white'>: Giving out device 0 to
+physmap-flash.0</span><span lang=EN-US style='font-family:Verdana;color:#595959;
+background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:black;background:white'>google</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:black;background:white'>后发现可能跟</span><span
+lang=EN-US style='font-family:Verdana;color:black;background:white'>boot</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:black;
+background:white'>参数有关。仔细检查</span><span lang=EN-US style='font-family:Verdana;
+color:black;background:white'>boot</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:black;background:white'>参数：</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:black;background:white'>setenv bootargs 'root=/dev/mtdblock/2
+rootfstype=jffs2 rw init=/init mem=100M console=ttyS0,115200
+mtdparts=phys_mapped_flash:640k(u-boot1)ro,1664k(kernel),4480k(jffs2),1088k(app),320k(stbinfo),512k(u-boot2)ro,5824k(res),320k(cainfo),1024k(bootlogo)'</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>发现</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>mtdparts=phys_mapped_flash</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>这句比较可疑，</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>phys_mapped_flash</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>是从哪来的呢</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>?<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>在老版内核中搜索</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>“phys_mapped_flash”</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，发现内核</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>pphysmap.c</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>中有</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>:<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>struct</span></span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'> map_info
+physmap_map = {<br>
+&nbsp;.name = &quot;phys_mapped_flash&quot;,<br>
+&nbsp;.phys = CONFIG_MTD_PHYSMAP_START,<br>
+&nbsp;.size = CONFIG_MTD_PHYSMAP_LEN,<br>
+&nbsp;.bankwidth = CONFIG_MTD_PHYSMAP_BANKWIDTH,<br>
+};<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>于是到新版内核中去找，发现有：</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:#595959;background:white'>static</span></span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'> struct
+platform_device physmap_flash = {<br>
+&nbsp;.name&nbsp;&nbsp;= &quot;physmap-flash&quot;,<br>
+&nbsp;.id&nbsp;&nbsp;= 0,<br>
+&nbsp;.dev&nbsp;&nbsp;= {<br>
+&nbsp;&nbsp;.platform_data&nbsp;= &amp;physmap_flash_data,<br>
+&nbsp;},<br>
+&nbsp;.num_resources&nbsp;= 1,<br>
+&nbsp;.resource&nbsp;= &amp;physmap_flash_resource,<br>
+};<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>于是将</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>boot</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>参数改为</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>mtdparts=physmap-flash</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>。重启内核后仍然出现</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-family:
+Verdana;color:red;background:white'>mtd</span></span><span lang=EN-US
+style='font-family:Verdana;color:red;background:white'>: Giving out device 0 to
+physmap-flash.0</span><span lang=EN-US style='font-family:Verdana;color:#595959;
+background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>boot</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>参数改成</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>mtdparts=physmap-flash.0</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>后，有了一些进展，打印如下：</span><span lang=EN-US style='font-family:
+Verdana;color:red;background:white'><br>
+[&nbsp;&nbsp;&nbsp; 8.880000] 9 cmdlinepart partitions found on MTD device
+physmap-flash.0<br>
+[&nbsp;&nbsp;&nbsp; 8.890032] Creating 9 MTD partitions on
+&quot;physmap-flash.0&quot;:<br>
+[&nbsp;&nbsp;&nbsp; 8.900034] 0x00000000-0x000a0000 : &quot;u-boot1&quot;<br>
+[&nbsp;&nbsp;&nbsp; 8.910029] mtd: Giving out device 0 to u-boot1<br>
+[&nbsp;&nbsp;&nbsp; 8.981516] 0x000a0000-0x00240000 : &quot;kernel&quot;<br>
+[&nbsp;&nbsp;&nbsp; 8.990092] mtd: Giving out device 1 to kernel<br>
+[&nbsp;&nbsp;&nbsp; 9.060259] 0x00240000-0x006a0000 : &quot;jffs2&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.070113] mtd: Giving out device 2 to jffs2<br>
+[&nbsp;&nbsp;&nbsp; 9.141523] 0x006a0000-0x007b0000 : &quot;app&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.160037] mtd: Giving out device 3 to app<br>
+[&nbsp;&nbsp;&nbsp; 9.230289] 0x007b0000-0x00800000 : &quot;stbinfo&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.250105] mtd: Giving out device 4 to stbinfo<br>
+[&nbsp;&nbsp;&nbsp; 9.310282] 0x00800000-0x00880000 : &quot;u-boot2&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.330098] mtd: Giving out device 5 to u-boot2<br>
+[&nbsp;&nbsp;&nbsp; 9.390244] 0x00880000-0x00e30000 : &quot;res&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.400112] mtd: Giving out device 6 to res<br>
+[&nbsp;&nbsp;&nbsp; 9.470158] 0x00e30000-0x00e80000 : &quot;cainfo&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.480109] mtd: Giving out device 7 to cainfo<br>
+[&nbsp;&nbsp;&nbsp; 9.540383] 0x00e80000-0x00f80000 : &quot;bootlogo&quot;<br>
+[&nbsp;&nbsp;&nbsp; 9.550113] mtd: Giving out device 8 to bootlogo<br>
+[&nbsp;&nbsp;&nbsp; 9.670462] input: ORION Remote Controller as
+/devices/virtual/input/input0<br>
+[&nbsp;&nbsp;&nbsp; 9.770478] Orion Watchdog Timer: timer margin 40 sec<br>
+[&nbsp;&nbsp;&nbsp; 9.890413] TCP cubic registered<br>
+[&nbsp;&nbsp;&nbsp; 9.930079] NET: Registered protocol family 1<br>
+[&nbsp;&nbsp;&nbsp; 9.940207] NET: Registered protocol family 17<br>
+[&nbsp;&nbsp; 10.000428] RPC: Registered udp transport module.<br>
+[&nbsp;&nbsp; 10.010062] RPC: Registered tcp transport module.<br>
+[&nbsp;&nbsp; 10.070386] Root-NFS: No NFS server available, giving up.<br>
+[&nbsp;&nbsp; 10.080150] VFS: Unable to mount root fs via NFS, trying floppy.<br>
+[&nbsp;&nbsp; 10.110265] MTDSB: dev_name &quot;/dev/root&quot;<br>
+[&nbsp;&nbsp; 10.120065] MTDSB: path_<span class=GramE>lookup(</span>) returned
+0, inode c5c00c08<br>
+[&nbsp;&nbsp; 10.130051] List of all partitions:<br>
+&lt;4&gt;[&nbsp;&nbsp; 10.140046]
+1f00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 640 mtdblock0[&nbsp;&nbsp;
+10.140046] 1f00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 640 mtdblock0
+(driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.160035]
+1f01&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1664 mtdblock1[&nbsp;&nbsp; 10.160035]
+1f01&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1664 mtdblock1 (driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.180031]
+1f02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4480 mtdblock2[&nbsp;&nbsp; 10.180031]
+1f02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4480 mtdblock2 (driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.200032]
+1f03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1088 mtdblock3[&nbsp;&nbsp; 10.200032]
+1f03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1088 mtdblock3 (driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.220032]
+1f04&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 320 mtdblock4[&nbsp;&nbsp;
+10.220032] 1f04&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 320 mtdblock4
+(driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.240033]
+1f05&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 512 mtdblock5[&nbsp;&nbsp;
+10.240033] 1f05&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 512 mtdblock5
+(driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.260032]
+1f06&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5824 mtdblock6[&nbsp;&nbsp; 10.260032]
+1f06&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5824 mtdblock6 (driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.280033]
+1f07&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 320 mtdblock7[&nbsp;&nbsp;
+10.280033] 1f07&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 320 mtdblock7
+(driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.300032]
+1f08&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1024 mtdblock8[&nbsp;&nbsp; 10.300032]
+1f08&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1024 mtdblock8 (driver?)<br>
+&nbsp;(<span class=GramE>driver</span>?)<br>
+&lt;4<span class=GramE>&gt;[</span>&nbsp;&nbsp; 10.320022] No filesystem could
+mount root, tried: [&nbsp;&nbsp; 10.320022] No filesystem could mount root,
+tried:&nbsp; jffs2 jffs2</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:red;background:white'>&lt;0<span class=GramE>&gt;[</span>&nbsp;&nbsp;
+10.350042] Kernel panic - not syncing: VFS: Unable to mount root fs on
+unknown-block(2,0)<br>
+[&nbsp;&nbsp; 10.350042] Kernel panic - not syncing: VFS: Unable to mount root
+fs on unknown-block(2,0)</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:black;background:white'>然后</span><span lang=EN-US
+style='font-family:Verdana;color:black;background:white'>google&quot;mtdblock0
+(driver?)&quot;</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:black;background:white'>，发现有人遇到同样的问题，原因是新版内核不支持</span><span
+lang=EN-US style='font-family:Verdana;color:black;background:white'>devfs</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:black;
+background:white'>造成的，应该将</span><span lang=EN-US style='font-family:Verdana;
+color:black;background:white'>boot</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:black;background:white'>参数中的</span><span
+lang=EN-US style='font-family:Verdana;color:black;background:white'>root=/dev/mtdblock/2</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:black;
+background:white'>改为</span><span lang=EN-US style='font-family:Verdana;
+color:black;background:white'>root=31:2<br>
+</span><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;
+color:black;background:white'>试了一下，确实好用。</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:black;background:white'>至此内核终于跑起来了！</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>最后的</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>boot</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>参数如下：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><strong><span lang=EN-US style='font-family:Verdana;
+mso-bidi-font-family:宋体;color:blue;background:white'>setenv bootargs 'root=31:2
+rootfstype=jffs2 rw init=/init mem=100M console=ttyS0,115200 mtdparts=physmap-flash.0:640k(u-boot1)ro,1664k(kernel),4480k(jffs2),1088k(app),320k(stbinfo),512k(u-boot2)ro,5824k(res),320k(cainfo),1024k(bootlogo)'</span></strong><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>&nbsp;<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>接下来就是移植</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>Android</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>内核到第一步升级后的芯晟内核。通过比较发现</span><span lang=EN-US
+style='font-family:Verdana;color:#595959;background:white'>Android</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>对内核的修改和芯晟对内核的修改几乎没有重合的地方，因此移植相对容易。这里参考了网上一位外国朋友</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>Peter&nbsp;McDermott&nbsp;</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>的文章－《</span><b><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana;color:black;background:white'>Porting&nbsp;Android&nbsp;to&nbsp;a&nbsp;new&nbsp;device</span></b><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>》：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>What&nbsp;did&nbsp;Google&nbsp;change&nbsp;in&nbsp;the&nbsp;kernel?</span></b><span
+lang=EN-US style='font-size:10.5pt;font-family:"Times New Roman";color:#595959;
+background:white'><br>
+We&nbsp;checked&nbsp;the&nbsp;differences&nbsp;between&nbsp;the&nbsp;Android&nbsp;kernel&nbsp;and&nbsp;the&nbsp;standard&nbsp;Linux&nbsp;kernel&nbsp;and&nbsp;found&nbsp;that&nbsp;Google&nbsp;had&nbsp;changed&nbsp;75&nbsp;files&nbsp;and&nbsp;added&nbsp;an&nbsp;additional&nbsp;88.&nbsp;We&nbsp;have&nbsp;prepared&nbsp;an&nbsp;annotated&nbsp;list&nbsp;of&nbsp;changed&nbsp;files&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;this&nbsp;document,&nbsp;and&nbsp;a&nbsp;brief&nbsp;summary&nbsp;here.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>Goldfish&nbsp;--&nbsp;44&nbsp;Files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;The&nbsp;Android&nbsp;emulator&nbsp;runs&nbsp;a&nbsp;virtual&nbsp;CPU&nbsp;that&nbsp;Google&nbsp;calls&nbsp;Goldfish.&nbsp;Goldfish&nbsp;executes&nbsp;ARM926T&nbsp;instructions&nbsp;and&nbsp;has&nbsp;hooks&nbsp;for&nbsp;input&nbsp;and&nbsp;output&nbsp;--&nbsp;such&nbsp;as&nbsp;reading&nbsp;key&nbsp;presses&nbsp;from&nbsp;or&nbsp;displaying&nbsp;video&nbsp;output&nbsp;in&nbsp;the&nbsp;emulator.<br>
+These&nbsp;interfaces&nbsp;are&nbsp;implemented&nbsp;in&nbsp;files&nbsp;specific&nbsp;to&nbsp;the&nbsp;Goldfish&nbsp;emulator&nbsp;and&nbsp;will&nbsp;not&nbsp;be&nbsp;compiled&nbsp;into&nbsp;a&nbsp;kernel&nbsp;that&nbsp;runs&nbsp;on&nbsp;real&nbsp;devices.&nbsp;So&nbsp;we&nbsp;safely&nbsp;ignored&nbsp;these&nbsp;files&nbsp;in&nbsp;our&nbsp;work.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>YAFFS2&nbsp;--&nbsp;35&nbsp;Files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;<span class=GramE>Unlike</span>&nbsp;PCs,&nbsp;which&nbsp;store&nbsp;files&nbsp;on&nbsp;disks,&nbsp;mobile&nbsp;phones&nbsp;store&nbsp;files&nbsp;in&nbsp;sold-state&nbsp;flash&nbsp;memory&nbsp;chips.&nbsp;The&nbsp;HTC&nbsp;G1&nbsp;uses&nbsp;NAND&nbsp;flash,&nbsp;a&nbsp;type&nbsp;of&nbsp;flash&nbsp;memory&nbsp;that&nbsp;is&nbsp;becoming&nbsp;more&nbsp;popular&nbsp;due&nbsp;to&nbsp;its&nbsp;combination&nbsp;of&nbsp;high&nbsp;density&nbsp;and&nbsp;low&nbsp;cost.<br>
+YAFFS2&nbsp;is&nbsp;an&nbsp;acronym&nbsp;for&nbsp;&quot;Yet&nbsp;<span
+class=GramE>Another</span>&nbsp;Flash&nbsp;File&nbsp;System,&nbsp;2nd&nbsp;edition.&quot;&nbsp;It&nbsp;provides&nbsp;a&nbsp;high-performance&nbsp;interface&nbsp;between&nbsp;the&nbsp;Linux&nbsp;kernel&nbsp;and&nbsp;NAND&nbsp;flash&nbsp;devices.&nbsp;YAFFS2&nbsp;was&nbsp;already&nbsp;freely&nbsp;available&nbsp;for&nbsp;Linux.&nbsp;However,&nbsp;it&nbsp;is&nbsp;not&nbsp;part&nbsp;of&nbsp;the&nbsp;standard&nbsp;<st1:chsdate
+IsROCDate="False" IsLunarDate="False" Day="30" Month="12" Year="1899" w:st="on">2.6.25</st1:chsdate>&nbsp;Linux&nbsp;kernel,&nbsp;and&nbsp;so&nbsp;Google&nbsp;added&nbsp;it&nbsp;to&nbsp;Android.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>Bluetooth&nbsp;--&nbsp;10&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;Google&nbsp;made&nbsp;changes&nbsp;to&nbsp;10&nbsp;files&nbsp;in&nbsp;the&nbsp;Bluetooth&nbsp;communications&nbsp;stack.&nbsp;These&nbsp;changes&nbsp;fix&nbsp;apparent&nbsp;bugs&nbsp;related&nbsp;to&nbsp;Bluetooth&nbsp;headsets,&nbsp;and&nbsp;add&nbsp;Bluetooth&nbsp;debugging&nbsp;and&nbsp;access&nbsp;control&nbsp;functions.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>Scheduler&nbsp;--&nbsp;5&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;The&nbsp;Android&nbsp;kernel&nbsp;also&nbsp;contains&nbsp;slight&nbsp;changes&nbsp;to&nbsp;the&nbsp;CPU&nbsp;process&nbsp;scheduler&nbsp;and&nbsp;time-keeping&nbsp;algorithms.&nbsp;We&nbsp;don't&nbsp;know&nbsp;the&nbsp;history&nbsp;of&nbsp;these&nbsp;changes,&nbsp;and&nbsp;the&nbsp;impact&nbsp;was&nbsp;not&nbsp;evident&nbsp;based&nbsp;on&nbsp;a&nbsp;cursory&nbsp;examination.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>New&nbsp;Android&nbsp;Functionality&nbsp;--&nbsp;28&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;In&nbsp;addition&nbsp;to&nbsp;bug&nbsp;fixes&nbsp;and&nbsp;other&nbsp;small&nbsp;changes,&nbsp;Android&nbsp;contains&nbsp;a&nbsp;number&nbsp;of&nbsp;new&nbsp;subsystems&nbsp;that&nbsp;are&nbsp;worth&nbsp;mentioning&nbsp;here,&nbsp;including&nbsp;the&nbsp;following:&nbsp;</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><span lang=EN-US style='font-size:
+9.0pt;font-family:"Courier New";color:black;background:white'>o</span></span><span
+lang=EN-US style='font-size:9.0pt;font-family:"Courier New";color:black;
+background:white'>&nbsp;</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><b><span lang=EN-US
+style='font-size:9.0pt;font-family:"Courier New";color:black;background:white'>o</span></b></span><b><span
+lang=EN-US style='font-size:9.0pt;font-family:"Courier New";color:black;
+background:white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana;color:black;background:white'>IPC&nbsp;Binder</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;The&nbsp;IPC&nbsp;Binder&nbsp;is&nbsp;an&nbsp;Inter-Process&nbsp;Communication&nbsp;(IPC)&nbsp;mechanism.&nbsp;It&nbsp;allows&nbsp;processes&nbsp;to&nbsp;provide&nbsp;services&nbsp;to&nbsp;other&nbsp;processes&nbsp;via&nbsp;a&nbsp;set&nbsp;of&nbsp;higher-level&nbsp;APIs&nbsp;than&nbsp;are&nbsp;available&nbsp;in&nbsp;standard&nbsp;Linux.&nbsp;An&nbsp;Internet&nbsp;search&nbsp;indicated&nbsp;that&nbsp;the&nbsp;Binder&nbsp;concept&nbsp;originated&nbsp;at&nbsp;Be,&nbsp;Inc.,&nbsp;and&nbsp;then&nbsp;made&nbsp;its&nbsp;way&nbsp;into&nbsp;Palm's&nbsp;software,&nbsp;before&nbsp;Google&nbsp;wrote&nbsp;a&nbsp;new&nbsp;Binder&nbsp;for&nbsp;Android.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+"Courier New";color:black;background:white'>o&nbsp;</span></b><b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>Low&nbsp;Memory&nbsp;Killer</span></b><span lang=EN-US style='font-size:
+9.0pt;font-family:Verdana;color:black;background:white'>--&nbsp;Android&nbsp;adds&nbsp;a&nbsp;low-memory&nbsp;killer&nbsp;that,&nbsp;each&nbsp;time&nbsp;it's&nbsp;called,&nbsp;scans&nbsp;the&nbsp;list&nbsp;of&nbsp;running&nbsp;Linux&nbsp;processes,&nbsp;and&nbsp;kills&nbsp;one.&nbsp;It&nbsp;was&nbsp;not&nbsp;clear&nbsp;in&nbsp;our&nbsp;cursory&nbsp;examination&nbsp;why&nbsp;Android&nbsp;adds&nbsp;a&nbsp;low-memory&nbsp;killer&nbsp;on&nbsp;top&nbsp;of&nbsp;the&nbsp;already&nbsp;existing&nbsp;one&nbsp;in&nbsp;the&nbsp;standard&nbsp;Linux&nbsp;kernel.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><b><span lang=EN-US
+style='font-size:9.0pt;font-family:"Courier New";color:black;background:white'>o</span></b></span><b><span
+lang=EN-US style='font-size:9.0pt;font-family:"Courier New";color:black;
+background:white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana;color:black;background:white'>Ashmem</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;Ashmem&nbsp;is&nbsp;an&nbsp;Anonymous&nbsp;SHared&nbsp;MEMory&nbsp;system&nbsp;that&nbsp;adds&nbsp;interfaces&nbsp;so&nbsp;processes&nbsp;can&nbsp;share&nbsp;named&nbsp;blocks&nbsp;of&nbsp;memory.&nbsp;As&nbsp;an&nbsp;example,&nbsp;the&nbsp;system&nbsp;could&nbsp;use&nbsp;Ashmem&nbsp;to&nbsp;store&nbsp;icons,&nbsp;which&nbsp;multiple&nbsp;processes&nbsp;could&nbsp;then&nbsp;access&nbsp;when&nbsp;drawing&nbsp;their&nbsp;UI.&nbsp;The&nbsp;advantage&nbsp;of&nbsp;Ashmem&nbsp;over&nbsp;traditional&nbsp;Linux&nbsp;shared&nbsp;memory&nbsp;is&nbsp;that&nbsp;it&nbsp;provides&nbsp;a&nbsp;means&nbsp;for&nbsp;the&nbsp;kernel&nbsp;to&nbsp;reclaim&nbsp;these&nbsp;shared&nbsp;memory&nbsp;blocks&nbsp;if&nbsp;they&nbsp;are&nbsp;not&nbsp;currently&nbsp;in&nbsp;use.&nbsp;If&nbsp;a&nbsp;process&nbsp;then&nbsp;tries&nbsp;to&nbsp;access&nbsp;a&nbsp;shared&nbsp;memory&nbsp;block&nbsp;the&nbsp;kernel&nbsp;has&nbsp;freed,&nbsp;it&nbsp;will&nbsp;receive&nbsp;an&nbsp;error,&nbsp;and&nbsp;will&nbsp;then&nbsp;need&nbsp;to&nbsp;reallocate&nbsp;the&nbsp;block&nbsp;and&nbsp;reload&nbsp;the&nbsp;data.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><b><span lang=EN-US
+style='font-size:9.0pt;font-family:"Courier New";color:black;background:white'>o</span></b></span><b><span
+lang=EN-US style='font-size:9.0pt;font-family:"Courier New";color:black;
+background:white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana;color:black;background:white'>RAM&nbsp;Console&nbsp;and&nbsp;Log&nbsp;Device</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;To&nbsp;aid&nbsp;in&nbsp;debugging,&nbsp;Android&nbsp;adds&nbsp;the&nbsp;ability&nbsp;to&nbsp;store&nbsp;kernel&nbsp;log&nbsp;messages&nbsp;to&nbsp;a&nbsp;RAM&nbsp;buffer.&nbsp;Additionally,&nbsp;Android&nbsp;adds&nbsp;a&nbsp;separate&nbsp;logging&nbsp;module&nbsp;so&nbsp;that&nbsp;user&nbsp;processes&nbsp;can&nbsp;read&nbsp;and&nbsp;write&nbsp;user&nbsp;log&nbsp;messages.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span class=GramE><b><span lang=EN-US
+style='font-size:9.0pt;font-family:"Courier New";color:black;background:white'>o</span></b></span><b><span
+lang=EN-US style='font-size:9.0pt;font-family:"Courier New";color:black;
+background:white'>&nbsp;</span></b><st1:place w:st="on"><st1:PlaceName w:st="on"><b><span
+  lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+  white'>Android</span></b></st1:PlaceName><b><span lang=EN-US
+ style='font-size:9.0pt;font-family:Verdana;color:black;background:white'>&nbsp;<st1:PlaceName
+ w:st="on">Debug</st1:PlaceName>&nbsp;<st1:PlaceType w:st="on">Bridge<span
+  style='font-weight:normal'>--</span></st1:PlaceType></span></b></st1:place><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>&nbsp;Debugging&nbsp;embedded&nbsp;devices&nbsp;can&nbsp;best&nbsp;be&nbsp;described&nbsp;as&nbsp;challenging.&nbsp;To&nbsp;make&nbsp;debugging&nbsp;easier,&nbsp;Google&nbsp;created&nbsp;the&nbsp;Android&nbsp;Debug&nbsp;Bridge&nbsp;(ADB),&nbsp;which&nbsp;is&nbsp;a&nbsp;protocol&nbsp;that&nbsp;runs&nbsp;over&nbsp;a&nbsp;USB&nbsp;link&nbsp;between&nbsp;a&nbsp;hardware&nbsp;device&nbsp;running&nbsp;Android&nbsp;and&nbsp;a&nbsp;developer&nbsp;writing&nbsp;applications&nbsp;on&nbsp;a&nbsp;desktop&nbsp;PC.<br>
+<br>
+Android&nbsp;also&nbsp;adds&nbsp;a&nbsp;new&nbsp;real-time&nbsp;clock,&nbsp;switch&nbsp;support,&nbsp;and&nbsp;timed&nbsp;GPIO&nbsp;support.&nbsp;We&nbsp;list&nbsp;the&nbsp;impacted&nbsp;files&nbsp;for&nbsp;these&nbsp;new&nbsp;modules&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;this&nbsp;document.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span><span lang=EN-US style='font-size:
+9.0pt;mso-ascii-font-family:Symbol;color:black;background:white'>&nbsp;</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>Power&nbsp;Management&nbsp;--&nbsp;5&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;Power&nbsp;management&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;most&nbsp;difficult&nbsp;pieces&nbsp;to&nbsp;get&nbsp;right&nbsp;in&nbsp;mobile&nbsp;devices,&nbsp;so&nbsp;we&nbsp;split&nbsp;it&nbsp;out&nbsp;into&nbsp;a&nbsp;group&nbsp;separate&nbsp;from&nbsp;the&nbsp;other&nbsp;pieces.&nbsp;It's&nbsp;interesting&nbsp;to&nbsp;note&nbsp;that&nbsp;Google&nbsp;added&nbsp;a&nbsp;new&nbsp;power&nbsp;management&nbsp;system&nbsp;to&nbsp;Linux,&nbsp;rather&nbsp;than&nbsp;reuse&nbsp;what&nbsp;already&nbsp;existed.&nbsp;We&nbsp;list&nbsp;the&nbsp;impacted&nbsp;files&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;this&nbsp;document.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>Miscellaneous&nbsp;Changes&nbsp;--&nbsp;36&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;In&nbsp;addition&nbsp;to&nbsp;the&nbsp;<span class=GramE>above,</span>&nbsp;we&nbsp;found&nbsp;a&nbsp;number&nbsp;of&nbsp;changes&nbsp;that&nbsp;could&nbsp;best&nbsp;be&nbsp;described&nbsp;as,&nbsp;'Miscellaneous.'&nbsp;Among&nbsp;other&nbsp;things,&nbsp;these&nbsp;changes&nbsp;include&nbsp;additional&nbsp;debugging&nbsp;support,&nbsp;keypad&nbsp;light&nbsp;controls,&nbsp;and&nbsp;management&nbsp;of&nbsp;TCP&nbsp;networking.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Symbol;color:black;background:white'>·</span></b><b><span lang=EN-US
+style='font-size:9.0pt;mso-ascii-font-family:Symbol;color:black;background:
+white'>&nbsp;</span></b><b><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana;color:black;background:white'>NetFilter&nbsp;--&nbsp;0&nbsp;files</span></b><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana;color:black;background:
+white'>--&nbsp;Finally,&nbsp;our&nbsp;change&nbsp;list&nbsp;showed&nbsp;Netfilter&nbsp;as&nbsp;having&nbsp;22&nbsp;changed&nbsp;files.&nbsp;However,&nbsp;examination&nbsp;showed&nbsp;the&nbsp;only&nbsp;difference&nbsp;was&nbsp;the&nbsp;capitalization&nbsp;of&nbsp;the&nbsp;filenames&nbsp;(xt_DSCP.c&nbsp;vs.&nbsp;xc_dscp.c).&nbsp;The&nbsp;contents&nbsp;of&nbsp;the&nbsp;files&nbsp;were&nbsp;all&nbsp;identical.&nbsp;So&nbsp;we&nbsp;ignored&nbsp;these&nbsp;files&nbsp;in&nbsp;our&nbsp;port.</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:#595959;background:white'>因为我的移植是针对机顶盒的，因此</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>bluetooth</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>和</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>power management</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>都是不需要的，我的试验平台是</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>NOR FLASH</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，因此也不需要</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>YAFFS2</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>文件系统。剩下的改动只需做简单的拷贝即可。然后重新做</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>menuconfig</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>，把</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>Android</span><span style='mso-ascii-font-family:
+Verdana;mso-hansi-font-family:Verdana;color:#595959;background:white'>新增的功能选上。编译很容易就过了。</span><span
+lang=EN-US style='font-family:Verdana;color:#595959;background:white'>&nbsp;</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:#595959;
+background:white'>但是内核启动的时候提示：</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'>Kernel panic - not syncing: Attempted to kill
+init!<o:p></o:p></span></p>
+
+<p style='margin-top:7.5pt;margin-right:0cm;margin-bottom:7.5pt;margin-left:
+0cm;line-height:18.75pt'><span style='mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana;color:red;background:white'>搜了一下发现必须用</span><span lang=EN-US
+style='font-family:Verdana;color:red;background:white'>Android</span><span
+style='mso-ascii-font-family:Verdana;mso-hansi-font-family:Verdana;color:red;
+background:white'>自己的根文件系统。</span><span lang=EN-US style='font-family:Verdana;
+color:#595959;background:white'><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

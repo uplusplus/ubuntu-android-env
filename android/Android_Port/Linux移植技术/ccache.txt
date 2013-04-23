@@ -1,0 +1,128 @@
+
+一、使用高速的C/C++编译工具 ccache  
+    ccache（“compiler cache”的缩写  官方网站   ）是一个编译器缓存，该工具会高速缓存编译生成的信息，并在编译的特定部分使用高速缓存的信息， 比如头文件，这样就节省了通常使用 cpp 解析这些信息所需要的时间。如果您编译清单 2 中的文件，假定  foobar.h  中包含对其他头文件的引用，ccache 会用那个文件的 cpp-parsed 版本来 取代  include 声明。就那么简单。不是真正去读取、理解并解释其内容，ccache 只是 将最终的文本拷贝到文件中，使得它可以立即被编译。
+
+   如果不需要再次编译Android可以不配置ccache，初次编译使用ccache会减低些速度，但是要是重新编译的会会提升5~10倍速度。
+   如果想了解更多使用，可以参考ccache使用教程
+
+1 ccache安装
+
+sudo apt-get install ccache  
+
+2 ccache配置
+
+编辑.bashrc添加以下配置  
+$ export USE_CCACHE=1  
+$ export CCACHE_DIR=/<path_of_your_choice>/.ccache  
+$ ccache -M 20G  
+
+3 可以观察ccache都做了什么
+
+$ watch -n1 -d prebuilt/linux-x86/ccache/ccache -s  
+
+
+
+二、初始化系统编译环境
+
+$ cd WORKING_DIRECTORY/  
+$ source build/envsetup.sh  
+including device/asus/grouper/vendorsetup.sh  
+including device/generic/armv7-a-neon/vendorsetup.sh  
+including device/generic/armv7-a/vendorsetup.sh  
+including device/moto/wingray/vendorsetup.sh  
+including device/samsung/crespo/vendorsetup.sh  
+including device/samsung/maguro/vendorsetup.sh  
+including device/ti/panda/vendorsetup.sh  
+including sdk/bash_completion/adb.bash  
+
+envsetup.sh参数解释：
+http://blog.csdn.net/changjiang654/article/details/6752324
+
+envsetup.sh文件shell源码分析
+http://www.cnblogs.com/cnhome/archive/2010/07/24/1784382.html
+
+或者
+$ . build/envsetup.sh
+
+
+三、选择目标平台
+
+$ lunch full-eng  
+  
+============================================  
+PLATFORM_VERSION_CODENAME=REL  
+PLATFORM_VERSION=4.1.2  
+TARGET_PRODUCT=full  
+TARGET_BUILD_VARIANT=eng  
+TARGET_BUILD_TYPE=release  
+TARGET_BUILD_APPS=  
+TARGET_ARCH=arm  
+TARGET_ARCH_VARIANT=armv7-a  
+HOST_ARCH=x86  
+HOST_OS=linux  
+HOST_OS_EXTRA=Linux-3.2.0-29-generic-x86_64-with-Ubuntu-12.04-precise  
+HOST_BUILD_TYPE=release  
+BUILD_ID=JZO54K  
+OUT_DIR=out  
+============================================  
+
+
+
+参数解释
+build name：
+
+Build name	 Device	 Notes
+full	 emulator	 fully configured with all languages, apps, input methods
+full_maguro	 maguro	full  build running on Galaxy Nexus GSM/HSPA+ ("maguro")
+full_panda	 panda	full  build running on PandaBoard ("panda")
+
+
+build type：
+
+Buildtype	 Use
+user	 limited access; suited for production
+userdebug	 like "user" but with root access and debuggability; preferred for debugging
+eng	 development configuration with additional debugging tools
+
+
+四、编译Android代码
+
+白天上班之前使用make -j16 结果，编译过程中终端卡死，只能重新编译了
+
+如果直接使用make命令编译会比较慢，可以通过参数 -j 来提高编译速度
+
+make -j参数解释：
+“-j []” 
+“–jobs[=]” 
+指同时运行命令的个数。如果没有这个参数，make运行命令时能运行多少就运行多少。
+同时运行命令的个数可以是cpu核数的1~2倍。例如我的是8核CPU， 执行
+
+$ make -j 8  
+
+
+参考文章：
+http://blog.csdn.net/wangjingfei/article/details/4969942
+
+
+
+
+
+
+
+参考资料
+Android官方文档：Building the System
+
+老罗资料：
+ 在Ubuntu上下载、编译和安装Android最新源代码
+http://blog.csdn.net/luoshengyang/article/details/6559955
+在Ubuntu上下载、编译和安装Android最新内核源代码（Linux Kernel）
+http://blog.csdn.net/luoshengyang/article/details/6564592
+如何单独编译Android源代码中的模块
+http://blog.csdn.net/luoshengyang/article/details/6566662
+
+* make -j参数相关：
+http://blog.csdn.net/wangjingfei/article/details/4969942
+
+* ccache相关：
+ccache使用教程  
+ccache官方网站   

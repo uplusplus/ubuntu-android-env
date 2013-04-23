@@ -1,0 +1,954 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:st1="urn:schemas-microsoft-com:office:smarttags"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="如何下载并编译Android4.0内核源码goldfish.files/filelist.xml">
+<link rel=Edit-Time-Data href="如何下载并编译Android4.0内核源码goldfish.files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]--><o:SmartTagType
+ namespaceuri="urn:schemas-microsoft-com:office:smarttags" name="chsdate"/>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>微软中国</o:Author>
+  <o:LastAuthor>微软中国</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>0</o:TotalTime>
+  <o:Created>2013-01-29T05:51:00Z</o:Created>
+  <o:LastSaved>2013-01-29T05:51:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>993</o:Words>
+  <o:Characters>5663</o:Characters>
+  <o:Company>www.xunchi.com</o:Company>
+  <o:Lines>47</o:Lines>
+  <o:Paragraphs>13</o:Paragraphs>
+  <o:CharactersWithSpaces>6643</o:CharactersWithSpaces>
+  <o:Version>11.9999</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]--><!--[if !mso]><object
+ classid="clsid:38481807-CA0E-42D2-BF39-B33AF135CC4D" id=ieooui></object>
+<style>
+st1\:*{behavior:url(#ieooui) }
+</style>
+<![endif]-->
+<link rel=Stylesheet type="text/css" media=all
+href="如何下载并编译Android4.0内核源码goldfish_files/navtop_2012.css">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Helvetica;
+	panose-1:2 11 6 4 2 2 2 2 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536902279 -2147483648 8 0 511 0;}
+@font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:SimSun;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+h3
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	font-size:13.5pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:center;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	border:none;
+	mso-border-bottom-alt:solid windowtext .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 1.0pt 0cm;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.navtop2011, li.navtop2011, div.navtop2011
+	{mso-style-name:nav_top_2011;
+	font-size:9.0pt;
+	font-family:Helvetica;
+	mso-fareast-font-family:宋体;}
+p.navbody, li.navbody, div.navbody
+	{mso-style-name:navbody;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.navtop20111, li.navtop20111, div.navtop20111
+	{mso-style-name:nav_top_20111;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:.75pt;
+	margin-left:0cm;
+	line-height:21.0pt;
+	mso-pagination:widow-orphan;
+	background:white;
+	border:none;
+	mso-border-alt:solid #CCCCCC .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 0cm 0cm;
+	font-size:9.0pt;
+	font-family:Helvetica;
+	mso-fareast-font-family:宋体;}
+ /* Page Definitions */
+ @page
+	{mso-footnote-separator:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") fs;
+	mso-footnote-continuation-separator:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") fcs;
+	mso-endnote-separator:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") es;
+	mso-endnote-continuation-separator:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") ecs;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:42.55pt;
+	mso-footer-margin:49.6pt;
+	mso-even-header:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") eh1;
+	mso-header:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") h1;
+	mso-even-footer:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") ef1;
+	mso-footer:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") f1;
+	mso-first-header:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") fh1;
+	mso-first-footer:url("如何下载并编译Android4.0内核源码goldfish.files/header.htm") ff1;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:20516596;
+	mso-list-template-ids:-1243324708;}
+@list l1
+	{mso-list-id:58790188;
+	mso-list-template-ids:145945164;}
+@list l2
+	{mso-list-id:334191965;
+	mso-list-template-ids:-525152628;}
+@list l3
+	{mso-list-id:362361799;
+	mso-list-template-ids:761192784;}
+@list l4
+	{mso-list-id:449670901;
+	mso-list-template-ids:478585510;}
+@list l5
+	{mso-list-id:708645309;
+	mso-list-template-ids:2026298552;}
+@list l6
+	{mso-list-id:1014261964;
+	mso-list-template-ids:802750326;}
+@list l7
+	{mso-list-id:1159614830;
+	mso-list-template-ids:1525445462;}
+@list l8
+	{mso-list-id:1464692112;
+	mso-list-template-ids:378980194;}
+@list l9
+	{mso-list-id:1499005795;
+	mso-list-template-ids:1239068328;}
+@list l10
+	{mso-list-id:1519583980;
+	mso-list-template-ids:2112012382;}
+@list l11
+	{mso-list-id:1577713888;
+	mso-list-template-ids:-1619110150;}
+@list l12
+	{mso-list-id:1650744745;
+	mso-list-template-ids:-1120889760;}
+@list l13
+	{mso-list-id:1895660543;
+	mso-list-template-ids:-1911760488;}
+@list l14
+	{mso-list-id:2069182075;
+	mso-list-template-ids:-1343312088;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:普通表格;
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="3074"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=ZH-CN link=blue vlink=blue style='tab-interval:21.0pt'>
+
+<div class=Section1>
+
+<div id="article_details">
+
+<div>
+
+<h3><span lang=EN-US style='font-size:9.0pt;font-family:Helvetica'><script  type="text/javascript">
+    var username = "kevinshq";
+    var blog_address = "http://blog.csdn.net/kevinshq";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";
+</script></span><span class=linktitle><span lang=EN-US style='font-family:宋体;
+mso-bidi-font-family:宋体'><a href="../../../kevinshq/article/details/7831189"><span
+lang=EN-US><span lang=EN-US>如何下载并编译</span></span>Android4.0<span lang=EN-US><span
+lang=EN-US>内核源码</span></span>goldfish(<span lang=EN-US><span lang=EN-US>图文</span></span>)
+</a></span></span></h3>
+
+</div>
+
+<div id="article_content">
+
+<p>第一步<span lang=EN-US>:</span>下载<span lang=EN-US>goldfish</span>源码</p>
+
+<p>在<span lang=EN-US>Android</span>源码根目录下新建<span lang=EN-US>kernel</span>文件夹</p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo1;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_1"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_1" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=1&amp;width=18&amp;height=18" wmode=transparent>
+     $mkdir&nbsp;kernel&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l7 level1 lfo1;tab-stops:list 36.0pt'><span lang=EN-US>$cd&nbsp;kernel&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal>下载源码<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l1 level1 lfo2;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_2"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_2" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=2&amp;width=18&amp;height=18" wmode=transparent>
+     $git&nbsp;clone&nbsp;http://android.googlesource.com/kernel/goldfish.git&nbsp;&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><img border=0 width=724 height=464
+id="_x0000_i1026" src="如何下载并编译Android4.0内核源码goldfish_files/0_1323845106Z19M.gif"><br>
+</span>下载完毕如下图<span lang=EN-US>: </span></p>
+
+<p><span lang=EN-US><img border=0 width=724 height=464 id="_x0000_i1027"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323845296R9Eo.gif"></span></p>
+
+<p>此时在<span lang=EN-US>kernel</span>目录下会生成一个<span lang=EN-US>goldfish</span>文件夹。进入此目录<span
+lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l8 level1 lfo3;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_3"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_3" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=3&amp;width=18&amp;height=18" wmode=transparent>
+     $cd&nbsp;goldfish&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+</span>此目录下有一个隐藏的目录<span lang=EN-US>.git,</span>通过 </p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l2 level1 lfo4;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_4"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_4" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=4&amp;width=18&amp;height=18" wmode=transparent>
+     $ls&nbsp;-al&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+</span>可看到此目录<span lang=EN-US>: </span></p>
+
+<p><span lang=EN-US><img border=0 width=724 height=464 id="_x0000_i1028"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323845573upel.gif"></span></p>
+
+<p>查看所有分支<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l5 level1 lfo5;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_5"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_5" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=5&amp;width=18&amp;height=18" wmode=transparent>
+     git&nbsp;&nbsp;branch&nbsp;-a&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal>如下图<span lang=EN-US>: </span></p>
+
+<p><span lang=EN-US><img border=0 width=724 height=464 id="_x0000_i1029"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323845730NX0v.gif"></span></p>
+
+<p><span lang=EN-US>check out:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l10 level1 lfo6;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_6"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_6" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=6&amp;width=18&amp;height=18" wmode=transparent>
+     $git&nbsp;checkout&nbsp;remotes/origin/android-goldfish-<st1:chsdate
+     Year="1899" Month="12" Day="30" IsLunarDate="False" IsROCDate="False"
+     w:st="on">2.6.29</st1:chsdate>&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+<br>
+<img border=0 width=724 height=464 id="_x0000_i1030"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323845943FAXM.gif"></span></p>
+
+<p>此时你会看到<span lang=EN-US>goldfish</span>目录下会出现很多文件<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l3 level1 lfo7;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_7"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_7" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=7&amp;width=18&amp;height=18" wmode=transparent>
+     $ls&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+<img border=0 width=724 height=464 id="_x0000_i1031"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323846010Z3Jd.gif"></span></p>
+
+<p><span lang=EN-US>&nbsp;</span>这个时候<span lang=EN-US>goldfish</span>源码就已经下下来了，接下来的事情就是编译了<span
+lang=EN-US>.</span></p>
+
+<p><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+<p>第二步<span lang=EN-US>:</span>编译<span lang=EN-US>goldfish</span></p>
+
+<p><span style='font-size:7.5pt;mso-ascii-font-family:Verdana;mso-hansi-font-family:
+Verdana'>导出交叉编译工具目录到</span><span lang=EN-US style='font-size:7.5pt;font-family:
+Verdana'>$PATH</span><span style='font-size:7.5pt;mso-ascii-font-family:Verdana;
+mso-hansi-font-family:Verdana'>环境变量中去</span><span lang=EN-US style='font-size:
+7.5pt;font-family:Verdana'>.</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l4 level1 lfo8;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_8"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_8" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=8&amp;width=18&amp;height=18" wmode=transparent>
+     export&nbsp;<span class=attribute><span style='font-family:宋体;mso-bidi-font-family:
+     宋体'>PATH</span></span>=$PATH:~/WORKING_DIRECTORY/prebuilt/linux-x86/toolchain/arm-eabi-<st1:chsdate
+     Year="1899" Month="12" Day="30" IsLunarDate="False" IsROCDate="False"
+     w:st="on">4.4.3</st1:chsdate>/bin&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+</span>我们将使用上述这个目录下的交叉编译器<strong><span lang=EN-US style='font-family:宋体;
+mso-bidi-font-family:宋体'>arm-eabi-</span></strong><span lang=EN-US>gcc </span></p>
+
+<p>然后在<span lang=EN-US>glodfish</span>目录下用<span lang=EN-US>gedit</span>打开<span
+lang=EN-US>Makefile</span>文件，找到这两行文字<span lang=EN-US>:</span></p>
+
+<p><span lang=EN-US>&nbsp;<strong><span style='font-family:宋体;mso-bidi-font-family:
+宋体'># ARCH </span></strong></span></p>
+
+<p><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:宋体'>?=
+(SUBARCH)</span></strong></p>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>&nbsp;#&nbsp;CROSS_COMPILE?=</span></strong><b><span lang=EN-US><br>
+</span><strong><span style='font-family:宋体;mso-bidi-font-family:宋体'>修改为<span
+lang=EN-US>:</span></span></strong><span lang=EN-US><br>
+<strong><span style='font-family:宋体;mso-bidi-font-family:宋体'>ARCH ?= arm</span></strong></span></b></p>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>CROSS_COMPILE &nbsp; &nbsp; ?= arm-eabi-</span></strong></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l14 level1 lfo9;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_9"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_9" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=9&amp;width=18&amp;height=18" wmode=transparent>
+     $gedit&nbsp;Makefile&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><img border=0 width=652 height=614
+id="_x0000_i1032" src="如何下载并编译Android4.0内核源码goldfish_files/0_132391563915xa.gif"><br>
+</span>注意<span lang=EN-US>:ARTH ?=arm,</span>的<span lang=EN-US>arm</span>后边不要有空格，不然就会出现如下类似错误<span
+lang=EN-US>:<br>
+Make:...../kernel/goldfish/arch/arm: Is a directory.&nbsp; Stop.<br>
+</span>害我白白浪费了几个小时<span lang=EN-US>.<br>
+<br>
+</span>上述操作的目的是为了指定目标设备的体系架构和交叉编译器，其实也可以通过以下指令来完成<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[plain]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo10;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_10"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_10" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=10&amp;width=18&amp;height=18" wmode=transparent>
+     $&nbsp;export&nbsp;ARCH=arm&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo10;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;export&nbsp;SUBARCH=arm&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo10;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;export&nbsp;CROSS_COMPILE=arm-eabi-&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+<br>
+</span>为了确保环境参数正确，接下来执行下面两条指令<span lang=EN-US>,</span>否则有可能不能正常启动模拟器<span
+lang=EN-US>.(</span>注<span lang=EN-US>:</span>以下两条指令是在<span lang=EN-US>Android</span>源码根目录下执行<span
+lang=EN-US>)</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[cpp]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo11;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_11"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_11" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=11&amp;width=18&amp;height=18" wmode=transparent>
+     $&nbsp;source&nbsp;build/envsetup.sh&nbsp;&nbsp;<span class=comment><span
+     style='font-family:宋体;mso-bidi-font-family:宋体'>//</span></span></span><span
+     class=comment><span style='font-family:宋体;mso-bidi-font-family:宋体'>缺少这条指令，可能会导致无法编译通过</span></span><span
+     lang=EN-US>&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo11;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;lunch&nbsp;full-eng&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+     class=comment><span style='font-family:宋体;mso-bidi-font-family:宋体'>//</span></span></span><span
+     class=comment><span style='font-family:宋体;mso-bidi-font-family:宋体'>缺少这条指令，可能会导致无法启动模块器，系统报无法找到<span
+     lang=EN-US>AVD</span>，并要求你创建<span lang=EN-US>AVD</span>。</span></span><span
+     lang=EN-US>&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><br>
+</span>关闭<span lang=EN-US>gedit,</span>接下来就开始<span lang=EN-US>make</span>了<span
+lang=EN-US>,</span>执行如下指令<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo12;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_12"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_12" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=12&amp;width=18&amp;height=18" wmode=transparent>
+     $&nbsp;make&nbsp;goldfish_armv7_defconfig&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo12;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;make&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal style='margin-bottom:12.0pt'><span style='color:red'>注：用<span
+lang=EN-US>$make goldfish_defconfig</span>这样配置也可以编译通过，模拟器也可以启动，但是<span
+lang=EN-US>Android</span>的开机画机就显示不了，<span lang=EN-US>$adb shell</span>也死活连不上，原因就是这个<span
+lang=EN-US>goldfish_defconfig</span>这个配置文件问题<span lang=EN-US>.</span></span><span
+lang=EN-US><br>
+<br>
+</span>提示<span lang=EN-US>:<br>
+$make goldfish_armv7_defconfig</span>指令的意思是将目录<span lang=EN-US>WORKING_DIRECTORY/kernel/goldfish/arch/arm/configs/</span>下的<span
+lang=EN-US>goldfish_armv7_defconfig</span>文件内的<span lang=EN-US>Kconfig</span>配置内容复制到<span
+lang=EN-US>WORKING_DIRECTORY/kernel/goldfish/</span>目录下的<span lang=EN-US>.config</span>文件中，<span
+lang=EN-US>.config</span>文件是一个隐藏目录，保存着各个目录下<span lang=EN-US>Kconfig</span>文件的配置<span
+lang=EN-US>.<br>
+</span>最终结果如下图所示<span lang=EN-US>:<br>
+<img border=0 width=724 height=428 id="_x0000_i1033"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323848396tlxf.gif"><br>
+<br>
+</span>这样就表示编译成功了<span lang=EN-US>.</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l9 level1 lfo13;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_13"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_13" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=13&amp;width=18&amp;height=18" wmode=transparent>
+     $&nbsp;ls&nbsp;arch/arm/boot/&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal>可以看到<span lang=EN-US>zImage</span>文件<span lang=EN-US>.<br>
+<img border=0 width=724 height=428 id="_x0000_i1034"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_13238486137t03.gif"><br>
+<br>
+</span>第三步<span lang=EN-US>:</span>在模拟器中启动编译好的内核<span lang=EN-US><br>
+&nbsp;<br>
+</span>按下来再运行其下指令<span lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l6 level1 lfo14;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_14"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_14" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=14&amp;width=18&amp;height=18" wmode=transparent>
+     $&nbsp;export&nbsp;<span class=attribute><span style='font-family:宋体;
+     mso-bidi-font-family:宋体'>PATH</span></span>=$PATH:~/WORKING_DIRECTORY/out/host/linux-x86/bin&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l6 level1 lfo14;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;export&nbsp;<span
+     class=attribute><span style='font-family:宋体;mso-bidi-font-family:宋体'>ANDROID_PRODUCT_OUT</span></span>=~/WORKING_DIRECTORY/out/target/product/generic&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l6 level1 lfo14;tab-stops:list 36.0pt'><span lang=EN-US>$&nbsp;emulator&nbsp;-kernel&nbsp;~/WORKING_DIRECTORY/kernel/goldfish/arch/arm/boot/zImage&nbsp;&amp;&nbsp;&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal style='margin-bottom:12.0pt'>模拟器启动界面<span lang=EN-US>:<br>
+<img border=0 width=793 height=564 id="_x0000_i1035"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323916450wMir.gif"><br
+style='mso-special-character:line-break'>
+<![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+<![endif]></span></p>
+
+</div>
+
+<p>进入模拟器从设置里看版本信息<span lang=EN-US>:</span></p>
+
+<p><span lang=EN-US><img border=0 width=793 height=564 id="_x0000_i1036"
+src="如何下载并编译Android4.0内核源码goldfish_files/0_1323916639t0p7.gif"></span></p>
+
+<p>从上图可以看出当前<span lang=EN-US>Android</span>版本是<st1:chsdate Year="1899"
+Month="12" Day="30" IsLunarDate="False" IsROCDate="False" w:st="on"><span
+ lang=EN-US>4.0.1</span></st1:chsdate><span lang=EN-US>,</span>内核版本是<span
+lang=EN-US>2.6.29,</span>说明成功了<span lang=EN-US>.</span></p>
+
+<p>同样也可以通过<span lang=EN-US>adb shell</span>来查看内核版本信息<span lang=EN-US>,</span>如下图<span
+lang=EN-US>:</span></p>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><strong><span lang=EN-US style='font-family:宋体;mso-bidi-font-family:
+宋体'>[html]</span></strong><span lang=EN-US> <a
+href="http://blog.csdn.net/flydream0/article/details/7070392" title="view plain">view
+plain</a><a href="http://blog.csdn.net/flydream0/article/details/7070392"
+title=copy>copy</a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l11 level1 lfo15;tab-stops:list 36.0pt'><span lang=EN-US>
+     <embed id="ZeroClipboardMovie_15"
+     src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf"
+     loop=false menu=false quality=best bgcolor="#ffffff" width=18 height=18
+     name="ZeroClipboardMovie_15" align=middle allowscriptaccess=always
+     allowfullscreen=false type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"
+     flashvars="id=15&amp;width=18&amp;height=18" wmode=transparent>
+     $adb&nbsp;shell&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l11 level1 lfo15;tab-stops:list 36.0pt'><span lang=EN-US>#cd&nbsp;proc&nbsp;&nbsp;</span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l11 level1 lfo15;tab-stops:list 36.0pt'><span lang=EN-US>#cat&nbsp;version&nbsp;&nbsp;</span></li>
+</ol>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><img border=0 width=724 height=464
+id="_x0000_i1037" src="如何下载并编译Android4.0内核源码goldfish_files/0_1323917505xoxn.gif"></span></p>
+
+</div>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+</body>
+
+</html>

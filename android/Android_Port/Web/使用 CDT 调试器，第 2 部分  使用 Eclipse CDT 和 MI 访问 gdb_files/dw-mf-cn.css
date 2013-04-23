@@ -1,0 +1,18 @@
+/* CSS styles for chinese article ratings */
+/* Contact: llk */
+
+/*move ratings drop down to align with right margin */
+.dw-how-many-comments-label {
+   margin-left:360px;
+}   
+/*Chinese star ratings bleed into the radio input button*/
+
+.rating-image2 {
+    margin-left: 2970px !important;
+}
+/* IE7 fix*/
+*:first-child+html .rating-image {margin-left: 2975px !important;}
+*:first-child+html .rating-image2 {margin-left: 2975px !important;}
+/* Chrome fix*/
+body:nth-of-type(1) .rating-image2 {margin-left: 2975px !important;}
+body:nth-of-type(1) .rating-image {margin-left: 2975px !important;}

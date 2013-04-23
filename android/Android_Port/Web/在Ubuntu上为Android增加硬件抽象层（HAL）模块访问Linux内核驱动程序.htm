@@ -1,0 +1,412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0285)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E6%8A%BD%E8%B1%A1%E5%B1%82%EF%BC%88HAL%EF%BC%89%E6%A8%A1%E5%9D%97%E8%AE%BF%E9%97%AELinux%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./在Ubuntu上为Android增加硬件抽象层（HAL）模块访问Linux内核驱动程序_files/default.css">
+<link type="text/css" rel="stylesheet" href="./在Ubuntu上为Android增加硬件抽象层（HAL）模块访问Linux内核驱动程序_files/style.css"><style>@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}</style></head>
+<body>
+<script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script><link rel="stylesheet" type="text/css" href="http://csdnimg.cn/pubnav/css/navtop_2012.css">
+
+<link rel="stylesheet" type="text/css" href="./在Ubuntu上为Android增加硬件抽象层（HAL）模块访问Linux内核驱动程序_files/navtop_2012.css">
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E6%8A%BD%E8%B1%A1%E5%B1%82%EF%BC%88HAL%EF%BC%89%E6%A8%A1%E5%9D%97%E8%AE%BF%E9%97%AELinux%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F_files/%E5%9C%A8Ubuntu%E4%B8%8A%E4%B8%BAAndroid%E5%A2%9E%E5%8A%A0%E7%A1%AC%E4%BB%B6%E6%8A%BD%E8%B1%A1%E5%B1%82%EF%BC%88HAL%EF%BC%89%E6%A8%A1%E5%9D%97%E8%AE%BF%E9%97%AELinux%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F.htm">
+        在Ubuntu上为Android增加硬件抽象层（HAL）模块访问Linux内核驱动程序
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+
+    
+<div id="article_content" class="article_content">
+<p>&nbsp;&nbsp; &nbsp; &nbsp;在<a href="http://blog.csdn.net/luoshengyang/article/details/6567257">Android硬件抽象层（HAL）概要介绍和学习计划</a>一文中，我们简要介绍了在Android系统为为硬件编写驱动程序的方法。简单来说，硬件驱动程序一方面分布在Linux内核中，另一方面分布在用户空间的硬件抽象层中。接着，<a href="http://blog.csdn.net/luoshengyang/article/details/6568411">在Ubuntu上为Android系统编写Linux内核驱动程序</a>一文中举例子说明了如何在Linux内核编写驱动程序。在这一篇文章中，我们将继续介绍Android系统硬件驱动程序的另一方面实现，即如何在硬件抽象层中增加硬件模块来和内核驱动程序交互。在这篇文章中，我们还将学习到如何在Android系统创建设备文件时用类似Linux的udev规则修改设备文件模式的方法。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;一. 参照<a href="http://blog.csdn.net/luoshengyang/article/details/6568411">在Ubuntu上为Android系统编写Linux内核驱动程序</a>一文所示，准备好示例内核驱动序。完成这个内核驱动程序后，便可以在Android系统中得到三个文件，分别是/dev/hello、/sys/class/hello/hello/val和/proc/hello。在本文中，我们将通过设备文件/dev/hello来连接硬件抽象层模块和Linux内核驱动程序模块。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;二. 进入到在hardware/libhardware/include/hardware目录，新建hello.h文件：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ cd&nbsp;hardware/libhardware/include/hardware</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;USER-NAME@MACHINE-NAME:~/Android/hardware/libhardware/include/hardware$ vi hello.h</strong></p><p><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>hello.h文件的内容如下：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 810px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#ifndef&nbsp;ANDROID_HELLO_INTERFACE_H</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;ANDROID_HELLO_INTERFACE_H</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;hardware/hardware.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>__BEGIN_DECLS&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*定义模块ID*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;HELLO_HARDWARE_MODULE_ID&nbsp;"hello"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*硬件模块结构体*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">struct</span><span>&nbsp;hello_module_t&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hw_module_t&nbsp;common;&nbsp;&nbsp;</span></span></li><li class="alt"><span>};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*硬件接口结构体*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">struct</span><span>&nbsp;hello_device_t&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hw_device_t&nbsp;common;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;fd;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;(*set_val)(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;val);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;(*get_val)(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>*&nbsp;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>__END_DECLS&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#endif</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="cpp" style="display: none;">#ifndef ANDROID_HELLO_INTERFACE_H
+#define ANDROID_HELLO_INTERFACE_H
+#include &lt;hardware/hardware.h&gt;
+
+__BEGIN_DECLS
+
+/*定义模块ID*/
+#define HELLO_HARDWARE_MODULE_ID "hello"
+
+/*硬件模块结构体*/
+struct hello_module_t {
+	struct hw_module_t common;
+};
+
+/*硬件接口结构体*/
+struct hello_device_t {
+	struct hw_device_t common;
+	int fd;
+	int (*set_val)(struct hello_device_t* dev, int val);
+	int (*get_val)(struct hello_device_t* dev, int* val);
+};
+
+__END_DECLS
+
+#endif</pre><br><p></p><p>&nbsp;&nbsp; &nbsp; &nbsp;这里按照Android硬件抽象层规范的要求，分别定义模块ID、模块结构体以及硬件接口结构体。在硬件接口结构体中，fd表示设备文件描述符，对应我们将要处理的设备文件"/dev/hello"，set_val和get_val为该HAL对上提供的函数接口。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;三. 进入到hardware/libhardware/modules目录，新建hello目录，并添加hello.c文件。 hello.c的内容较多，我们分段来看。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;首先是包含相关头文件和定义相关结构：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 1537px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#define&nbsp;LOG_TAG&nbsp;"HelloStub"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;hardware/hardware.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;hardware/hello.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;fcntl.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;errno.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#include&nbsp;&lt;cutils/log.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#include&nbsp;&lt;cutils/atomic.h&gt;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#define&nbsp;DEVICE_NAME&nbsp;"/dev/hello"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;MODULE_NAME&nbsp;"Hello"</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;MODULE_AUTHOR&nbsp;"shyluo@gmail.com"</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*设备打开和关闭接口*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_device_open(</span><span class="keyword">const</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_module_t*&nbsp;module,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;name,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_device_t**&nbsp;device);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_device_close(</span><span class="keyword">struct</span><span>&nbsp;hw_device_t*&nbsp;device);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*设备访问接口*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_set_val(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;val);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_get_val(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>*&nbsp;val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">/*模块方法表*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_module_methods_t&nbsp;hello_module_methods&nbsp;=&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;open:&nbsp;hello_device_open&nbsp;&nbsp;</span></li><li class="alt"><span>};&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*模块实例变量*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">struct</span><span>&nbsp;hello_module_t&nbsp;HAL_MODULE_INFO_SYM&nbsp;=&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;common:&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tag:&nbsp;HARDWARE_MODULE_TAG,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;version_major:&nbsp;1,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;version_minor:&nbsp;0,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;HELLO_HARDWARE_MODULE_ID,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;MODULE_NAME,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;author:&nbsp;MODULE_AUTHOR,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;methods:&nbsp;&amp;hello_module_methods,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>};&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">#define LOG_TAG "HelloStub"
+
+#include &lt;hardware/hardware.h&gt;
+#include &lt;hardware/hello.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;cutils/log.h&gt;
+#include &lt;cutils/atomic.h&gt;
+
+#define DEVICE_NAME "/dev/hello"
+#define MODULE_NAME "Hello"
+#define MODULE_AUTHOR "shyluo@gmail.com"
+
+/*设备打开和关闭接口*/
+static int hello_device_open(const struct hw_module_t* module, const char* name, struct hw_device_t** device);
+static int hello_device_close(struct hw_device_t* device);
+
+/*设备访问接口*/
+static int hello_set_val(struct hello_device_t* dev, int val);
+static int hello_get_val(struct hello_device_t* dev, int* val);
+
+/*模块方法表*/
+static struct hw_module_methods_t hello_module_methods = {
+	open: hello_device_open
+};
+
+/*模块实例变量*/
+struct hello_module_t HAL_MODULE_INFO_SYM = {
+	common: {
+		tag: HARDWARE_MODULE_TAG,
+		version_major: 1,
+		version_minor: 0,
+		id: HELLO_HARDWARE_MODULE_ID,
+		name: MODULE_NAME,
+		author: MODULE_AUTHOR,
+		methods: &amp;hello_module_methods,
+	}
+};</pre><br><p></p><p>&nbsp;&nbsp; &nbsp; &nbsp;这里，实例变量名必须为HAL_MODULE_INFO_SYM，tag也必须为HARDWARE_MODULE_TAG，这是Android硬件抽象层规范规定的。</p><p>&nbsp;&nbsp; &nbsp; &nbsp;定义hello_device_open函数：</p><p>&nbsp;&nbsp; &nbsp; &nbsp;</p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 2437px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_device_open(</span><span class="keyword">const</span><span>&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_module_t*&nbsp;module,&nbsp;</span><span class="keyword">const</span><span>&nbsp;</span><span class="datatypes">char</span><span>*&nbsp;name,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;hw_device_t**&nbsp;device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev;dev&nbsp;=&nbsp;(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*)malloc(</span><span class="keyword">sizeof</span><span>(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!dev)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE(<span class="string">"Hello&nbsp;Stub:&nbsp;failed&nbsp;to&nbsp;alloc&nbsp;space"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-EFAULT;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;memset(dev,&nbsp;0,&nbsp;<span class="keyword">sizeof</span><span>(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t));&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;common.tag&nbsp;=&nbsp;HARDWARE_DEVICE_TAG;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;common.version&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;common.module&nbsp;=&nbsp;(hw_module_t*)module;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;common.close&nbsp;=&nbsp;hello_device_close;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;dev-&gt;set_val&nbsp;=&nbsp;hello_set_val;dev-&gt;get_val&nbsp;=&nbsp;hello_get_val;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>((dev-&gt;fd&nbsp;=&nbsp;open(DEVICE_NAME,&nbsp;O_RDWR))&nbsp;==&nbsp;-1)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE(<span class="string">"Hello&nbsp;Stub:&nbsp;failed&nbsp;to&nbsp;open&nbsp;/dev/hello&nbsp;--&nbsp;%s."</span><span>,&nbsp;strerror(errno));free(dev);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-EFAULT;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;*device&nbsp;=&nbsp;&amp;(dev-&gt;common);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;Stub:&nbsp;open&nbsp;/dev/hello&nbsp;successfully."</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">static int hello_device_open(const struct hw_module_t* module, const char* name, struct hw_device_t** device) {
+	struct hello_device_t* dev;dev = (struct hello_device_t*)malloc(sizeof(struct hello_device_t));
+	
+	if(!dev) {
+		LOGE("Hello Stub: failed to alloc space");
+		return -EFAULT;
+	}
+
+	memset(dev, 0, sizeof(struct hello_device_t));
+	dev-&gt;common.tag = HARDWARE_DEVICE_TAG;
+	dev-&gt;common.version = 0;
+	dev-&gt;common.module = (hw_module_t*)module;
+	dev-&gt;common.close = hello_device_close;
+	dev-&gt;set_val = hello_set_val;dev-&gt;get_val = hello_get_val;
+
+	if((dev-&gt;fd = open(DEVICE_NAME, O_RDWR)) == -1) {
+		LOGE("Hello Stub: failed to open /dev/hello -- %s.", strerror(errno));free(dev);
+		return -EFAULT;
+	}
+
+	*device = &amp;(dev-&gt;common);
+	LOGI("Hello Stub: open /dev/hello successfully.");
+
+	return 0;
+}</pre><br><p></p><p>&nbsp;&nbsp; &nbsp; &nbsp;DEVICE_NAME定义为"/dev/hello"。由于设备文件是在内核驱动里面通过device_create创建的，而device_create创建的设备文件默认只有root用户可读写，而hello_device_open一般是由上层APP来调用的，这些APP一般不具有root权限，这时候就导致打开设备文件失败：</p><div>&nbsp;&nbsp; &nbsp; <strong>&nbsp;Hello Stub: failed to open /dev/hello -- Permission denied.</strong></div><div>&nbsp;&nbsp; &nbsp; &nbsp;解决办法是类似于Linux的udev规则，打开Android源代码工程目录下，进入到system/core/rootdir目录，里面有一个名为ueventd.rc文件，往里面添加一行：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>/dev/hello 0666 root root</strong></div><div><strong>&nbsp;&nbsp; &nbsp; </strong>&nbsp;定义hello_device_close、hello_set_val和hello_get_val这三个函数：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/luoshengyang/article/details/6573809#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 510px; top: 3251px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_device_close(</span><span class="keyword">struct</span><span>&nbsp;hw_device_t*&nbsp;device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;hello_device&nbsp;=&nbsp;(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*)device;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(hello_device)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close(hello_device-&gt;fd);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;free(hello_device);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_set_val(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;val)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;Stub:&nbsp;set&nbsp;value&nbsp;%d&nbsp;to&nbsp;device."</span><span>,&nbsp;val);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;write(dev-&gt;fd,&nbsp;&amp;val,&nbsp;<span class="keyword">sizeof</span><span>(val));&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">static</span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;hello_get_val(</span><span class="keyword">struct</span><span>&nbsp;hello_device_t*&nbsp;dev,&nbsp;</span><span class="datatypes">int</span><span>*&nbsp;val)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(!val)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE(<span class="string">"Hello&nbsp;Stub:&nbsp;error&nbsp;val&nbsp;pointer"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;-EFAULT;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;read(dev-&gt;fd,&nbsp;val,&nbsp;<span class="keyword">sizeof</span><span>(*val));&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;LOGI(<span class="string">"Hello&nbsp;Stub:&nbsp;get&nbsp;value&nbsp;%d&nbsp;from&nbsp;device"</span><span>,&nbsp;*val);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">static int hello_device_close(struct hw_device_t* device) {
+	struct hello_device_t* hello_device = (struct hello_device_t*)device;
+
+	if(hello_device) {
+		close(hello_device-&gt;fd);
+		free(hello_device);
+	}
+	
+	return 0;
+}
+
+static int hello_set_val(struct hello_device_t* dev, int val) {
+	LOGI("Hello Stub: set value %d to device.", val);
+
+	write(dev-&gt;fd, &amp;val, sizeof(val));
+
+	return 0;
+}
+
+static int hello_get_val(struct hello_device_t* dev, int* val) {
+	if(!val) {
+		LOGE("Hello Stub: error val pointer");
+		return -EFAULT;
+	}
+
+	read(dev-&gt;fd, val, sizeof(*val));
+
+	LOGI("Hello Stub: get value %d from device", *val);
+
+	return 0;
+}</pre><br></div><div><strong>&nbsp;&nbsp; &nbsp; </strong>&nbsp;四. 继续在hello目录下新建Android.mk文件：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>LOCAL_PATH := $(call my-dir)</strong></div><div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;include $(CLEAR_VARS)</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_MODULE_TAGS := optional</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_PRELINK_MODULE := false</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_SHARED_LIBRARIES := liblog</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_SRC_FILES := hello.c</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;LOCAL_MODULE := hello.default</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;include $(BUILD_SHARED_LIBRARY)</strong></div><div>&nbsp;&nbsp; &nbsp; &nbsp;注意，LOCAL_MODULE的定义规则，hello后面跟有default，hello.default能够保证我们的模块总能被硬象抽象层加载到。</div><div>&nbsp;&nbsp; &nbsp; &nbsp;五. 编译：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$&nbsp;mmm hardware/libhardware/modules/hello</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>编译成功后，就可以在out/target/product/generic/system/lib/hw目录下看到hello.default.so文件了。</div><div>&nbsp;&nbsp; &nbsp; &nbsp;六. 重新打包Android系统镜像system.img：</div><div>&nbsp;&nbsp; &nbsp; &nbsp;<strong>USER-NAME@MACHINE-NAME:~/Android$ make snod</strong></div><div><strong>&nbsp;&nbsp; &nbsp; &nbsp;</strong>重新打包后，system.img就包含我们定义的硬件抽象层模块hello.default了。</div><div>&nbsp;&nbsp; &nbsp; &nbsp;虽然我们在Android系统为我们自己的硬件增加了一个硬件抽象层模块，但是现在Java应用程序还不能访问到我们的硬件。我们还必须编写JNI方法和在Android的Application Frameworks层增加API接口，才能让上层Application访问我们的硬件。在接下来的文章中，我们还将完成这一系统过程，使得我们能够在Java应用程序中访问我们自己定制的硬件。</div></div>
+</div>
+
+
+
+
+
+            
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+<div class="clear"></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

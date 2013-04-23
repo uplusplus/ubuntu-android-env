@@ -1,0 +1,7 @@
+1 介绍启动开关,系统相关
+2 制作启动sdcard,启动到sdcard,清空nand
+3 刷写官方系统,启动,记录内核和系统版本信息
+4 uboot编译...修改uboot,添加网络驱动..支持tftp,ping...重新刷写
+5 kernel编译...修改kernel驱动配置,添加fake 电量驱动...tftp加载
+6 修改kernel添加hello驱动,tftp加载,测试
+7 os编译...修改os添加hello测试程序...测试

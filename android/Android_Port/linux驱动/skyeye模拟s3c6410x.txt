@@ -1,0 +1,12 @@
+1 s3c6410x_io_read_word
+	位置:soc/arm/s3c6410x/skyeye_mach_s3c6410x.c
+	主要IO:
+	1.1 标识
+	内核启动时会通过访问已定地址0x7e00f118来探测开发版的类型,smdk6410的标识为0x36410100,则:
+	s3c6410x_io_read_word 函数中加入这个地址,供内核访问。
+	#define BOARD_ID 0x7e00f118
+	case BOARD_ID:
+		data = 0x36410100;
+		break;
+	
+	

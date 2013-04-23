@@ -1,0 +1,571 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://blog.csdn.net/dragon101788/article/details/8134670 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./Linux设备驱动之USB hub驱动_files/Linux设备驱动之USB hub驱动.htm">
+        Linux设备驱动之USB hub驱动
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+<p>一：前言</p>
+<p>　　继UHCI的驱动之后，我们对USB Control的运作有了一定的了解。在接下来的分析中，我们对USB设备的驱动做一个全面的分析，我们先从HUB的驱动说起。关于HUB,usb2.0 spec上有详细的定义，基于这部份的代码位于linux-2.6.25/drivers/usb/core下，也就是说，这部份代码是位于core下，和具体设备是无关的，因为各厂商的hub都是按照spec的要求来设计的。</p>
+<p>　　二：UHCI驱动中的root hub</p>
+<p>　　记得在分析UHCI驱动的时候，曾详细分析过root hub的初始化操作。为了分析方便，将代码片段列出如下：</p>
+<p>　　usb_add_hcd() à usb_alloc_dev()：</p>
+<p>　　struct usb_device *usb_alloc_dev(struct usb_device *parent,</p>
+<p>　　struct usb_bus *bus, unsigned port1)</p>
+<p>　　{</p>
+<p>　　……</p>
+<p>　　……</p>
+<p>　　//usb_device,内嵌有struct device结构，对这个结构进行初始化</p>
+<p>　　device_initialize(&amp;dev-&gt;dev);</p>
+<p>　　dev-&gt;dev.bus = &amp;usb_bus_type;</p>
+<p>　　dev-&gt;dev.type = &amp;usb_device_type;</p>
+<p>　　……</p>
+<p>　　……</p>
+<p>　　}</p>
+<p>　　一看到前面对dev的赋值，根据我们对设备模型的理解，一旦这个device进行注册，就会发生driver和device的匹配过程了。</p>
+<p>　　不过，现在还不是分析这个过程的时候，我们先来看一下，USB子系统中的两种驱动。</p>
+<p>　　三：USB子系统中的两种驱动</p>
+<p>　　linux-2.6.25/drivers/usb/core/driver.c中，我们可以找到两种register driver的方式，分别为usb_register_driver()和usb_register_device_driver()。分别来分析一下这两个接口。</p>
+<p>　　usb_register_device_driver()接口的代码如下：</p>
+<p>　　int usb_register_device_driver(struct usb_device_driver *new_udriver,</p>
+<p>　　struct module *owner)</p>
+<p>　　{</p>
+<p>　　int retval = 0;</p>
+<p>　　if (usb_disabled())</p>
+<p>　　return -ENODEV;</p>
+<p>　　new_udriver-&gt;drvwrap.for_devices = 1;</p>
+<p>　　new_udriver-&gt;drvwrap.driver.name = (char *) new_udriver-&gt;name;</p>
+<p>　　new_udriver-&gt;drvwrap.driver.bus = &amp;usb_bus_type;</p>
+<p>　　new_udriver-&gt;drvwrap.driver.probe = usb_probe_device;</p>
+<p>　　new_udriver-&gt;drvwrap.driver.remove = usb_unbind_device;</p>
+<p>　　new_udriver-&gt;drvwrap.driver.owner = owner;</p>
+<p>　　retval = driver_register(&amp;new_udriver-&gt;drvwrap.driver);</p>
+<p>　　if (!retval) {</p>
+<p>　　pr_info("%s: registered new device driver %s\n",</p>
+<p>　　usbcore_name, new_udriver-&gt;name);</p>
+<p>　　usbfs_update_special();</p>
+<p>　　} else {</p>
+<p>　　printk(KERN_ERR "%s: error %d registering device "</p>
+<p>　　" driver %s\n",</p>
+<p>　　usbcore_name, retval, new_udriver-&gt;name);</p>
+<p>　　}</p>
+<p>　　return retval;</p>
+<p>　　}</p>
+<p>　　首先，通过usb_disabled()来判断一下usb是否被禁用，如果被禁用，当然就不必执行下面的流程了，直接退出即可。</p>
+<p>　　从上面的代码，很明显可以看到， struct usb_device_driver 对struct device_driver进行了一次封装，我们注意一下这里的赋值操作：new_udriver-&gt;drvwrap.for_devices = 1.等等。这些在后面都是用派上用场的。</p>
+<p>　　usb_register_driver()的代码如下：</p>
+<p>　　int usb_register_driver(struct usb_driver *new_driver, struct module *owner,</p>
+<p>　　const char *mod_name)</p>
+<p>　　{</p>
+<p>　　int retval = 0;</p>
+<p>　　if (usb_disabled())</p>
+<p>　　return -ENODEV;</p>
+<p>　　new_driver-&gt;drvwrap.for_devices = 0;</p>
+<p>　　new_driver-&gt;drvwrap.driver.name = (char *) new_driver-&gt;name;</p>
+<p>　　new_driver-&gt;drvwrap.driver.bus = &amp;usb_bus_type;</p>
+<p>　　new_driver-&gt;drvwrap.driver.probe = usb_probe_interface;</p>
+<p>　　new_driver-&gt;drvwrap.driver.remove = usb_unbind_interface;</p>
+<p>　　new_driver-&gt;drvwrap.driver.owner = owner;</p>
+<p>　　new_driver-&gt;drvwrap.driver.mod_name = mod_name;</p>
+<p>　　spin_lock_init(&amp;new_driver-&gt;dynids.lock);</p>
+<p>　　INIT_LIST_HEAD(&amp;new_driver-&gt;dynids.list);</p>
+<p>　　retval = driver_register(&amp;new_driver-&gt;drvwrap.driver);</p>
+<p>　　if (!retval) {</p>
+<p>　　pr_info("%s: registered new interface driver %s\n",</p>
+<p>　　usbcore_name, new_driver-&gt;name);</p>
+<p>　　usbfs_update_special();</p>
+<p>　　usb_create_newid_file(new_driver);</p>
+<p>　　} else {</p>
+<p>　　printk(KERN_ERR "%s: error %d registering interface "</p>
+<p>　　" driver %s\n",</p>
+<p>　　usbcore_name, retval, new_driver-&gt;name);</p>
+<p>　　}</p>
+<p>　　return retval;</p>
+<p>　　}</p>
+<p>　　很明显，在这里接口里，将new_driver-&gt;drvwrap.for_devices设为了0.而且两个接口的porbe()函数也不一样。</p>
+<p>　　其实，对于usb_register_driver()可以看作是usb设备中的接口驱动，而usb_register_device_driver()是一个单纯的USB设备驱动。</p>
+<p>　　四： hub的驱动分析</p>
+<p>　　4.1: usb_bus_type-&gt;match()的匹配过程</p>
+<p>　　usb_bus_type-&gt;match()用来判断驱动和设备是否匹配，它的代码如下：</p>
+<p>　　static int usb_device_match(struct device *dev, struct device_driver *drv)</p>
+<p>　　{</p>
+<p>　　/* devices and interfaces are handled separately */</p>
+<p>　　//usb device的情况</p>
+<p>　　if (is_usb_device(dev)) {</p>
+<p>　　/* interface drivers never match devices */</p>
+<p>　　if (!is_usb_device_driver(drv))</p>
+<p>　　return 0;</p>
+<p>　　/* TODO: Add real matching code */</p>
+<p>　　return 1;</p>
+<p>　　}</p>
+<p>　　//interface的情况</p>
+<p>　　else {</p>
+<p>　　struct usb_interface *intf;</p>
+<p>　　struct usb_driver *usb_drv;</p>
+<p>　　const struct usb_device_id *id;</p>
+<p>　　/* device drivers never match interfaces */</p>
+<p>　　if (is_usb_device_driver(drv))</p>
+<p>　　return 0;</p>
+<p>　　intf = to_usb_interface(dev);</p>
+<p>　　usb_drv = to_usb_driver(drv);</p>
+<p>　　id = usb_match_id(intf, usb_drv-&gt;id_table);</p>
+<p>　　if (id)</p>
+<p>　　return 1;</p>
+<p>　　id = usb_match_dynamic_id(intf, usb_drv);</p>
+<p>　　if (id)</p>
+<p>　　return 1;</p>
+<p>　　}</p>
+<p>　　return 0;</p>
+<p>　　}</p>
+<p>　　这里的match会区分上面所说的两种驱动，即设备的驱动和接口的驱动。</p>
+<p>　　is_usb_device()的代码如下：</p>
+<p>　　static inline int is_usb_device(const struct device *dev)</p>
+<p>　　{</p>
+<p>　　return dev-&gt;type == &amp;usb_device_type;</p>
+<p>　　}</p>
+<p>　　很明显，对于root hub来说，这个判断是肯定会满足的。</p>
+<p>　　static inline int is_usb_device_driver(struct device_driver *drv)</p>
+<p>　　{</p>
+<p>　　return container_of(drv, struct usbdrv_wrap, driver)-&gt;</p>
+<p>　　for_devices;</p>
+<p>　　}</p>
+<p>　　回忆一下，我们在分析usb_register_device_driver()的时候，不是将new_udriver-&gt;drvwrap.for_devices置为了1么？所以对于usb_register_device_driver()注册的驱动来说，这里也是会满足的。</p>
+<p>　　因此，对应root hub的情况，从第一个if就会匹配到usb_register_device_driver()注册的驱动。</p>
+<p>　　对于接口的驱动，我们等遇到的时候再来进行分析。</p>
+<p>　　4.2:root hub的驱动入口</p>
+<p>　　既然我们知道，root hub会匹配到usb_bus_type-&gt;match()的驱动，那这个驱动到底是什么呢？我们从usb子系统的初始化开始说起。</p>
+<p>　　在linux-2.6.25/drivers/usb/core/usb.c中。有这样的一段代码：</p>
+<p>　　subsys_initcall(usb_init);</p>
+<p>　　对于subsys_initcall()我们已经不陌生了，在很多地方都会遇到它。在系统初始化的时候，会调用到它对应的函数。在这里，即为usb_init()。</p>
+<p>　　在usb_init()中，有这样的代码片段：</p>
+<p>　　static int __init usb_init(void)</p>
+<p>　　{</p>
+<p>　　……</p>
+<p>　　……</p>
+<p>　　1</p>
+<p>　　if (!retval)</p>
+<p>　　goto out;</p>
+<p>　　……</p>
+<p>　　}</p>
+<p>　　在这里终于看到usb_register_device_driver()了。 usb_generic_driver会匹配到所有usb 设备。定义如下：</p>
+<p>　　struct usb_device_driver usb_generic_driver = {</p>
+<p>　　.name = "usb",</p>
+<p>　　.probe = generic_probe,</p>
+<p>　　.disconnect = generic_disconnect,</p>
+<p>　　#ifdef CONFIG_PM</p>
+<p>　　.suspend = generic_suspend,</p>
+<p>　　.resume = generic_resume,</p>
+<p>　　#endif</p>
+<p>　　.supports_autosuspend = 1,</p>
+<p>　　};</p>
+<p>　　现在是到分析probe()的时候了。我们这里说的并不是usb_generic_driver中的probe,而是封装在struct usb_device_driver中的driver对应的probe函数。</p>
+<p>　　在上面的分析， usb_register_device_driver()将封装的driver的probe()函数设置为了usb_probe_device()。代码如下：</p>
+<p>　　static int usb_probe_device(struct device *dev)</p>
+<p>　　{</p>
+<p>　　struct usb_device_driver *udriver = to_usb_device_driver(dev-&gt;driver);</p>
+<p>　　struct usb_device *udev;</p>
+<p>　　int error = -ENODEV;</p>
+<p>　　dev_dbg(dev, "%s\n", __FUNCTION__);</p>
+<p>　　//再次判断dev是否是usb device</p>
+<p>　　if (!is_usb_device(dev)) /* Sanity check */</p>
+<p>　　return error;</p>
+<p>　　udev = to_usb_device(dev);</p>
+<p>　　/* TODO: Add real matching code */</p>
+<p>　　/* The device should always appear to be in use</p>
+<p>　　* unless the driver suports autosuspend.</p>
+<p>　　*/</p>
+<p>　　//pm_usage_cnt: autosuspend计数。如果此计数为1,则不允许autosuspend</p>
+<p>　　udev-&gt;pm_usage_cnt = !(udriver-&gt;supports_autosuspend);</p>
+<p>　　error = udriver-&gt;probe(udev);</p>
+<p>　　return error;</p>
+<p>　　}</p>
+<p>　　首先，可以通过container_of()将封装的struct device, struct device_driver转换为struct usb_device和struct usb_device_driver.</p>
+<p>　　然后，再执行一次安全检查，判断dev是否是属于一个usb device.</p>
+<p>　　在这里，我们首次接触到了hub suspend.如果不支持suspend(udriver-&gt;supports_autosuspend为0)，则udev-&gt;pm_usage_cnt被设为1,也就是说，它不允许设备suspend.否则，将其初始化为0.</p>
+<p>　　最后，正如你所看到的，流程转入到了usb_device_driver-&gt;probe()。</p>
+<p>　　对应到root hub,流程会转入到generic_probe()。代码如下：</p>
+<p>　　static int generic_probe(struct usb_device *udev)</p>
+<p>　　{</p>
+<p>　　int err, c;</p>
+<p>　　/* put device-specific files into sysfs */</p>
+<p>　　usb_create_sysfs_dev_files(udev);</p>
+<p>　　/* Choose and set the configuration. This registers the interfaces</p>
+<p>　　* with the driver core and lets interface drivers bind to them.</p>
+<p>　　*/</p>
+<p>　　if (udev-&gt;authorized == 0)</p>
+<p>　　dev_err(&amp;udev-&gt;dev, "Device is not authorized for usage\n");</p>
+<p>　　else {</p>
+<p>　　//选择和设定一个配置</p>
+<p>　　c = usb_choose_configuration(udev);</p>
+<p>　　if (c &gt;= 0) {</p>
+<p>　　err = usb_set_configuration(udev, c);</p>
+<p>　　if (err) {</p>
+<p>　　dev_err(&amp;udev-&gt;dev, "can't set config #%d, error %d\n",</p>
+<p>　　c, err);</p>
+<p>　　/* This need not be fatal. The user can try to</p>
+<p>　　* set other configurations. */</p>
+<p>　　}</p>
+<p>　　}</p>
+<p>　　}</p>
+<p>　　/* USB device state == configured … usable */</p>
+<p>　　usb_notify_add_device(udev);</p>
+<p>　　return 0;</p>
+<p>　　}</p>
+<p>　　usb_create_sysfs_dev_files()是在sysfs中显示几个属性文件，不进行详细分析，有兴趣的可以结合之前分析的《linux设备模型详解》来看下代码。</p>
+<p>　　usb_notify_add_device()是有关notify链表的操作，这里也不做详细分析。</p>
+<p>　　至于udev-&gt;authorized,在root hub的初始化中，是会将其初始化为1的。后面的逻辑就更简单了。为root hub 选择一个配置然后再设定这个配置。</p>
+<p>　　还记得我们在分析root hub的时候，在usb_new_device()中，会将设备的所有配置都取出来，然后将它们放到了usb_device-&gt; config.现在这些信息终于会派上用场了。不太熟悉的，可以看下本站之前有关usb控制器驱动的文档。</p>
+<p>　　Usb2.0 spec上规定，对于hub设备，只能有一个config,一个interface,一个endpoint.实际上，在这里，对hub的选择约束不大，反正就一个配置，不管怎么样，选择和设定都是这个配置。</p>
+<p>　　不过，为了方便以后的分析，我们还是跟进去看下usb_choose_configuration()和usb_set_configuration()的实现。</p>
+<p>　　实际上，经过这两个函数之后，设备的probe()过程也就会结束了。</p>
+<p>　　4.2.1:usb_choose_configuration()函数分析</p>
+<p>　　usb_choose_configuration()的代码如下：</p>
+<p>　　//为usb device选择一个合适的配置</p>
+<p>　　int usb_choose_configuration(struct usb_device *udev)</p>
+<p>　　{</p>
+<p>　　int i;</p>
+<p>　　int num_configs;</p>
+<p>　　int insufficient_power = 0;</p>
+<p>　　struct usb_host_config *c, *best;</p>
+<p>　　best = NULL;</p>
+<p>　　//config数组</p>
+<p>　　c = udev-&gt;config;</p>
+<p>　　//config项数</p>
+<p>　　num_configs = udev-&gt;descriptor.bNumConfigurations;</p>
+<p>　　//遍历所有配置项</p>
+<p>　　for (i = 0; i &lt; num_configs; (i++, c++)) {</p>
+<p>　　struct usb_interface_descriptor *desc = NULL;</p>
+<p>　　/* It's possible that a config has no interfaces! */</p>
+<p>　　//配置项的接口数目</p>
+<p>　　//取配置项的第一个接口</p>
+<p>　　if (c-&gt;desc.bNumInterfaces &gt; 0)</p>
+<p>　　desc = &amp;c-&gt;intf_cache[0]-&gt;altsetting-&gt;desc;</p>
+<p>　　/*</p>
+<p>　　* HP's USB bus-powered keyboard has only one configuration</p>
+<p>　　* and it claims to be self-powered; other devices may have</p>
+<p>　　* similar errors in their descriptors. If the next test</p>
+<p>　　* were allowed to execute, such configurations would always</p>
+<p>　　* be rejected and the devices would not work as expected.</p>
+<p>　　* In the meantime, we run the risk of selecting a config</p>
+<p>　　* that requires external power at a time when that power</p>
+<p>　　* isn't available. It seems to be the lesser of two evils.</p>
+<p>　　*</p>
+<p>　　* Bugzilla #6448 reports a device that appears to crash</p>
+<p>　　* when it receives a GET_DEVICE_STATUS request! We don't</p>
+<p>　　* have any other way to tell whether a device is self-powered,</p>
+<p>　　* but since we don't use that information anywhere but here,</p>
+<p>　　* the call has been removed.</p>
+<p>　　*</p>
+<p>　　* Maybe the GET_DEVICE_STATUS call and the test below can</p>
+<p>　　* be reinstated when device firmwares become more reliable.</p>
+<p>　　* Don't hold your breath.</p>
+<p>　　*/</p>
+<p>　　#if 0</p>
+<p>　　/* Rule out self-powered configs for a bus-powered device */</p>
+<p>　　if (bus_powered &amp;&amp; (c-&gt;desc.bmAttributes &amp;</p>
+<p>　　USB_CONFIG_ATT_SELFPOWER))</p>
+<p>　　continue;</p>
+<p>　　#endif</p>
+<p>　　/*</p>
+<p>　　* The next test may not be as effective as it should be.</p>
+<p>　　* Some hubs have errors in their descriptor, claiming</p>
+<p>　　* to be self-powered when they are really bus-powered.</p>
+<p>　　* We will overestimate the amount of current such hubs</p>
+<p>　　* make available for each port.</p>
+<p>　　*</p>
+<p>　　* This is a fairly benign sort of failure. It won't</p>
+<p>　　* cause us to reject configurations that we should have</p>
+<p>　　* accepted.</p>
+<p>　　*/</p>
+<p>　　/* Rule out configs that draw too much bus current */</p>
+<p>　　//电源不足。配置描述符中的电力是所需电力的1/2</p>
+<p>　　if (c-&gt;desc.bMaxPower * 2 &gt; udev-&gt;bus_mA) {</p>
+<p>　　insufficient_power++;</p>
+<p>　　continue;</p>
+<p>　　}</p>
+<p>　　/* When the first config's first interface is one of Microsoft's</p>
+<p>　　* pet nonstandard Ethernet-over-USB protocols, ignore it unless</p>
+<p>　　* this kernel has enabled the necessary host side driver.</p>
+<p>　　*/</p>
+<p>　　if (i == 0 &amp;&amp; desc &amp;&amp; (is_rndis(desc) || is_activesync(desc))) {</p>
+<p>　　#if !defined(CONFIG_USB_NET_RNDIS_HOST) &amp;&amp; !defined(CONFIG_USB_NET_RNDIS_HOST_MODULE)</p>
+<p>　　continue;</p>
+<p>　　#else</p>
+<p>　　best = c;</p>
+<p>　　#endif</p>
+<p>　　}</p>
+<p>　　/* From the remaining configs, choose the first one whose</p>
+<p>　　* first interface is for a non-vendor-specific class.</p>
+<p>　　* Reason: Linux is more likely to have a class driver</p>
+<p>　　* than a vendor-specific driver. */</p>
+<p>　　//选择一个不是USB_CLASS_VENDOR_SPEC的配置</p>
+<p>　　else if (udev-&gt;descriptor.bDeviceClass !=</p>
+<p>　　USB_CLASS_VENDOR_SPEC &amp;&amp;</p>
+<p>　　(!desc || desc-&gt;bInterfaceClass !=</p>
+<p>　　USB_CLASS_VENDOR_SPEC)) {</p>
+<p>　　best = c;</p>
+<p>　　break;</p>
+<p>　　}</p>
+<p>　　/* If all the remaining configs are vendor-specific,</p>
+<p>　　* choose the first one. */</p>
+<p>　　else if (!best)</p>
+<p>　　best = c;</p>
+<p>　　}</p>
+<p>　　if (insufficient_power &gt; 0)</p>
+<p>　　dev_info(&amp;udev-&gt;dev, "rejected %d configuration%s "</p>
+<p>　　"due to insufficient available bus power\n",</p>
+<p>　　insufficient_power, plural(insufficient_power));</p>
+<p>　　//如果选择好了配置，返回配置的序号，否则，返回-1</p>
+<p>　　if (best) {</p>
+<p>　　i = best-&gt;desc.bConfigurationValue;</p>
+<p>　　dev_info(&amp;udev-&gt;dev,</p>
+<p>　　"configuration #%d chosen from %d choice%s\n",</p>
+<p>　　i, num_configs, plural(num_configs));</p>
+<p>　　} else {</p>
+<p>　　i = -1;</p>
+<p>　　dev_warn(&amp;udev-&gt;dev,</p>
+<p>　　"no configuration chosen from %d choice%s\n",</p>
+<p>　　num_configs, plural(num_configs));</p>
+<p>　　}</p>
+<p>　　return i;</p>
+<p>　　}</p>
+<p>　　Linux按照自己的喜好选择好了配置之后，返回配置的序号。不过对于HUB来说，它有且仅有一个配置。</p>
+<p>　　4.2.2:usb_set_configuration()函数分析</p>
+<p>　　既然已经选好配置了，那就告诉设备选好的配置，这个过程是在usb_set_configuration()中完成的。它的代码如下：</p>
+<p>　　int usb_set_configuration(struct usb_device *dev, int configuration)</p>
+<p>　　{</p>
+<p>　　int i, ret;</p>
+<p>　　struct usb_host_config *cp = NULL;</p>
+<p>　　struct usb_interface **new_interfaces = NULL;</p>
+<p>　　int n, nintf;</p>
+<p>　　if (dev-&gt;authorized == 0 || configuration == -1)</p>
+<p>　　configuration = 0;</p>
+<p>　　else {</p>
+<p>　　for (i = 0; i &lt; dev-&gt;descriptor.bNumConfigurations; i++) {</p>
+<p>　　if (dev-&gt;config[i].desc.bConfigurationValue ==</p>
+<p>　　configuration) {</p>
+<p>　　cp = &amp;dev-&gt;config[i];</p>
+<p>　　break;</p>
+<p>　　}</p>
+<p>　　}</p>
+<p>　　}</p>
+<p>　　if ((!cp &amp;&amp; configuration != 0))</p>
+<p>　　return -EINVAL;</p>
+<p>　　/* The USB spec says configuration 0 means unconfigured.</p>
+<p>　　* But if a device includes a configuration numbered 0,</p>
+<p>　　* we will accept it as a correctly configured state.</p>
+<p>　　* Use -1 if you really want to unconfigure the device.</p>
+<p>　　*/</p>
+<p>　　if (cp &amp;&amp; configuration == 0)</p>
+<p>　　dev_warn(&amp;dev-&gt;dev, "config 0 descriptor??\n");</p>
+<p>　　首先，根据选择好的配置号找到相应的配置，在这里要注意了， dev-&gt;config[]数组中的配置并不是按照配置的序号来存放的，而是按照遍历到顺序来排序的。因为有些设备在发送配置描述符的时候，并不是按照配置序号来发送的，例如，配置2可能在第一次GET_CONFIGURATION就被发送了，而配置1可能是在第二次GET_CONFIGURATION才能发送。</p>
+<p>　　取得配置描述信息之后，要对它进行有效性判断，注意一下本段代码的最后几行代码：usb2.0 spec上规定，0号配置是无效配置，但是可能有些厂商的设备并末按照这一约定，所以在linux中，遇到这种情况只是打印出警告信息，然后尝试使用这一配置。</p>
+<p>　　/* Allocate memory for new interfaces before doing anything else,</p>
+<p>　　* so that if we run out then nothing will have changed. */</p>
+<p>　　n = nintf = 0;</p>
+<p>　　if (cp) {</p>
+<p>　　//接口总数</p>
+<p>　　nintf = cp-&gt;desc.bNumInterfaces;</p>
+<p>　　//interface指针数组，</p>
+<p>　　new_interfaces = kmalloc(nintf * sizeof(*new_interfaces)，</p>
+<p>　　GFP_KERNEL);</p>
+<p>　　if (!new_interfaces) {</p>
+<p>　　dev_err(&amp;dev-&gt;dev, "Out of memory\n");</p>
+<p>　　return -ENOMEM;</p>
+<p>　　}</p>
+<p>　　for (; n &lt; nintf; ++n) {</p>
+<p>　　new_interfaces[n] = kzalloc(</p>
+<p>　　sizeof(struct usb_interface)，</p>
+<p>　　GFP_KERNEL);</p>
+<p>　　if (!new_interfaces[n]) {</p>
+<p>　　dev_err(&amp;dev-&gt;dev, "Out of memory\n");</p>
+<p>　　ret = -ENOMEM;</p>
+<p>　　free_interfaces:</p>
+<p>　　while (--n &gt;= 0)</p>
+<p>　　kfree(new_interfaces[n]);</p>
+<p>　　kfree(new_interfaces);</p>
+<p>　　return ret;</p>
+<p>　　}</p>
+<p>　　}</p>
+<p>　　//如果总电源小于所需电流，打印警告信息</p>
+<p>　　i = dev-&gt;bus_mA - cp-&gt;desc.bMaxPower * 2;</p>
+<p>　　if (i &lt; 0)</p>
+<p>　　dev_warn(&amp;dev-&gt;dev, "new config #%d exceeds power "</p>
+<p>　　"limit by %dmA\n",</p>
+<p>　　configuration, -i);</p>
+<p>　　}</p>
+<p>　　在这里，注要是为new_interfaces分配空间，要这意的是， new_interfaces是一个二级指针，它的最终指向是struct usb_interface结构。特别的，如果总电流数要小于配置所需电流，则打印出警告消息。实际上，这种情况在usb_choose_configuration()中已经进行了过滤。</p>
+<p>　　/* Wake up the device so we can send it the Set-Config request */</p>
+<p>　　//要对设备进行配置了，先唤醒它</p>
+<p>　　ret = usb_autoresume_device(dev);</p>
+<p>　　if (ret)</p>
+<p>　　goto free_interfaces;</p>
+<p>　　/* if it's already configured, clear out old state first.</p>
+<p>　　* getting rid of old interfaces means unbinding their drivers.</p>
+<p>　　*/</p>
+<p>　　//不是处于ADDRESS状态，先清除设备的状态</p>
+<p>　　if (dev-&gt;state != USB_STATE_ADDRESS)</p>
+<p>　　usb_disable_device(dev, 1); /* Skip ep0 */</p>
+<p>　　//发送控制消息，选取配置</p>
+<p>　　ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0)，</p>
+<p>　　USB_REQ_SET_CONFIGURATION, 0, configuration, 0,</p>
+<p>　　NULL, 0, USB_CTRL_SET_TIMEOUT);</p>
+<p>　　if (ret &lt; 0) {</p>
+<p>　　/* All the old state is gone, so what else can we do?</p>
+<p>　　* The device is probably useless now anyway.</p>
+<p>　　*/</p>
+<p>　　cp = NULL;</p>
+<p>　　}</p>
+<p>　　//dev-&gt;actconfig存放的是当前设备选取的配置</p>
+<p>　　dev-&gt;actconfig = cp;</p>
+<p>　　if (!cp) {</p>
+<p>　　usb_set_device_state(dev, USB_STATE_ADDRESS);</p>
+<p>　　usb_autosuspend_device(dev);</p>
+<p>　　goto free_interfaces;</p>
+<p>　　}</p>
+<p>　　//将状态设为CONFIGURED</p>
+<p>　　usb_set_device_state(dev, USB_STATE_CONFIGURED);</p>
+<p>　　接下来，就要对设备进行配置了，首先，将设备唤醒。回忆一下我们在分析UHCI驱动时，列出来的设备状态图。只有在ADDRESS状态才能转入到CONFIG状态。(SUSPEND状态除外)。 所以，如果设备当前不是处于ADDRESS状态，就需要将设备的状态初始化。usb_disable_device()函数是个比较重要的操作，在接下来再对它进行详细分析。</p>
+<p>　　接着，发送SET_CONFIGURATION的Control消息给设备，用来选择配置</p>
+<p>　　最后，将dev-&gt;actconfig指向选定的配置，将设备状态设为CONFIG</p>
+<p>　　/* Initialize the new interface structures and the</p>
+<p>　　* hc/hcd/usbcore interface/endpoint state.</p>
+<p>　　*/</p>
+<p>　　//遍历所有的接口</p>
+<p>　　for (i = 0; i &lt; nintf; ++i) {</p>
+<p>　　struct usb_interface_cache *intfc;</p>
+<p>　　struct usb_interface *intf;</p>
+<p>　　struct usb_host_interface *alt;</p>
+<p>　　cp-&gt;interface[i] = intf = new_interfaces[i];</p>
+<p>　　intfc = cp-&gt;intf_cache[i];</p>
+<p>　　intf-&gt;altsetting = intfc-&gt;altsetting;</p>
+<p>　　intf-&gt;num_altsetting = intfc-&gt;num_altsetting;</p>
+<p>　　//是否关联的接口描述符，定义在minor usb 2.0 spec中</p>
+<p>　　intf-&gt;intf_assoc = find_iad(dev, cp, i);</p>
+<p>　　kref_get(&amp;intfc-&gt;ref);</p>
+<p>　　//选择0号设置</p>
+<p>　　alt = usb_altnum_to_altsetting(intf, 0);</p>
+<p>　　/* No altsetting 0? We'll assume the first altsetting.</p>
+<p>　　* We could use a GetInterface call, but if a device is</p>
+<p>　　* so non-compliant that it doesn't have altsetting 0</p>
+<p>　　* then I wouldn't trust its reply anyway.</p>
+<p>　　*/</p>
+<p>　　//如果0号设置不存在，选排在第一个设置</p>
+<p>　　if (!alt)</p>
+<p>　　alt = &amp;intf-&gt;altsetting[0];</p>
+<p>　　//当前的配置</p>
+<p>　　intf-&gt;cur_altsetting = alt;</p>
+<p>　　usb_enable_interface(dev, intf);</p>
+<p>　　intf-&gt;dev.parent = &amp;dev-&gt;dev;</p>
+<p>　　intf-&gt;dev.driver = NULL;</p>
+<p>　　intf-&gt;dev.bus = &amp;usb_bus_type;</p>
+<p>　　intf-&gt;dev.type = &amp;usb_if_device_type;</p>
+<p>　　intf-&gt;dev.dma_mask = dev-&gt;dev.dma_mask;</p>
+<p>　　device_initialize(&amp;intf-&gt;dev);</p>
+<p>　　mark_quiesced(intf);</p>
+<p>　　sprintf(&amp;intf-&gt;dev.bus_id[0], "%d-%s:%d.%d",</p>
+<p>　　dev-&gt;bus-&gt;busnum, dev-&gt;devpath,</p>
+<p>　　configuration, alt-&gt;desc.bInterfaceNumber);</p>
+<p>　　}</p>
+<p>　　kfree(new_interfaces);</p>
+<p>　　if (cp-&gt;string == NULL)</p>
+<p>　　cp-&gt;string = usb_cache_string(dev, cp-&gt;desc.iConfiguration);</p>
+<p>　　之前初始化的new_interfaces在这里终于要派上用场了。初始化各接口，从上面的初始化过程中，我们可以看出：</p>
+<p>　　Intf-&gt;altsetting,表示接口的各种设置</p>
+<p>　　Intf-&gt;num_altsetting:表示接口的设置数目</p>
+<p>　　Intf-&gt;intf_assoc:接口的关联接口(定义于minor usb 2.0 spec)</p>
+<p>　　Intf-&gt;cur_altsetting:接口的当前设置。</p>
+<p>　　结合之前在UHCI中的分析，我们总结一下：</p>
+<p>　　Usb_dev-&gt;config,其实是一个数组，存放设备的配置。usb_dev-&gt;config[m]-&gt; interface[n]表示第m个配置的第n个接口的intercace结构。(m,n不是配置序号和接口序号 *^_^*)。</p>
+<p>　　注意这个地方对intf内嵌的struct devcie结构赋值，它的type被赋值为了usb_if_device_type.bus还是usb_bus_type.可能你已经反应过来了，要和这个device匹配的设备是interface的驱动。</p>
+<p>　　特别的，这里的device的命名：</p>
+<p>　　sprintf(&amp;intf-&gt;dev.bus_id[0], "%d-%s:%d.%d",</p>
+<p>　　dev-&gt;bus-&gt;busnum, dev-&gt;devpath,</p>
+<p>　　configuration, alt-&gt;desc.bInterfaceNumber);</p>
+<p>　　dev指的是这个接口所属的usb_dev,结合我们之前在UHCI中关于usb设备命名方式的描述。可得出它的命令方式如下：</p>
+<p>　　USB总线号-设备路径：配置号。接口号。</p>
+<p>　　例如，在我的虚拟机上：</p>
+<p>　　[root@localhost devices]# pwd</p>
+<p>　　/sys/bus/usb/devices</p>
+<p>　　[root@localhost devices]# ls</p>
+<p>　　1-0:1.0 usb1</p>
+<p>　　[root@localhost devices]#</p>
+<p>　　可以得知，系统只有一个usb control.</p>
+<p>　　1-0:1.0:表示，第一个usb control下的root hub的1号配置的0号接口。</p>
+<p><br>
+&nbsp;</p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

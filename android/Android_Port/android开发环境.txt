@@ -1,0 +1,128 @@
+搭建Android源码编译环境
+
+1.安装Ubuntu 12.04
+	可以使用U盘安装,如果安装正常,启动失败,需要使用ubuntu官方的急救工具,修复引导.
+	修复引导:
+	https://help.ubuntu.com/community/UbuntuSecureRemix
+
+2.安装Python
+      Ubuntu 12.04 已经安装了2.6版。
+
+3.安装JDK
+	2.3后使用jdk6编译
+      更新软件库：
+      sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+      sudo apt-get update
+      下载JDK：
+      使用新立得软件包管理器下载 sun-java6-jdk或执行命令：sudo apt-get install sun-java6-jdk
+      修改当前使用的JDK版本：sudo update-alternatives --config java
+
+4.安装所需的组件
+      To set up your development environment, install the following required packages:
+      执行命令：sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev libc6-dev lib32ncurses5-dev ia32-libs x11proto-core-dev libx11-dev lib32readline5-dev lib32z-dev
+
+      For building Froyo or an older release on a 64-bit system, several other packages are necessary to establish a 32-bit build  environment:
+      执行命令：sudo apt-get install gcc-multilib g++-multilib libc6-i386 libc6-dev-i386
+
+5.安装几个必须库
+      进入新立得软件包管理器勾选lib32z1-dev、zlib-bin并安装。
+
+6.Android编译需要安装mtd-utils（该程序不能升级，使用指定版本mtd-utils_20090606-1_amd64.deb）
+      使用强制安装方式：sudo dpkg -i 文件名
+      此组件是用来创建UBI文件系统的。
+
+7.安装GCC编译器
+      系统已经默认安装了gcc6,不行就切成gcc4。
+
+8.安装交叉编译工具arm-linux-gcc（PAO的默认配置为源码放在主文件夹的project下，arm-linux-gcc放在project的tools下）
+      A.解压arm-linux-gcc-4.5.1-v6-vfp-20101103.tgz，执行命令：
+         tar xvzf arm-linux-gcc-4.5.1-v6-vfp-20101103.tgz –C home/administrator/project/tools/
+         cp -r home/administrator/project/tools/opt/FriendlyARM/toolschain/4.5.1 /home/administrator/project/tools/arm-linux-4.5.1/
+         rm -rf home/administrator/project/tools/opt
+      B.设置环境变量（多个变量时用“:”分格）：
+             sudo gedit /etc/profile
+             在最后添加：PATH=$PATH:/home/administrator/project/tools/arm-linux-4.5.1/bin
+      C.重新登录后运行：arm-linux-gcc --v 测试是否安装成功。
+
+9.错误处理
+      在Ubuntu12.04（64位）编译Android2.3源码时，遇到各种各样的问题。不是缺这个，就是少那个。现把这些问题和解决方法罗列出来，供大家参考。
+
+错误：
+/usr/include/gnu/stubs.h:7:27: error: gnu/stubs-32.h: No such file or directory
+make: *** [out/host/linux-x86/obj/EXECUTABLES/acp_intermediates/acp.o] 错误 1
+
+解决：
+　　sudo apt-get install libc6-dev-i386
+
+错误：
+make: *** [out/host/linux-x86/obj/EXECUTABLES/acp_intermediates/acp] error 1
+
+解决：
+　　sudo apt-get install g++-multilib
+
+错误：
+external/clearsilver/cgi/cgi.c:22: fatal error: zlib.h: No such file or directory
+compilation terminated.
+make: *** [out/host/linux-x86/obj/SHARED_LIBRARIES/libneo_cgi_intermediates/cgi.o] Error 1
+
+解决：
+sudo apt-get install zlib1g-dev
+
+错误：
+/usr/bin/ld: cannot find -lz
+collect2: ld returned 1 exit status
+make: *** [out/host/linux-x86/obj/EXECUTABLES/aapt_intermediates/aapt] Error 1
+
+解决：
+sudo apt-get install lib32z1-dev
+
+错误：
+bison -d  -o out/host/linux-x86/obj/EXECUTABLES/aidl_intermediates/aidl_language_y.cpp frameworks/base/tools/aidl/aidl_language_y.y
+/bin/bash: bison: command not found
+make: *** [out/host/linux-x86/obj/EXECUTABLES/aidl_intermediates/aidl_language_y.cpp] Error 127
+
+解决：
+sudo apt-get install bison
+
+错误：
+Lex: aidl <= frameworks/base/tools/aidl/aidl_language_l.l
+/bin/bash: flex: command not found
+make: *** [out/host/linux-x86/obj/EXECUTABLES/aidl_intermediates/aidl_language_l.cpp] Error 127
+
+解决：
+sudo apt-get install flex
+
+错误：
+/usr/bin/ld: cannot find -lncurses
+collect2: ld returned 1 exit status
+make: *** [out/host/linux-x86/obj/EXECUTABLES/adb_intermediates/adb] Error 1
+
+解决：
+sudo apt-get install lib32ncurses5-dev
+
+错误：
+prebuilt/linux-x86/sdl/include/SDL/SDL_syswm.h:55: fatal error: X11/Xlib.h: No such file or directory
+compilation terminated.
+make: *** [out/host/linux-x86/obj/EXECUTABLES/emulator_intermediates/android/main-common.o] Error 1
+
+解决：
+sudo apt-get install libx11-dev
+
+错误：
+sh: gperf: not found
+calling gperf failed: 32512 at ./makeprop.pl line 96.
+make: *** [out/target/product/generic/obj/STATIC_LIBRARIES/libwebcore_intermediates/WebCore/css/CSSPropertyNames.h] Error 25
+make: *** Deleting file `out/target/product/generic/obj/STATIC_LIBRARIES/libwebcore_intermediates/WebCore/css/CSSPropertyNames.h'
+
+解决：
+sudo apt-get install gperf
+
+错误：
+build/core/java.mk:9: *** bin: Target java module does not define any source or resource files. Stop.
+
+解决：
+      删除源码根目录下的bin文件夹，这个文件夹是导入eclipse时创建的。
+
+10.相关资料
+      A.http://source.android.com/source/initializing.html；
+      B.mini6410用户手册。

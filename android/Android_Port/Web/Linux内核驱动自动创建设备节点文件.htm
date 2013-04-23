@@ -1,0 +1,2149 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:st1="urn:schemas-microsoft-com:office:smarttags"
+xmlns="http://www.w3.org/TR/REC-html40" version=g42dymwpi--nx>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="Linux内核驱动自动创建设备节点文件.files/filelist.xml">
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="PlaceName"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="PlaceType"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="place"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="chsdate"/>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>微软中国</o:Author>
+  <o:LastAuthor>微软中国</o:LastAuthor>
+  <o:Revision>5</o:Revision>
+  <o:TotalTime>2</o:TotalTime>
+  <o:Created>2013-01-30T02:05:00Z</o:Created>
+  <o:LastSaved>2013-01-30T02:07:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>1247</o:Words>
+  <o:Characters>7108</o:Characters>
+  <o:Company>www.xunchi.com</o:Company>
+  <o:Lines>59</o:Lines>
+  <o:Paragraphs>16</o:Paragraphs>
+  <o:CharactersWithSpaces>8339</o:CharactersWithSpaces>
+  <o:Version>11.9999</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]--><!--[if !mso]><object
+ classid="clsid:38481807-CA0E-42D2-BF39-B33AF135CC4D" id=ieooui></object>
+<style>
+st1\:*{behavior:url(#ieooui) }
+</style>
+<![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:SimSun;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:3 135135232 16 0 262145 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+h1
+	{mso-style-next:正文;
+	margin-top:17.0pt;
+	margin-right:0cm;
+	margin-bottom:16.5pt;
+	margin-left:0cm;
+	line-height:240%;
+	mso-pagination:widow-orphan lines-together;
+	page-break-after:avoid;
+	mso-outline-level:1;
+	font-size:22.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	mso-font-kerning:22.0pt;
+	font-weight:bold;}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;
+	font-weight:bold;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:center;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	border:none;
+	mso-border-bottom-alt:solid windowtext .75pt;
+	padding:0cm;
+	mso-padding-alt:0cm 0cm 1.0pt 0cm;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 207.65pt right 415.3pt;
+	layout-grid-mode:char;
+	font-size:9.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:宋体;
+	mso-bidi-font-family:宋体;}
+tt
+	{mso-ansi-font-size:12.0pt;
+	mso-bidi-font-size:12.0pt;
+	font-family:宋体;
+	mso-ascii-font-family:宋体;
+	mso-fareast-font-family:宋体;
+	mso-hansi-font-family:宋体;
+	mso-bidi-font-family:宋体;}
+span.apple-converted-space
+	{mso-style-name:apple-converted-space;}
+span.toctoggle
+	{mso-style-name:toctoggle;}
+span.tocnumber
+	{mso-style-name:tocnumber;}
+span.toctext
+	{mso-style-name:toctext;}
+span.editsection
+	{mso-style-name:editsection;}
+span.mw-headline
+	{mso-style-name:mw-headline;}
+span.mbox-text-span
+	{mso-style-name:mbox-text-span;}
+ /* Page Definitions */
+ @page
+	{mso-footnote-separator:url("Linux内核驱动自动创建设备节点文件.files/header.htm") fs;
+	mso-footnote-continuation-separator:url("Linux内核驱动自动创建设备节点文件.files/header.htm") fcs;
+	mso-endnote-separator:url("Linux内核驱动自动创建设备节点文件.files/header.htm") es;
+	mso-endnote-continuation-separator:url("Linux内核驱动自动创建设备节点文件.files/header.htm") ecs;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:42.55pt;
+	mso-footer-margin:49.6pt;
+	mso-even-header:url("Linux内核驱动自动创建设备节点文件.files/header.htm") eh1;
+	mso-header:url("Linux内核驱动自动创建设备节点文件.files/header.htm") h1;
+	mso-even-footer:url("Linux内核驱动自动创建设备节点文件.files/header.htm") ef1;
+	mso-footer:url("Linux内核驱动自动创建设备节点文件.files/header.htm") f1;
+	mso-first-header:url("Linux内核驱动自动创建设备节点文件.files/header.htm") fh1;
+	mso-first-footer:url("Linux内核驱动自动创建设备节点文件.files/header.htm") ff1;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:567620347;
+	mso-list-template-ids:-296683956;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:742603144;
+	mso-list-template-ids:-793358664;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:1194802255;
+	mso-list-template-ids:-1417767772;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:普通表格;
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="3074"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=ZH-CN link=blue vlink=blue style='tab-interval:21.0pt'>
+
+<div class=Section1>
+
+<div>
+
+<div>
+
+<div>
+
+<div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><a
+href="Linux内核驱动自动创建设备节点文件_files/Linux内核驱动自动创建设备节点文件.htm">Linux<span lang=EN-US><span
+lang=EN-US>内核驱动自动创建设备节点文件</span></span></a> <em><span style='font-family:宋体;
+mso-bidi-font-family:宋体'>2012-06-16 00:04:23</span></em> </span></p>
+
+</div>
+
+<div>
+
+<div style='word-wrap: break-word'>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>Linux</span>下生成驱动设备节点文件的方法有<span
+lang=EN-US>3</span>个：<span lang=EN-US>1</span>、手动<span lang=EN-US>mknod</span>；<span
+lang=EN-US>2</span>、利用<span lang=EN-US>devfs</span>；<span lang=EN-US>3</span>、利用<span
+lang=EN-US>udev</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>在刚开始写<span lang=EN-US>Linux</span>设备驱动程序的时候，很多时候都是利用<span
+lang=EN-US>mknod</span>命令手动创建设备节点，实际上<span lang=EN-US>Linux</span>内核为我们提供了一组函数，可以用来在模块加载的时候自动在<span
+lang=EN-US>/dev</span>目录下创建相应设备节点，并在卸载模块时删除该节点。</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>在<st1:chsdate Year="1899" Month="12" Day="30"
+IsLunarDate="False" IsROCDate="False" w:st="on"><span lang=EN-US>2.6.17</span></st1:chsdate>以前，在<span
+lang=EN-US>/dev</span>目录下生成设备文件很容易，</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devfs_mk_bdev</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devfs_mk_cdev</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devfs_mk_symlink</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devfs_mk_dir</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devfs_remove</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>这几个是纯<span lang=EN-US>devfs</span>的<span lang=EN-US>api</span>，<st1:chsdate
+Year="1899" Month="12" Day="30" IsLunarDate="False" IsROCDate="False" w:st="on"><span
+ lang=EN-US>2.6.17</span></st1:chsdate>以前可用，但后来<span lang=EN-US>devfs</span>被<span
+lang=EN-US style='color:#0000F0'>sysfs+udev</span>的形式取代，同时期<span lang=EN-US>sysfs</span>文件系统可以用的<span
+lang=EN-US>api</span>：</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>class_device_create_file</span>，在<st1:chsdate
+Year="1899" Month="12" Day="30" IsLunarDate="False" IsROCDate="False" w:st="on"><span
+ lang=EN-US>2.6.26</span></st1:chsdate>以后也不行了，现在，使用的是<span lang=EN-US>device_create
+</span>，从<span lang=EN-US>2.6.18</span>开始可用</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct device *device_create(struct class
+*class, struct device *parent,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>dev_t devt, const char *fmt, ...)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>从<st1:chsdate Year="1899" Month="12" Day="30"
+IsLunarDate="False" IsROCDate="False" w:st="on"><span lang=EN-US>2.6.26</span></st1:chsdate>起又多了一个参数<span
+lang=EN-US>drvdata</span>：<span lang=EN-US> the data to be added to the device
+for callbacks</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>不会用可以给此参数赋<span lang=EN-US>NULL</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct device *<span style='color:#0000F0'>device_create</span>(struct
+class *class, struct device *parent,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>dev_t devt, void *drvdata, const char *fmt,
+...)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>下面着重讲解第三种方法<span lang=EN-US>udev</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>在驱动用加入对<span lang=EN-US>udev</span>的支持主要做的就是：在驱动初始化的代码里调用<span
+lang=EN-US style='color:#0000F0'>class_create</span><span lang=EN-US>(...)</span>为该设备创建一个<span
+lang=EN-US>class</span>，再为每个设备调用<span lang=EN-US style='color:#0000F0'>device_create</span><span
+lang=EN-US>(...)( </span>在<span lang=EN-US>2.6</span>较早的内核中用<span lang=EN-US>class_device_create)</span>创建对应的设备。</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>内核中定义的<span lang=EN-US>struct class</span>结构体，顾名思义，一个<span
+lang=EN-US>struct class</span>结构体类型变量对应一个类，内核同时提供了<span lang=EN-US
+style='color:#0000F0'>class_create(…)</span><span style='color:#0000F0'>函数，可以用它来创建一个类，这个类存放于<span
+lang=EN-US>sysfs</span>下面</span>，一旦创建好了这个类，<span style='color:#0000F0'>再调用<span
+lang=EN-US> device_create(…)</span>函数来在<span lang=EN-US>/dev</span>目录下创建相应的设备节点</span>。这样，<span
+style='color:#0000F0'>加载模块的时候，用户空间中的<span lang=EN-US>udev</span>会自动响应<span
+lang=EN-US> device_create(…)</span>函数，去<span lang=EN-US>/sysfs</span>下寻找对应的类从而创建设备节点。</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct class</span>和<span lang=EN-US>class_create(…)
+</span>以及<span lang=EN-US>device_create(…)</span>都包含在在<span lang=EN-US>/include/linux/device.h</span>中，使用的时候一定要包含这个头文件，否则编译器会报错。</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct class</span>定义在头文件<span lang=EN-US>include/linux/device.h</span>中</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>class_create(…)</span>在<span lang=EN-US>/drivers/base/class.c</span>中实现</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>device_create(…)</span>函数在<span lang=EN-US>/drivers/base/core.c</span>中实现</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>class_destroy(...),device_destroy(...)</span>也在<span
+lang=EN-US>/drivers/base/core.c</span>中实现调用过程类似如下：</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static struct class *spidev_class;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/*-------------------------------------------------------------------------*/</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static int __devinit spidev_probe(struct
+spi_device *spi)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; ....</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; dev = <span
+style='color:#0000F0'>device_create</span>(spidev_class, &amp;spi-&gt;dev,
+spidev-&gt;devt,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; spidev, &quot;spidev%d.%d&quot;,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; spi-&gt;master-&gt;bus_num, spi-&gt;chip_select);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; ...</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static int __devexit spidev_remove(struct
+spi_device *spi)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; ......</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; <span style='color:#0000F0'>device_destroy</span>(spidev_class,
+spidev-&gt;devt);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; .....</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; return 0;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static struct spi_driver spidev_spi = {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; .driver = {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; .name = &nbsp;
+&nbsp; &nbsp; &nbsp;&quot;spidev&quot;,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; .owner = &nbsp;
+&nbsp;THIS_MODULE,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; },</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; .probe = &nbsp;
+&nbsp;spidev_probe,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; .remove = &nbsp;
+&nbsp;__devexit_p(spidev_remove),</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>};</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/*-------------------------------------------------------------------------*/</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static int __init spidev_init(void)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; ....</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; spidev_class = <span
+style='color:#0000F0'>class_create</span>(THIS_MODULE, &quot;spidev&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; if (IS_ERR(spidev_class)) {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp;
+unregister_chrdev(SPIDEV_MAJOR, spidev_spi.driver.name);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp; return
+PTR_ERR(spidev_class);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; }</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; ....</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>module_init(spidev_init);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static void __exit spidev_exit(void)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; ......</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; <span style='color:#0000F0'>class_destroy</span>(spidev_class);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; ......</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>module_exit(spidev_exit);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>MODULE_DESCRIPTION(&quot;User mode SPI
+device interface&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>MODULE_LICENSE(&quot;GPL&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span>下面以一个简单字符设备驱动来展示如何使用这几个函数<span
+lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/module.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/kernel.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/init.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/fs.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/cdev.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>#include &lt;linux/device.h&gt;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>int HELLO_MAJOR = 0;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>int HELLO_MINOR = 0;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>int NUMBER_OF_DEVICES = 2;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct class *my_class;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>//struct cdev cdev;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>//dev_t devno;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct hello_dev {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>struct device *dev;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>dev_t chrdev;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>struct cdev cdev;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>};</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static
+struct&nbsp;hello_dev&nbsp;*my_hello_dev = NULL;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct file_operations hello_fops = {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;.owner = THIS_MODULE</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>};</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static int __init hello_init (void)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>int err = 0;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>struct device *dev;</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>my_hello_dev = kzalloc(sizeof(struct
+hello_dev), GFP_KERNEL);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if (NULL == my_hello_dev) {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>printk(&quot;%s kzalloc failed!\n&quot;,__func__);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>return -ENOMEM;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>devno = MKDEV(HELLO_MAJOR, HELLO_MINOR);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if (HELLO_MAJOR)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>err= register_chrdev_region(my_hello_dev-&gt;chrdev, 2,
+&quot;memdev&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>else</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>err = alloc_chrdev_region(&amp;my_hello_dev-&gt;chrdev, 0, 2,
+&quot;memdev&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>HELLO_MAJOR = MAJOR(devno);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>} &nbsp;</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if (err) {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>printk(&quot;%s alloc_chrdev_region failed!\n&quot;,__func__);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>goto alloc_chrdev_err;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>printk(&quot;MAJOR IS
+%d\n&quot;,HELLO_MAJOR);</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>cdev_init(&amp;(my_hello_dev-&gt;cdev),
+&amp;hello_fops);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>my_hello_dev-&gt;cdev.owner = THIS_MODULE;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>err =
+cdev_add(&amp;(my_hello_dev-&gt;cdev), my_hello_dev-&gt;chrdev, 1);</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if (err) {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>printk(&quot;%s cdev_add failed!\n&quot;,__func__);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>goto cdev_add_err;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>printk (KERN_INFO &quot;Character driver
+Registered\n&quot;);</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>my_class = <span style='color:#0000F0'>class_create</span>(THIS_MODULE,&quot;hello_char_class&quot;);
+&nbsp;//</span>类名为<span lang=EN-US>hello_char_class</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if(IS_ERR(my_class))&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>err = PTR_ERR(my_class);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>printk(&quot;%s class_create failed!\n&quot;,__func__);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>goto class_err;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>dev
+=&nbsp;device_create</span><span lang=EN-US>(my_class,NULL,my_hello_dev-&gt;chrdev,NULL,&quot;memdev%d&quot;,0);
+&nbsp; &nbsp; &nbsp;//</span>设备名为<span lang=EN-US>memdev</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>if (IS_ERR(dev)) {</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>err = PTR_ERR(dev);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>gyro_err(&quot;%s device_create failed!\n&quot;,__func__);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>goto device_err;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>printk(&quot;hello module
+initialization\n&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>return 0;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>device_err:</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>device_destroy(my_class,&nbsp;my_hello_dev-&gt;chrdev);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>class_err:</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>cdev_del(my_hello_dev-&gt;chrdev);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>cdev_add_err:</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>unregister_chrdev_region(my_hello_dev-&gt;chrdev, 1);</span></p>
+
+</div>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>alloc_chrdev_err:</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span class=apple-tab-span><span lang=EN-US
+style='font-family:宋体;mso-bidi-font-family:宋体'><span style='mso-tab-count:1'>    </span></span></span><span
+lang=EN-US>kfree(my_hello_dev);</span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>return err;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>static void __exit hello_exit (void)</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>{</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>cdev_del (&amp;(my_hello_dev-&gt;cdev));</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>unregister_chrdev_region
+(my_hello_dev-&gt;chrdev,1);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>device_destroy</span><span
+lang=EN-US>(my_class, devno); &nbsp; &nbsp; &nbsp; &nbsp; //delete device node
+under /dev//</span>必须先删除设备，再删除<span lang=EN-US>class</span>类</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>class_destroy</span><span
+lang=EN-US>(my_class); &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+//delete class created by us</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>printk (KERN_INFO &quot;char driver cleaned
+up\n&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>}</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>module_init (hello_init);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>module_exit (hello_exit);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>MODULE_LICENSE (&quot;GPL&quot;);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>这样，模块加载后，就能在<span lang=EN-US>/dev</span>目录下找到<span
+lang=EN-US>memdev</span>这个设备节点了。</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span>例<span lang=EN-US>2:</span>内核中的<span
+lang=EN-US>drivers/i2c/i2c-dev.c</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>在<span lang=EN-US>i2cdev_attach_adapter</span>中调用<span
+lang=EN-US>device_create(i2c_dev_class, &amp;adap-&gt;dev,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;MKDEV(I2C_MAJOR, adap-&gt;nr), NULL,</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;&quot;i2c-%d&quot;, adap-&gt;nr);</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>这样在<span lang=EN-US>dev</span>目录就产生<span lang=EN-US>i2c-0
+&nbsp;</span>或<span lang=EN-US>i2c-1</span>节点</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>接下来就是<span lang=EN-US>udev</span>应用，<span lang=EN-US>udev</span>是应用层的东西，<span
+lang=EN-US>udev</span>需要内核<span lang=EN-US>sysfs</span>和<span lang=EN-US>tmpfs</span>的支持，<span
+lang=EN-US>sysfs</span>为<span lang=EN-US>udev</span>提供设备入口和<span lang=EN-US>uevent</span>通道，<span
+lang=EN-US>tmpfs</span>为<span lang=EN-US>udev</span>设备文件提供存放空间</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>udev</span>的源码可以在去相关网站下载，然后就是对其在运行环境下的移植，指定交叉编译环境，修改<span
+lang=EN-US>Makefile</span>下的<span lang=EN-US>CROSS_COMPILE</span>，如为<span
+lang=EN-US>mipsel-linux-</span>，<span lang=EN-US>DESTDIR=xxx</span>，或直接<span
+lang=EN-US>make CROSS_COMPILE=mipsel-linux-,DESTDIR=xxx </span>并<span
+lang=EN-US>install</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>把主要生成的<span lang=EN-US>udevd</span>、<span lang=EN-US>udevstart</span>拷贝<span
+lang=EN-US>rootfs</span>下的<span lang=EN-US>/sbin/</span>目录内，<span lang=EN-US>udev</span>的配置文件<span
+lang=EN-US>udev.conf</span>和<span lang=EN-US>rules.d</span>下的<span lang=EN-US>rules</span>文件拷贝到<span
+lang=EN-US>rootfs</span>下的<span lang=EN-US>/etc/</span>目录内</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>并在<span lang=EN-US>rootfs/etc/init.d/rcS</span>中添加以下几行：</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>echo “Starting udevd...”</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>/sbin/udevd --daemon</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US style='color:#0000F0'>/sbin/udevstart</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>（原<span lang=EN-US>rcS</span>内容如下：</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US># <st1:place w:st="on"><st1:PlaceType
+ w:st="on">mount</st1:PlaceType> <st1:PlaceName w:st="on">filesystems</st1:PlaceName></st1:place></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mount -t proc /proc /proc</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mount -t sysfs sysfs /sys</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mount -t tmpfs tmpfs /dev</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US># create necessary devices</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mknod /dev/null c 1 3</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mkdir /dev/pts</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mount -t devpts devpts /dev/pts</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mknod /dev/audio c 14 4</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>/bin/mknod /dev/ts c 10 16</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>）</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal>这样当系统启动后，<span lang=EN-US>udevd</span>和<span lang=EN-US>udevstart</span>就会解析配置文件，并自动在<span
+lang=EN-US>/dev</span>下创建设备节点文件</p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+<div style='mso-element:para-border-div;border:none;border-bottom:solid #AAAAAA 1.0pt;
+mso-border-bottom-alt:solid #AAAAAA .75pt;padding:0cm 0cm 0cm 0cm'>
+
+<h1 style='margin-top:0cm;margin-right:0cm;margin-bottom:1.2pt;margin-left:
+0cm;mso-line-height-alt:14.4pt;border:none;mso-border-bottom-alt:solid #AAAAAA .75pt;
+padding:0cm;mso-padding-alt:0cm 0cm 0cm 0cm'><span lang=EN-US style='font-size:
+19.0pt;font-family:Arial;color:black;mso-fareast-language:ZH;font-weight:normal'>Udev</span><span
+style='font-size:19.0pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black;font-weight:normal'>简介</span><span
+lang=EN-US style='font-size:19.0pt;font-family:Arial;color:black;font-weight:
+normal'>(from wikipedia)<o:p></o:p></span></h1>
+
+</div>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white'><b><span lang=EN-US style='font-size:
+11.5pt;font-family:Arial;color:black'>udev</span></b><span
+class=apple-converted-space><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>&nbsp;</span></span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>是</span><span lang=EN-US style='font-size:11.5pt;font-family:
+Arial;color:black'>Linux kernel 2.6</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>系列的设备管理器。它主要的功能是管理</span><tt><span lang=EN-US
+style='font-family:"Courier New";mso-bidi-font-family:宋体;color:black'>/dev</span></tt><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>目录底下的</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/w/index.php?title=%E8%AE%BE%E5%A4%87%E8%8A%82%E7%82%B9&amp;action=edit&amp;redlink=1"
+title="设备节点（页面不存在）" style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span lang=EN-US style='font-family:宋体;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;color:#A55858'><span
+lang=EN-US>设备节点</span></span></a></span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>。它同时也是用来接替</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'><a href="http://zh.wikipedia.org/wiki/Devfs"
+title=Devfs style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span style='color:#0B0080'>devfs</span></a></span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>及</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/w/index.php?title=Hotplug&amp;action=edit&amp;redlink=1"
+title="Hotplug（页面不存在）" style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span style='color:#A55858'>hotplug</span></a></span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>的功能，这意味着它要在添加／删除硬件时处理</span><tt><span
+lang=EN-US style='font-family:"Courier New";mso-bidi-font-family:宋体;color:black'>/dev</span></tt><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>目录以及所有用户空间的行为，包括加载</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/wiki/Firmware" title=Firmware style='text-decoration:
+initial;background-position:initial initial;background-repeat:initial initial'><span
+style='color:#0B0080'>firmware</span></a></span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>时。</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>udev</span><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>的最新版本依赖于升级后的</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>Linux kernel <st1:chsdate
+Year="1899" Month="12" Day="30" IsLunarDate="False" IsROCDate="False" w:st="on">2.6.13</st1:chsdate></span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>的</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/w/index.php?title=Uevent&amp;action=edit&amp;redlink=1"
+title="Uevent（页面不存在）" style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span style='color:#A55858'>uevent</span></a></span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>接口的最新版本。使用新版本</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>的系统不能在</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>2.6.13</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>以下版本启动，除非使用</span><i><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>noudev</span></i><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>参数来禁用</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>并使用传统的／</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>dev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>来进行设备读取。</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<div style='mso-element:para-border-div;border:none;border-bottom:solid #AAAAAA 1.0pt;
+mso-border-bottom-alt:solid #AAAAAA .75pt;padding:0cm 0cm 2.0pt 0cm;background:
+white'>
+
+<h2 style='margin-top:0cm;margin-right:0cm;margin-bottom:7.2pt;margin-left:
+0cm;line-height:16.55pt;background:white;border:none;mso-border-bottom-alt:
+solid #AAAAAA .75pt;padding:0cm;mso-padding-alt:0cm 0cm 2.0pt 0cm;background-position:
+initial initial;background-repeat:initial initial;overflow:hidden'><span
+class=mw-headline><span style='font-size:16.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black;font-weight:
+normal'>概要</span></span></span><span lang=EN-US style='font-size:16.5pt;
+font-family:Arial;color:black;font-weight:normal'><o:p></o:p></span></h2>
+
+</div>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span style='font-size:11.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>在传统的</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>Linux</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>系统中，</span><tt><span lang=EN-US
+style='font-family:"Courier New";color:black'>/dev</span></tt><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>目录下的设备节点为一系列静态存在的文件，而</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>则动态提供了在系统中实际存在的设备节点。虽然</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>devfs</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>提供了类似功能，</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>的支持者也给出了很多</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>实现得比</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>devfs</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>好的理由</span><sup id="cite_ref-1"><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/wiki/Udev#cite_note-1" style='text-decoration:
+initial;background-position:initial initial;background-repeat:initial initial'><span
+style='color:#0B0080'>[1]</span></a></span></sup><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>：</span><span lang=EN-US style='font-size:11.5pt;font-family:
+Arial;color:black'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:1.2pt;
+margin-left:19.2pt;text-indent:-18.0pt;line-height:16.55pt;mso-list:l0 level1 lfo2;
+tab-stops:list 36.0pt;background:white'><![if !supportLists]><span lang=EN-US
+style='font-size:10.0pt;mso-bidi-font-size:11.5pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:black'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>udev</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>支持设备的固定命名，而并不依赖于设备插入系统的顺序。默认的</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>设置提供了存储设备的固定命名。任何硬盘都根据其唯一的文件系统</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>id</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>、磁盘名称及硬件连接的物理位置来进行识别。</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:1.2pt;
+margin-left:19.2pt;text-indent:-18.0pt;line-height:16.55pt;mso-list:l0 level1 lfo2;
+tab-stops:list 36.0pt;background:white'><![if !supportLists]><span lang=EN-US
+style='font-size:10.0pt;mso-bidi-font-size:11.5pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:black'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>udev</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>完全在</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/wiki/%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4"
+title=用户空间 style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span lang=EN-US style='font-family:宋体;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;color:#0B0080'><span
+lang=EN-US>用户空间</span></span></a></span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>执行，而不是像</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>devfs</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>在</span><span lang=EN-US style='font-size:11.5pt;font-family:
+Arial;color:black'><a
+href="http://zh.wikipedia.org/wiki/%E5%86%85%E6%A0%B8%E7%A9%BA%E9%97%B4"
+title=内核空间 style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span lang=EN-US style='font-family:宋体;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;color:#0B0080'><span
+lang=EN-US>内核空间</span></span></a></span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>一样执行。结果就是</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>udev</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>将命名策略从内核中移走，并可以在节点创建前用任意程序在设备属性中为设备命名。</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<div style='mso-element:para-border-div;border:none;border-bottom:solid #AAAAAA 1.0pt;
+mso-border-bottom-alt:solid #AAAAAA .75pt;padding:0cm 0cm 2.0pt 0cm;background:
+white'>
+
+<h2 style='margin-top:0cm;margin-right:0cm;margin-bottom:7.2pt;margin-left:
+0cm;line-height:16.55pt;background:white;border:none;mso-border-bottom-alt:
+solid #AAAAAA .75pt;padding:0cm;mso-padding-alt:0cm 0cm 2.0pt 0cm;orphans: 2;
+text-align:start;widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+background-position:initial initial;background-repeat:initial initial;
+overflow:hidden;word-spacing:0px'><span style='-webkit-user-select: none;
+float:right'><span class=mw-headline><span style='font-size:16.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black;
+font-weight:normal'>运行方式</span></span></span><span lang=EN-US style='font-size:
+16.5pt;font-family:Arial;color:black;font-weight:normal'><o:p></o:p></span></h2>
+
+</div>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>udev</span><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>是一个通用的内核设备管理器。它以守护进程的方式运行于</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>Linux</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>系统，并监听在新设备初始化或设备从系统中移除时，内核（通过</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/w/index.php?title=Netlink&amp;action=edit&amp;redlink=1"
+title="Netlink（页面不存在）" style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span style='color:#A55858'>netlink</span></a><span
+class=apple-converted-space>&nbsp;</span>socket</span><span style='font-size:
+11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>）所发出的</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>uevent</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>。</span><span lang=EN-US style='font-size:11.5pt;font-family:
+Arial;color:black'><o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span style='font-size:11.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>系统提供了一套规则用于匹配可发现的设备事件和属性的导出值。匹配规则可能命名并创建设备节点，并运行配置程序来对设备进行设置。</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>udev</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>规则可以匹配像内核子系统、内核设备名称、设备的物理等属性，或设备串行号的属性。规则也可以请求外部程序提供信息来命名设备，或指定一个永远一样的自定义名称来命名设备，而不管设备什么时候被系统发现。</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white'><span lang=EN-US style='font-size:
+11.5pt;font-family:Arial;color:black'><o:p>&nbsp;</o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white'><span lang=EN-US style='font-size:
+11.5pt;font-family:Arial;color:black'>udev</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>系统可以分为三个部分：</span><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:1.2pt;
+margin-left:19.2pt;text-indent:-18.0pt;line-height:16.55pt;mso-list:l2 level1 lfo3;
+tab-stops:list 36.0pt;background:white'><![if !supportLists]><span lang=EN-US
+style='font-size:10.0pt;mso-bidi-font-size:11.5pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:black'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>libudev</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>函数库，可以用来获取设备的信息。</span><span lang=EN-US style='font-size:
+11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:1.2pt;
+margin-left:19.2pt;text-indent:-18.0pt;line-height:16.55pt;mso-list:l2 level1 lfo3;
+tab-stops:list 36.0pt;background:white'><![if !supportLists]><span lang=EN-US
+style='font-size:10.0pt;mso-bidi-font-size:11.5pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:black'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='font-size:11.5pt;
+font-family:Arial;color:black'>udevd</span><span style='font-size:11.5pt;
+mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:
+Arial;color:black'>守护进程，处于用户空间，用于管理虚拟／</span><span lang=EN-US style='font-size:
+11.5pt;font-family:Arial;color:black'>dev<o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:1.2pt;
+margin-left:19.2pt;text-indent:-18.0pt;line-height:16.55pt;mso-list:l2 level1 lfo3;
+tab-stops:list 36.0pt;background:white'><![if !supportLists]><span lang=EN-US
+style='font-size:10.0pt;mso-bidi-font-size:11.5pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:black'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>管理命令</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>udevadm</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>，用来诊断出错情况。</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span style='font-size:11.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>系统获取内核通过</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'>netlink
+socket</span><span style='font-size:11.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>发出的信息。早期的版本使用</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><a
+href="http://zh.wikipedia.org/w/index.php?title=Hotplug&amp;action=edit&amp;redlink=1"
+title="Hotplug（页面不存在）" style='text-decoration:initial;background-position:initial initial;
+background-repeat:initial initial'><span style='color:#A55858'>hotplug</span></a></span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>，并在</span><tt><span lang=EN-US
+style='font-family:"Courier New";color:black'>/etc/hotplug.d/default</span></tt><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>添加一个链接到自身来达到目的。</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<div style='mso-element:para-border-div;border:none;border-bottom:solid #AAAAAA 1.0pt;
+mso-border-bottom-alt:solid #AAAAAA .75pt;padding:0cm 0cm 2.0pt 0cm;background:
+white'>
+
+<h2 style='margin-top:0cm;margin-right:0cm;margin-bottom:7.2pt;margin-left:
+0cm;line-height:16.55pt;background:white;border:none;mso-border-bottom-alt:
+solid #AAAAAA .75pt;padding:0cm;mso-padding-alt:0cm 0cm 2.0pt 0cm;orphans: 2;
+text-align:start;widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+background-position:initial initial;background-repeat:initial initial;
+overflow:hidden;word-spacing:0px'><span style='-webkit-user-select: none;
+float:right'><span class=mw-headline><span lang=EN-US style='font-size:16.5pt;
+font-family:Arial;color:black;font-weight:normal'>udev</span></span><span
+class=mw-headline><span style='font-size:16.5pt;mso-ascii-font-family:Arial;
+mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black;font-weight:
+normal'>的命令格式</span></span></span><span lang=EN-US style='font-size:16.5pt;
+font-family:Arial;color:black;font-weight:normal'><o:p></o:p></span></h2>
+
+</div>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>BUS </span><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>总线</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'> KERNEL </span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>内核名如</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>sd* ID </span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>设备</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>id </span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>如总线</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>id PLACE<o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>SYSFS{filename}<o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>PROGRAM </span><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>调用外部程序</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'> RESULT </span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>匹配</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'>program</span><span
+style='font-size:11.5pt;mso-ascii-font-family:Arial;mso-hansi-font-family:Arial;
+mso-bidi-font-family:Arial;color:black'>返回的结果</span><span lang=EN-US
+style='font-size:11.5pt;font-family:Arial;color:black'> NAME<o:p></o:p></span></p>
+
+<p style='margin-top:4.8pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
+0cm;line-height:16.55pt;background:white;orphans: 2;text-align:start;
+widows: 2;-webkit-text-size-adjust: auto;-webkit-text-stroke-width: 0px;
+word-spacing:0px'><span lang=EN-US style='font-size:11.5pt;font-family:Arial;
+color:black'>SYMLINK </span><span style='font-size:11.5pt;mso-ascii-font-family:
+Arial;mso-hansi-font-family:Arial;mso-bidi-font-family:Arial;color:black'>连接规则</span><span
+lang=EN-US style='font-size:11.5pt;font-family:Arial;color:black'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

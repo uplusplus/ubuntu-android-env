@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0200)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/CyanogenMod%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%92%8C%E7%BC%96%E8%AF%91(Android%20ROM%E5%AE%9A%E5%88%B6%E5%9F%BA%E7%A1%80%E7%AF%87).htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="./CyanogenMod源码下载和编译_files/shStyle.css">
+
+
+
+  
+
+ 
+
+
+</head>
+<body contenteditable="true">
+
+
+
+<div id="home">
+
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+	
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle"><a id="cb_post_title_url" class="postTitle2" href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/CyanogenMod%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%92%8C%E7%BC%96%E8%AF%91(Android%20ROM%E5%AE%9A%E5%88%B6%E5%9F%BA%E7%A1%80%E7%AF%87)_files/CyanogenMod%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD%E5%92%8C%E7%BC%96%E8%AF%91(Android%20ROM%E5%AE%9A%E5%88%B6%E5%9F%BA%E7%A1%80%E7%AF%87).htm">CyanogenMod源码下载和编译</a></h1>
+		
+		<div class="postBody">
+			<div id="cnblogs_post_body"><p>本来想下载Android官方源代码，没想到android.git.kernel.org维护，不能访问，非常遗憾，并因此还郁闷了几天。&nbsp;<br>后来转投MIUI,没找到它的源码，不知道它的"超过40万人社区开发团队"是什么意思，求解具体开发人员几何，都是谁？<br>后来一想，竟然忘记了CyanogenMod这茬，这可是的的确确的开源啊，我的手机一直也在用CyanogenMod系统的，感觉确实不错。</p>
+<p><strong>1.准备<br></strong>我得环境如下，<br>VirtualBox 4.1.2.r73507<br>Ubuntu11.10 Beta2(32位)<br>下载CyanogenMod的gingerbread分支<br>Ubuntu的环境配置大家可以参考我前面写的《<a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/05/29/2060636.html">Android拓展系列(3)--Android源码下载</a>》，也可以参考<a href="http://source.android.com/">http://source.android.com/</a>。<br>这里着重说下Android 2.3以上需要借助JAVA6，安装Java6，我推荐如下安装：</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_390862" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$ sudo add-apt-repository </code><code class="csharp string">"deb <a href="http://archive.canonical.com/">http://archive.canonical.com/</a> lucid partner"</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$ sudo add-apt-repository </code><code class="csharp string">"deb-src <a href="http://archive.canonical.com/ubuntu">http://archive.canonical.com/ubuntu</a> lucid partner"</code></div><div class="line number3 index2 alt2"><code class="csharp plain">$ sudo apt-</code><code class="csharp keyword">get</code> <code class="csharp plain">update</code></div><div class="line number4 index3 alt1"><code class="csharp plain">$ sudo apt-</code><code class="csharp keyword">get</code> <code class="csharp plain">install sun-java6-jdk</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>其中第二句可能会出错，不过没关系，跳过即可。&nbsp;</p>
+<p><strong>2.安装repo</strong><br>因为android.git官方已经不能访问，所以我这里提供一个repo文件的下载地址，免的大家到处搜索：<a href="http://115.com/file/cl15goo2#repo">http://115.com/file/cl15goo2#repo</a>&nbsp;<br>把repo拷贝到ubuntu根目录下得bin下<br>操作方法：</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_950346" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$mkdir bin</code></div><div class="line number2 index1 alt1"><code class="csharp comments">//下载的repo脚本拷贝本地bin文件夹下</code></div><div class="line number3 index2 alt2"><code class="csharp comments">//设置本地repo的可执行权限</code></div><div class="line number4 index3 alt1"><code class="csharp plain">$chmod a+x ~/bin/repo</code></div><div class="line number5 index4 alt2"><code class="csharp plain">$alias repo=</code><code class="csharp string">"~/bin/repo"</code></div><div class="line number6 index5 alt1"><code class="csharp comments">//这里我用特意用别名，大家也可以按常规方法把repo的路径添加到PATH中</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p><strong>3.ubuntu中环境的配置</strong><br>JDK前面已经说了，其他的软件列表如下：</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_857097" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$sudo apt-</code><code class="csharp keyword">get</code> <code class="csharp plain">install git-core gnupg flex bison gperf libsdl1.2-dev libesd0-dev libwxgtk2.6-dev squashfs-tools build-essential zip curl libncurses5-dev zlib1g-dev sun-java6-jdk pngcrush schedtool&nbsp; </code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>这些软件都安装好之后我们开始下载CyanogenMod源码。</p>
+<p><strong>4.下载CyanogenMod源码</strong></p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_74894" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp comments">//从用户根目录下开始</code></div><div class="line number2 index1 alt1"><code class="csharp comments">//创建CyanogenMod文件夹来放置后面所有的代码</code></div><div class="line number3 index2 alt2"><code class="csharp plain">$mkdir CyanogenMod</code></div><div class="line number4 index3 alt1"><code class="csharp comments">//获取gingerbread的分支源代码</code></div><div class="line number5 index4 alt2"><code class="csharp plain">$repo init -u git:</code><code class="csharp comments">//github.com/CyanogenMod/android.git -b gingerbread&nbsp; </code></div><div class="line number6 index5 alt1"><code class="csharp comments">//同步服务器代码到本地，-j16据网友反应是多开网络连接，从而能提高下载速度</code></div><div class="line number6 index5 alt1"><code class="csharp comments">//Uplusplus:这个过程可能出现无法获取子项目的问题,可以进入.repo/projects/external/下删除相应的.git文件夹,再次sync即可.</code></div><div class="line number7 index6 alt2"><code class="csharp plain">$repo sync -j16</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>这个过程非常的漫长，大家慢慢的等吧，本人是晚上睡觉的时候下载，第二天早上醒来就Done了。</p>
+<p><strong>5.编译源码</strong><br>在CyanogenMod/device目录下有很多款手机的对应版本：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092720560175.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"><br>里面有个htc，本人是htc G9，也就是Liberty，我们点击看看：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092720563435.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"><br>我的liberty静静的优雅的舒服的躺在那里。<br>所以本人决定编译一个我手头上的liberty对应的系统版本，编译完成后我们直接刷机。<br><em><strong>第一步：读取手机上的一些私有配置文件</strong></em></p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_497367" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$cd CyanogenMod/device/htc/liberty</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$./extract-files.sh</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>图示如下：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721025486.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p><em><strong>第二步：生成编译脚本文件</strong></em></p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_197883" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$cd ~/CyanogenMod/vendor/cyanogen&nbsp; </code></div><div class="line number2 index1 alt1"><code class="csharp plain">$./</code><code class="csharp keyword">get</code><code class="csharp plain">-rommanager</code></div><div class="line number3 index2 alt2"><code class="csharp plain">$./extract-google-files</code></div><div class="line number4 index3 alt1"><code class="csharp comments">//复制编译脚本文件到CyanogenMod目录下，后面编译整个系统用的就是这个文件</code></div><div class="line number5 index4 alt2"><code class="csharp plain">$cp ~/CyanogenMod/vendor/cyanogen/products/cyanogen_lieberty.mk&nbsp; ~/CyanogenMod/buildspec.mk</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>贴上进行时图片：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721064981.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p><em><strong>第三步：编译脚本</strong></em><br>回到CyanogenMod目录下，执行脚本。</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_926430" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp comments">//初始化脚本，这个是后面的重要基础步骤</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$source build/envsetup.sh</code></div><div class="line number3 index2 alt2"><code class="csharp comments">//选择编译的产品</code></div><div class="line number4 index3 alt1"><code class="csharp comments">//这个命令需要一小会儿时间，但是又没提示，耐性等待一下</code></div><div class="line number5 index4 alt2"><code class="csharp plain">$lunch cyanogen_liberty-eng</code></div><div class="line number6 index5 alt1"><code class="csharp comments">//开始编译</code></div><div class="line number7 index6 alt2"><code class="csharp plain">$make -j4 CYANOGEN_WITH_GOOGLE=</code><code class="csharp keyword">true</code> <code class="csharp plain">otapackage </code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>这个过程也是相当的漫长，还好一般情况下我们只是第一次需要项目整个编译，后面只需要编译某个模块。<br>可惜完成的时候我忘记截图了，可惜不能上图了。<br>在编译的过程中，我们有一点要特别注意，虚拟机的内存不要太小，本人刚开始分配虚拟机512M内存，一会儿就出错，重新编译又一会儿出错，如此重复，而且还导致某个文件被破坏掉了（values-cs/strings.xml中某行少一个右尖括号，这个我百思不得其解），后来我把虚拟机内存调到1024M就一直编译通过了。</p>
+<p><em><strong>第四步：生产刷机zip包。</strong></em></p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_49831" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">./vendor/cyanogen/tools/squisher</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>有图为赏：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721195018.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"><br>用这个zip包，我刷到我手机上，一切正常。</p>
+<p><strong>6.定制ROM</strong><br>有了以上的环境后，我们就可以大展手脚，深度定制ROM, 做自己的操作系统，自己的CyanogenMod，自己的MIUI，自己的Android系统。<br>举个最简单的例子：<br>我们换一下默认menu菜单的选中背景图，我们进入CyanogenMod/frameworks/base/core/res/res/mdpi目录下(因为htc liberty的分辨率是480x320)，找到图片highlight_pressed.png，替换为绿色的背景：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721295436.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"><br>那么修改资源文件后，我们需要重新编译framework-res.apk:</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_851462" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp comments">//回到根目录</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$cd</code></div><div class="line number3 index2 alt2"><code class="csharp comments">//切换到管理员权限</code></div><div class="line number4 index3 alt1"><code class="csharp plain">$sudo -s</code></div><div class="line number5 index4 alt2"><code class="csharp comments">//进入CyanogenMod目录，并初始化脚本文件</code></div><div class="line number6 index5 alt1"><code class="csharp plain">$cd CyanogenMod</code></div><div class="line number7 index6 alt2"><code class="csharp plain">$source build/envsetup.h</code></div><div class="line number8 index7 alt1"><code class="csharp comments">//选择产品</code></div><div class="line number9 index8 alt2"><code class="csharp plain">$lunch cyanogen_liberty-eng</code></div><div class="line number10 index9 alt1"><code class="csharp comments">//进入资源编译目录(或者它的子目录也可以)</code></div><div class="line number11 index10 alt2"><code class="csharp plain">$cd frameworks/</code><code class="csharp keyword">base</code><code class="csharp plain">/core/res</code></div><div class="line number12 index11 alt1"><code class="csharp comments">//开始编译framework-res.apk</code></div><div class="line number13 index12 alt2"><code class="csharp plain">$mm</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>编译完成，示意图如下：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721494456.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p>在CyanogenMod/out/target/product/liberty/system/framework目录下生成了一个framework-res.apk文件，就是我们修改Menu选中项图片后新打的资源包。<br>现在我们需要把这个资源包更新到手机中。<br>USB连上手机后，一切正常的话(adb当然也是事前要装好的哦)，打开终端：</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_77231" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp comments">//使其可写</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$adb remount</code></div><div class="line number3 index2 alt2"><code class="csharp comments">//替换手机中资源包</code></div><div class="line number4 index3 alt1"><code class="csharp plain">$adb push ~/CyanogenMod/</code><code class="csharp keyword">out</code><code class="csharp plain">/target/product/liberty/system/framework/framework-res.apk /system/framework/</code></div><div class="line number5 index4 alt2"><code class="csharp comments">//重启手机后生效</code></div><div class="line number6 index5 alt1"><code class="csharp plain">$adb reboot</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>重启后，进入桌面，我们点击Menu，选择一项：</p>
+<p><img src="./CyanogenMod源码下载和编译_files/2011092721573548.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p>修改资源包，可以修改样式，显示图片，调整布局等等。<br>你也可以直接修改framework代码，在framework/base/core/java目录下，修改对应的类，比如逻辑处理，样式重绘等等，然后同上面类似编译，把生成的framework.jar替换掉手机的/system/framework下的framework.jar，重启手机即可看到效果。<br>你也可以添加系统应用，删除系统应用等等，这里特别提到一点，系统应用可以通过如下命令删除(具有root权限)：</p>
+<div class="cnblogs_Highlighter">
+<div><div id="highlighter_807312" class="syntaxhighlighter  csharp"><div class="toolbar"><span><a href="http://www.cnblogs.com/qianxudetianxia/archive/2011/09/27/2193590.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="csharp plain">$adb remount</code></div><div class="line number2 index1 alt1"><code class="csharp plain">$adb shell</code></div><div class="line number3 index2 alt2"><code class="csharp preprocessor">#cd system/app</code></div><div class="line number4 index3 alt1"><code class="csharp comments">//用rm删除系统FM应用</code></div><div class="line number5 index4 alt2"><code class="csharp preprocessor">#rm FM.apk</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>有了这些基础知识，我相信我们后面的深度定制ROM一定非常精彩！</p>
+<p><strong>7.小结</strong><br>本文以CyanogenMod源码编译总结了Android改造系统的一个基本环境，是我们之后ROM系统定制，优化的基础，是android深入学习的必会技能，特此分享，共勉！&nbsp;</p></div>
+
+
+
+
+		</div>
+		
+	</div>
+	
+	
+</div>
+
+
+
+
+
+
+
+	</div>
+	</div>
+
+	
+	
+	</div>
+	
+	
+</div>
+
+
+
+</body></html>

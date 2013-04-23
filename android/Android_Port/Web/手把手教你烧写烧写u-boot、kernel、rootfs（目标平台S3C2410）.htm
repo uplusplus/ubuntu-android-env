@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0055)http://blog.csdn.net/songjinshi/article/details/6818022 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body>
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./手把手教你烧写烧写u-boot、kernel、rootfs（目标平台S3C2410）_files/手把手教你烧写烧写u-boot、kernel、rootfs（目标平台S3C2410）.htm">
+        手把手教你烧写烧写u-boot、kernel、rootfs（目标平台S3C2410）
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+<span style="font-size:18px">内核分区空间：</span>
+<p><span style="font-size:18px">Creating 4 MTD partitions on "NAND 64MiB 3,3V 8-bit":</span></p>
+<p><span style="font-size:18px">0x00000000-0x00080000 : "Bootloader"</span></p>
+<p><span style="font-size:18px">0x00080000-0x00280000 : "Linux Kernel"</span></p>
+<p><span style="font-size:18px">0x00280000-0x00680000 : "Root File System"</span></p>
+<p><span style="font-size:18px">0x00680000-0x04000000 : "User Space"</span></p>
+<p><span style="font-size:18px">烧写u-boot：</span></p>
+<p><span style="font-size:18px">tftp 0x30008000 u-boot.bin</span></p>
+<p><span style="font-size:18px">nand erase 0x0 0x80000</span></p>
+<p><span style="font-size:18px">nand write 0x30008000 0x0 0x80000</span></p>
+<p><span style="font-size:18px">烧写内核：</span></p>
+<p><span style="font-size:18px">tftp 0x30008000 uImage</span></p>
+<p><span style="font-size:18px">nand erase 0x80000 0x200000</span></p>
+<p><span style="font-size:18px">nand write 0x30008000 0x80000 0x200000</span></p>
+<p><span style="font-size:18px">烧写文件系统：</span></p>
+<p><span style="font-size:18px">tftp 0x30008000 root.cramfs </span></p>
+<p><span style="font-size:18px">nand erase 0x280000 0x400000</span></p>
+<p><span style="font-size:18px">nand write 0x30008000 0x280000 0x400000</span></p>
+<p><span style="font-size:18px">[smdk2410#]setenv bootcmd nand read 0x30008000 0x80000 0x200000\;bootm</span></p>
+<p><span style="font-size:18px">[smdk2410#]saveenv</span></p>
+<p><span style="font-size:18px">[smdk2410#]setenv bootargs root=/dev/mtdblock2 init=/linuxrc console=ttySAC0,115200</span></p>
+<p><span style="font-size:18px">[smdk2410#]saveenv</span></p>
+<p><span style="font-size:18px">Saving Environment to NAND...</span></p>
+<p><span style="font-size:18px">Erasing Nand...Writing to Nand... done</span></p>
+<p><span style="font-size:18px">[smdk2410#]printenv</span></p>
+<p><span style="font-size:18px">bootargs=root=/dev/mtdblock3 init=/linuxrc console=ttySAC0,115200</span></p>
+<p><span style="font-size:18px">bootcmd=tftp; bootm</span></p>
+<p><span style="font-size:18px">bootdelay=3</span></p>
+<p><span style="font-size:18px">baudrate=115200</span></p>
+<p><span style="font-size:18px">ethaddr=08:00:3e:26:0a:5b</span></p>
+<p><span style="font-size:18px">ipaddr=192.168.1.131</span></p>
+<p><span style="font-size:18px">serverip=192.168.1.132</span></p>
+<p><span style="font-size:18px">netmask=255.255.255.0</span></p>
+<p><span style="font-size:18px">bootfile="uImage"</span></p>
+<p><span style="font-size:18px">stdin=serial</span></p>
+<p><span style="font-size:18px">stdout=serial</span></p>
+<p><span style="font-size:18px">stderr=serial</span></p>
+<p><span style="font-size:18px">修改ROOT分区</span></p>
+<p><span style="font-size:18px">[smdk2410#]setenv bootargs root=/dev/mtdblock2 init=/linuxrc
+</span></p>
+<p><span style="font-size:18px">console=ttySAC0,115200</span></p>
+<p><span style="font-size:18px">[smdk2410#]saveenv</span></p>
+<p><span style="font-size:18px">修改TFTP到NANDFLASH </span></p>
+<p><span style="font-size:18px">[smdk2410#]setenv bootcmd nand read 0x30008000 0x80000 0x200000\; bootm</span></p>
+<p><span style="font-size:18px">[smdk2410 #]printenv</span></p>
+<p><span style="font-size:18px">bootargs=root=/dev/mtdblock2 init=/linuxrc console=ttySAC0,115200</span></p>
+<p><span style="font-size:18px">bootdelay=3</span></p>
+<p><span style="font-size:18px">baudrate=115200</span></p>
+<p><span style="font-size:18px">ethaddr=08:00:3e:26:0a:5b</span></p>
+<p><span style="font-size:18px">ipaddr=192.168.1.131</span></p>
+<p><span style="font-size:18px">serverip=192.168.1.132</span></p>
+<p><span style="font-size:18px">netmask=255.255.255.0</span></p>
+<p><span style="font-size:18px">bootfile="uImage"</span></p>
+<p><span style="font-size:18px">stdin=serial</span></p>
+<p><span style="font-size:18px">stdout=serial</span></p>
+<p><span style="font-size:18px">stderr=serial</span></p>
+<p><span style="font-size:18px">bootcmd=nand read 0x30008000 0x80000 0x160000; bootm</span></p>
+<p><span style="font-size:18px">Environment size: 298/16380 bytes</span></p>
+<p><span style="font-size:18px">[smdk2410#]saveenv</span></p>
+<p><span style="font-size:18px">Saving Environment to NAND...</span></p>
+<p><span style="font-size:18px">Erasing Nand...Writing to Nand... done</span></p>
+<p><span style="font-size:18px">[smdk2410#]reset</span></p>
+<span style="font-size:18px">这样重启过后就会进入我们所移植的linux系统中，所有烧写工作完成。</span>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0119)file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/ARM%E5%BC%80%E5%8F%91%E6%9D%BF%E7%83%A7%E5%86%99uboot.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body contenteditable="true">
+<a name="top"></a>
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle"><br></div><div id="navigator"><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+	
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="file:///D:/My%20Documents/%E6%A1%8C%E9%9D%A2/Android_Port/Web/ARM%E5%BC%80%E5%8F%91%E6%9D%BF%E7%83%A7%E5%86%99uboot_files/ARM%E5%BC%80%E5%8F%91%E6%9D%BF%E7%83%A7%E5%86%99uboot.htm">ARM开发板烧写uboot&nbsp;</a></h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body"><div class="content-head clearfix">
+<div class="content-other-info"><br></div>
+<h2 class="title content-title">s3c6410 ARM开发板烧写uboot新手入门笔记</h2>
+</div>
+<div id="content" class="content mod-cs-content text-content clearfix">
+<p>s3c6410 ARM开发板烧写uboot新手入门笔记</p>
+<p>ARM开发板是依赖 bootloader启动的,是1段小程序,等同x86系统的BIOS,作用是检测硬件并读取内核到内存<br>bootloader通常需要开发人员手动烧写到ARM板上,而BIOS通常固化在某个硬件里;<br>通常bootloader是不用自己写的,别人已写好,最多自己改一下,有时候直接就用了;<br>嵌入式Linux的bootloader最常用的是U-Boot,版本经常更新;<br>WinCE的bootloader当然是微软自己写的EBoot<br>向开发板烧写U-Boot之前,开发板的Nand Flash是空的,没有操作系统,更没有文件系统<br>向没有文件系统的目标板copy文件的过程也就是"烧写"<br>为了解决这个问题,三星公司在硬件上提供了一种烧写机制,叫dnw,<br>就是通过USB线把PC机的U-Boot文件上传到目标板上;dnw是基于libusb标准库做的<br>同时烧写也需要两端都有软件支持,一端是u-boot(u-boot里有dnw),另一端是一个专门的dnw小软件;</p>
+<p>烧写的过程:<br>①usb线连接pc机和目标板;<br>②此时目标板是空的,需要设置sd卡启动,事先制做的sd卡有个uboot,这样目标板的uboot就起来了<br>③在PC端通过超级终端等串口软件操作目标板的uboot,输入命令 # dnw 50008000 <br>&nbsp;&nbsp;&nbsp; 这句话意思是启动目标板的usb连接并设置目标板接收USB数据的内存起始地址为0x50008000<br>④在PC端启动那个dnw软件,有windows版也有linux版的,道理相同,都需要libusb库支持<br>⑤PC端dnw软件:与目标板的USB线路连通后,再发送u-boot.bin文件到目标板<br>&nbsp;&nbsp;&nbsp; 这里发送文件是指发到目标板的内存中,起始地址是0x50008000,注意,这时并没有写到目标板的rand flash<br>⑥在PC端通过超级终端等串口软件操作目标板的uboot,把目标板内存中的u-boot.bin文件写到rand flash<br>⑦把目标板内存数据写到rand flash也是uboot命令提供的,其实这时也只有uboot能用;<br>⑧这里目标板的rand flash里已经烧写好u-boot.bin了,关掉目标板,再设置rand启动就可以了;</p>
+<p>在windows下有个dnw软件,是超级终端和dnw和合集用起来很方便,</p>
+<p>在Linux下分别用到 minicom 和 dnw 这两个软件<br>安装minicom&nbsp;# rpm -ivh minicom-2.00-12.i386.rpm<br>进入minicom&nbsp;# minicom<br>设置minicom&nbsp;ctrl+A O(选择serial port setup)<br>&nbsp;A - /dev/ttyUSB0<br>&nbsp;E - 115200 8N1<br>&nbsp;F - No<br>&nbsp;G - No<br>&nbsp;Save setup as dfl (/etc/minirc.dfl)&nbsp; <br>&nbsp;ctrl + a x 退出minicom</p>
+<p>dnw，包括usb驱动和写入工具</p>
+<p>安装secbulk驱动<br>加载模块到Linux内核： # insmod ./secbulk.ko (注意要在root权限下)<br># dmesg (查看是否加载成功) 　　<br>secbulk:secbulk loaded 　　<br>usbcore: registered new interface driver secbulk (看到这样两行就说明成功了)</p>
+<p>感觉不安装这个驱动也没有事,usb通常都是免驱动的啊,可能是在开发板上安的;</p>
+<p>SD卡启动</p>
+<p>SMDK6410 # dnw 50008000 </p>
+<p>DNW # ./dnw3 ./u-boot.bin</p>
+<p>OTG cable Connected!<br>Now, wating for DNW to transmit data<br>Down Done!! Down Address: 0x50008000, Download Filesize:0x30000<br>Checksum is being calculated.<br>Checksum O.K.</p>
+<p>SMDK6410 # nand erase 0 100000<br>SMDK6410 # nand write.uboot 50008000 0 100000&nbsp;//write(.uboot是参数不能改,且只在sd-boot中实现)</p>
+<p>nand启动</p>
+<p>// 写内核<br>SMDK6410 # dnw 50008000 <br>DNW # ./dnw3 ./zImage<br>SMDK6410 # nand erase 100000 500000<br>SMDK6410 # nand write.e 50008000 100000 500000&nbsp;//write(.e是参数不能改)</p>
+<p><br>// 写文件系统cramfse,也就是Qtopia2.2.0<br>SMDK6410 # dnw 50008000 <br>DNW # ./dnw3 ./FORLINX_6410_touch.cramfse<br>SMDK6410 # nand erase 600000 8000000<br>SMDK6410 # nand write.e 50008000 600000 8000000</p>
+<p><br>// 写yaffs文件系统,也就是Qtopia4.4.3<br>copy文件MY6410_yaffs2_v3.0.tar.gz至SD卡<br>完全启动开发板Linux<br>SMDK6410 # tar zxvf /sdcard/MY6410_yaffs2_v3.0.tar.gz -C /mnt/disk&nbsp;&nbsp; 或<br>SMDK6410 # tar zxvf /udisk/MY6410_yaffs2_v3.0.tar.gz -C /mnt/disk<br>重启进入uboot</p>
+<p>SMDK6410 # setenv bootargs root=/dev/mtdblock3 rootfstype=yaffs2 console=ttySAC0,115200<br>SMDK6410 # saveenvsd<br>SMDK6410 # reset</p>
+<p>//原来的env<br>SMDK6410 # printenv<br>bootargs=root=/dev/mtdblock2 rootfstype=cramfs console=ttySAC0,115200<br>bootcmd=nand read 0xc0008000 0x100000 0x500000;bootm 0xc0008000<br>bootdelay=1<br>baudrate=115200<br>ethaddr=00:40:5c:26:0a:5b<br>ipaddr=192.168.1.20<br>serverip=192.168.1.10<br>gatewayip=192.168.1.1<br>netmask=255.255.255.0<br>stdin=serial<br>stdout=serial<br>stderr=serial</p>
+<p>&nbsp;</p>
+<h3 class="title pre fs1"><span class="tcnt">烧写uboot、内核及文件系统的方法</span>&nbsp;&nbsp;</h3>
+<div class="bct fc05 fc11 nbw-blog ztag js-fs2"><p style="text-indent: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">下面总结的是做这个项目使用过的方法，不一定全面，仅供参考。</span></p>
+<p style="margin-left: 18pt; text-indent: -18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>1、</span></span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">的烧写</span></p>
+<p style="text-indent: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">下载</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">Uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">分为两个步骤，第一步将</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">下载到系统的扩展</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">RAM</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">并运行，第二步通过内存中运行的</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">把整个</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">下载到内存再烧写到</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nandflash</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">第一步</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">下载</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">到扩展</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">RAM</span></p>
+<p style="text-indent: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">首先使用短路块选择系统从内部启动，复位或者上电就会在串口软件（</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">115200 8 n 1</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">）看到打印的信息</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">LPC31xx READY FOR PLAIN IMAGE&gt;</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，此时使用串口软件的发送文件选择发送</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">u-boot-init.bin</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，再发送</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">u-boot.bin</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，之后就会在</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">RAM</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中启动</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，打印输出启动信息，并进行倒计时，此时发送任意字符给系统，停止计时，关闭串口软件，使用超级终端连接系统。</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">第二步</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">烧写</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">到</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nandflash</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">在超级终端中输入</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">loady</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">命令，再使用传送</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">/</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">发送文件，选择</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">Ymodem</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">协议，发送</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">u-boot.bin</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，接收完成后，先擦除</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand erase</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，可以全擦掉（不用给参数），也可以使用使用参数指定区域，一般第一次要全擦，而后使用</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand_params</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">将</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">flash</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">的信息写入其中，最后使用</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand write 0x30001000 0x4000 0x100000</span></p>
+<p style="margin-left: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;</span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">其中，</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">0x30001000 </span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">是</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">在内存中的地址；</span></p>
+<p style="margin-left: 39pt; text-indent: 3pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">0x4000 uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">在</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">flash</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中存放的起始地址，需要根据实际的分区情况而定；</span></p>
+<p style="margin-left: 36pt; text-indent: 3pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">0x100000 </span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">是</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">的大小，不小于实际大小；</span></p>
+<p style="margin-left: 9.05pt; text-indent: 21pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">至此，将</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">写入到</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nandflash</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中，可以将短路跳线去掉，使其从</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nandflash</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">启动。</span></p>
+<p style="margin-left: 18pt; text-indent: -18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>2、</span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">内核的烧写</span></p>
+<p style="text-indent: 30pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">在</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">启动倒计时，击任意键停止，输入</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">loady</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，与</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">烧写相似，使用的命令主要有：</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand erase 0x200000</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">（地址）</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"> 0x200000</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">（大小）</span></p>
+<p style="margin-left: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>nand write 0x30001000 0x200000 0x200000</span></p>
+<p style="margin-left: 18pt; text-indent: -18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>3、</span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">文件系统的烧写</span></p>
+<p style="text-indent: 24pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">文件系统的烧写，可以通过与内核相似的方法使用串口烧写，也可以通过挂载</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nfs</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">使用</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">mtd_debug </span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">工具烧写，由于文件系统较大，使用第一种方式会慢一些。</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">串口烧写使用到的命令</span></p>
+<p style="text-indent: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">loady</span></p>
+<p style="text-indent: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand erase 0x600000 0x3a00000</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">（目前的分区情况）</span></p>
+<p style="margin-left: 18pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nand write 0x30001000 0x600000 0x800000</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">（实际大小）</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">使用</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nfs</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">烧写用到的命令</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>mtd_debug erase /dev/mtd2 0 0x3a00000</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>mtd_debug write /dev/mtd2 0 0x800000 ubi.img</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">各项的含义可以参考</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">mtd_debug </span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">的帮助，直接</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">mtd_debug </span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">即可获取说明，其中的</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">len</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">可以使用十进制数，但是在</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中是不可以的，不加</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">0x</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">也会认为是十六进制。</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">4</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">、启动挂载文件系统的选项</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">在</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中可以通过环境变量设置启动的选项，一般只需要配置挂载的文件系统是</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nfs</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">还是</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">ubi</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，及内核启动选项。</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">挂载</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">nanflash</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">中的</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">ubifs</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">：</span></p>
+<p style="text-indent: 36pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">setenv bootargs console=ttyS0,115200n8 ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs;</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">挂载</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">129.1.4.199</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">上</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">/rfs/rootfs</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">，并且本机的</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">ip</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">设为</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">129.1.31.33</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">等：</span></p>
+<p style="text-indent: 36pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">setenv bootargs noinitrd root=/dev/nfs console=ttyS0,115200n8 nfsroot=129.1.4.199:/rfs/rootfs,proto=tcp,nfsvers=3,nolock ip=129.1.31.33:129.1.4.199:129.1.88.1:255.255.0.0::eth0:off</span></p>
+<p style="line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">启动内核的选项：</span></p>
+<p style="text-indent: 36pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">setenv bootcmd nand read 0x30001000 0x200000 0x200000\; bootm 0x30001000\;</span></p>
+<p style="text-indent: 21pt; line-height: 150%;"><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">修改过</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">uboot</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">的环境变量都需要</span><span style="font-size: 12pt; line-height: 150%;" lang="EN-US">saveenv</span><span style="font-size: 12pt; line-height: 150%; font-family: 宋体;">命令保存修改</span></p>
+</div>
+</div></div><div id="MySignature"></div>
+<script type="text/javascript">
+var isLogined = false;
+var cb_blogId = 132974;
+var cb_entryId = 2798920;
+var cb_blogApp = currentBlogApp;
+var cb_blogUserGuid = "93120efc-aa28-e211-aa8f-842b2b196315";
+var cb_entryCreatedDate = '2012/12/3 0:35:00';
+var enableGoogleAd = true;
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+</script>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="blog_post_info">
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"></div>
+</div>
+<script type="text/javascript">
+    //SyntaxHighlighter.config.strings.expandSource = '<span><img src="http://static.cnblogs.com/images/expand-code.gif" alt="" class="expand-code-icon"/>View Code</span>';
+    $(function () {             
+        fixPostBodyFormat();
+        loadAdUnderPost();
+        loadBlogSignature();
+        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);        
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);        
+    });
+</script>
+		</div>
+		<div class="postDesc"><br></div></div></div></div></div></div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+<script type="text/javascript" src="http://common.cnblogs.com/script/google-analytics.js"></script>
+
+
+<script>(function main() {
+        var CONSTANTS = {
+            PLAYER_DOM: 'object[data],embed[src],iframe[src]',
+            PLAYERS: [
+                {
+                    find: /http:\/\/static\.youku\.com\/.*q?(player|loader)(_taobao)?\.swf/,
+                    replace: 'http://player.opengg.me/loader.swf'
+                },
+                {
+                    find: /http:\/\/js\.tudouui\.com\/.*\/TudouVideoPlayer_Homer_.*.swf/,
+                    replace: 'http://player.opengg.me/TudouVideoPlayer_Homer_237.swf'
+                },
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(([a-z]|programs)\/.*)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            SHARE_DOM: '#panel_share input,input#copyInput.txt',
+            SHARES: [
+                {
+                    find: /http:\/\/player\.youku\.com\/player\.php\//,
+                    replace: 'http://player.opengg.me/player.php/'
+                },
+                {
+                    find: /http:\/\/www.tudou.com\/(.*v\.swf)/,
+                    replace: 'http://player.opengg.me/td.php/$1'
+                }
+            ],
+            NODEINSERTED_HACK: '@-moz-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-webkit-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@-o-keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}@keyframes nodeInserted{from{opacity:0;}to{opacity:1;}}embed,object{animation-duration:.001s;-ms-animation-duration:.001s;-moz-animation-duration:.001s;-webkit-animation-duration:.001s;-o-animation-duration:.001s;animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted;-o-animation-name:nodeInserted;}',
+            TOGGLE_BTN: '#toggleGoogle'
+        };
+        var DONE = [];
+        var UTIL = {
+            addCss: function (str) {
+                var style = document.createElement('style');
+                style.textContent = str;
+                document.head.appendChild(style);
+            },
+            reloadFlash: function (elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                if (nextSibling) {
+                    parentNode.insertBefore(elem, nextSibling);
+                } else {
+                    parentNode.appendChild(elem);
+                }
+            },
+            initFlash: function (elem) {
+                // console.log(elem);
+                if (DONE.indexOf(elem) !== -1) {
+                    return;
+                }
+                if (this.rewriteFlash(elem)) {
+                    this.reloadFlash(elem);
+                    DONE.push(elem);
+                }
+            },
+            rewriteFlash: function (elem) {
+                var atrs = ['data', 'src'];
+                var players = CONSTANTS.PLAYERS;
+                var needReload = false;
+                UTIL.forEach(atrs, function (atr) {
+                    UTIL.forEach(players, function (player) {
+                        if (elem[atr] && player.find.test(elem[atr])) {
+                            elem[atr] = elem[atr].replace(player.find, player.replace);
+                            needReload = true;
+                        }
+                    });
+                });
+                return needReload;
+            },
+            forEach: function (arr, callback) {
+                if (this.isArrayLike(arr)) {
+                    if (Array.prototype.forEach) {
+                        Array.prototype.forEach.call(arr, callback);
+                    } else {
+                        var i = 0;
+                        for (i = 0; i < arr.length; ++i) {
+                            callback.call(arr[i], arr[i]);
+                        }
+                    }
+                }
+            },
+            isArrayLike: function (obj) {
+                if (typeof obj !== 'object') {
+                    return false;
+                }
+                var types = ['Array', 'NodeList', 'HTMLCollection'];
+                var i = 0;
+                for (i = 0; i < types.length; ++i) {
+                    if (Object.prototype.toString.call(obj).indexOf(types[i]) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        function init() {
+            function onDOMNodeInsertedHandler(e) {
+                var target = e.target;
+                if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                    UTIL.initFlash(target);
+                }
+            }
+            function onAnimationStartHandler(e) {
+                if (e.animationName === 'nodeInserted') {
+                    var target = e.target;
+                    // console.log(target);
+                    if (target.nodeType === 1 && /OBJECT|EMBED|IFRAME/ig.test(target.nodeName)) {
+                        UTIL.initFlash(target);
+                    }
+                }
+            }
+            UTIL.addCss(CONSTANTS.NODEINSERTED_HACK);
+            /*Firefox*/
+            document.body.addEventListener('animationstart', onAnimationStartHandler, false);
+            /*/Firefox*/
+            /*Chrome*/
+            document.body.addEventListener('webkitAnimationEnd', onAnimationStartHandler, false);
+            /*/Chrome*/
+            /*Opera 12+*/
+            document.body.addEventListener('oAnimationStart', onAnimationStartHandler, false);
+            /*/Opera 12+*/
+            /*IE, but I never tested this*/
+            document.body.addEventListener('msAnimationStart', onAnimationStartHandler, false);
+            /*/IE, but I never tested this*/
+            if (/Opera/.test(navigator.userAgent) && !(/Version\/12/.test(navigator.userAgent))) {
+                /*Old fashion, slower maybe*/
+                document.body.addEventListener('DOMNodeInserted', onDOMNodeInsertedHandler, false);
+                var matches = document.body.querySelectorAll(CONSTANTS.PLAYER_DOM);
+                UTIL.forEach(matches, function (elem) {
+                    UTIL.initFlash(elem);
+                });
+            }
+        }
+        function tips() {
+            s=document.getElementById('ab_pip');
+            s.innerHTML = "";
+        }
+        function share(elem) {
+            var pairs = CONSTANTS.SHARES;
+            UTIL.forEach(pairs, function (item) {
+                elem.value = elem.value.replace(item.find, item.replace);
+            });
+        }
+        var CONTROLLER = [
+            {
+                host: '.',
+                fn: function () {
+                    init();
+                }
+            },
+            {
+                host: 'youku.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    tips();
+
+                    var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                    UTIL.forEach(matches, share);
+
+
+                    var youkuPlayer = document.body.querySelector('.playBox');
+                    var notWide = !document.body.querySelector('.playBox_thx');
+                    if (youkuPlayer && notWide) {
+                        youkuPlayer.className += ' playBox_thx';
+                    }
+                }
+            },
+            {
+                host: 'tudou.com',
+                fn: function () {
+                    // UTIL.addCss(CONSTANTS.STYLE);
+                    //tips();
+                    var tudouPlayer = document.body.querySelector('#playerObject');
+                    var normalDom = document.querySelector('.normal');
+                    if (tudouPlayer && normalDom) {
+                        normalDom.className = normalDom.className.replace('normal','widescreen');
+                    }
+                    var g = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+                    var TUI_copyToClip = g.TUI.copyToClip;
+                    g.TUI.copyToClip = function () {
+                        var matches = document.body.querySelectorAll(CONSTANTS.SHARE_DOM);
+                        UTIL.forEach(matches, share);
+                        TUI_copyToClip.apply(g.TUI, arguments);
+                    };
+                }
+            }
+        ];
+        var host = location.host;
+        function PROC(item) {
+            if (host.indexOf(item.host) !== -1) {
+                item.fn();
+                return;
+            }
+        }
+        UTIL.forEach(CONTROLLER, PROC);
+    })();</script></body></html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0059)http://blog.csdn.net/newthinker_wei/article/details/8022696 -->
+<html xmlns="http://www.w3.org/1999/xhtml" version="g42dymwpi--nx">
+<body contenteditable="false">
+
+
+
+
+<div id="container">
+
+
+
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3><span class="link_title"><a href="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/KConfig、Makefile详解以及ARM平台Linux内核的编译.htm">KConfig、Makefile详解以及ARM平台Linux内核的编译
+        </a></span>
+    </h3>
+</div>
+
+        
+    
+
+
+    
+<div id="article_content" class="article_content">
+
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">本文主要介绍Linxu2.6的内核配置系统。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">如果你浏览一下源代码目录，就可以发现源码目录及其子目录中有很多的KConfig文件和Makefile文件。这些文件什么作用呢？正是这些文件组成了Linux2.6的内核配置系统。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:32px">一、make menuconfig的背后------KConfig文件的组织</span></strong></p>
+<p><strong></strong><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">有没有想过，我们make menuconfig后，显示的那个菜单列表是怎么来的？</span></p>
+<p><span style="font-size:14px">带着这个疑问，我们先来简单学一下Kconfig文件的“语法”。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">source 关键字：</span></strong></p>
+<p><span style="font-size:14px">用法：source &lt;filename&gt;</span></p>
+<p><span style="font-size:14px">这个关键字相当于C语言里的“include”关键字，source后面跟一个文件名，相当于把该文件的内容复制到当前位置。下面是源码目录的arch/arm目录下Kconfig文件的部分内容。</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348741528_9694.JPG"></span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">通过这种source引用，可以引入很多其他子目录中的Kconfig文件，而且引入的Kconfig文件中，还可以继续通过source来引入下一级的Kconfig文件。这样的结构就可以将所有的Kconfig文件包含进来。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">一个菜单项（或叫配置项）的基本组成：config、bool(tristate)、default、prompt、help</span></strong></p>
+<p><span style="font-size:14px">一个简单的菜单项：</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348744157_6406.JPG"></span></p>
+<p><span style="font-size:14px">其中，config关键字表示新定义一个菜单项，后面跟的是这个菜单项的名字(ARCH_IXP23XX)。bool标识这个菜单项是bool类型，也就是这一项只能有两个值Y和N，此外还有一种最常用的类型，tristate三态型，这种类型的可以有三个值，Y/M/N，这三个值的意义在（上）篇中已经说过了。后面的“IXP23XX-based”是这个菜单项的描述，就是在make menuconfig时我们能看到的，如下图：</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348744730_7079.JPG"></span></p>
+<p><span style="font-size:14px">在菜单列表里我们并看不到一个菜单项的名字，而只能看到它的描述，因为看它的描述更便于我们理解这个菜单项的意义，方便我们配置。关于菜单项的描述，还有一个prompt关键字，举例说明其用法。比如下面两段是等效的</span></p>
+<p><span style="font-size:14px">----------------------------------</span></p>
+<p><span style="font-size:14px">CONFIG MY_MENU</span></p>
+<p><span style="font-size:14px">bool</span></p>
+<p><span style="font-size:14px">prompt "this is my menu"</span></p>
+<p><span style="font-size:14px">----------------------------------</span></p>
+<p><span style="font-size:14px">CONFIG MY_MENU</span></p>
+<p><span style="font-size:14px">bool "this is my menu"</span></p>
+<p><span style="font-size:14px">----------------------------------</span></p>
+<p><span style="font-size:14px">就是说，一个菜单项的描述，可以直接跟在其类型(bool)的后面来进行声明，也可以由prompt关键字声明。</span></p>
+<p><span style="font-size:14px">关于default关键字，截图中并未出现，但也是很常用的，它表明一个菜单项的默认值。如</span></p>
+<p><span style="font-size:14px">default y</span></p>
+<p><span style="font-size:14px">在进入菜单列表时，可以发现很多菜单项都有默认值，这些默认值就是通过Kconfig文件里的default定义的。</span></p>
+<p><span style="font-size:14px">还有一个help关键字，help关键字后面的内容是帮助信息，就是我们点击右下角的heip时显示的关于这个菜单项的帮助信息。下面是关于上图所示的菜单项的帮助信息：</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348745771_7967.JPG"></span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">菜单项间的依赖关系：select和depends on</span></strong></p>
+<p><span style="font-size:14px">还拿上面的例子来说明，第三行"depends on MMU"。这一行是说，现在定义的"ARCH_IXP23XX"这个菜单项的值(Y/N)依赖于MMU这个菜单项的值。当MMU这个菜单项为N时，ARCH_IXP23XX只能为N。ARCH_IXP23XX的值必须“小于”MMU的值。（对于bool型，Y&gt;N；对于tristate型，Y&gt;M&gt;N）。</span></p>
+<p><span style="font-size:14px">select关键字的作用恰与depends on相反，它描述了一个反依赖的关系。以第五行"select PCI"为例，PCI的值依赖于ARCH_IXP23XX。在定义PCI这个菜单项时，也要加上这样一句："depends on ARCH_IXP23XX"。</span></p>
+<p><span style="font-size:14px">根据各菜单项之间的依赖关系，在make menuconfig时，系统会自动将这些相关联的菜单项整理成菜单项与子菜单项的形式，如下图</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348747003_5128.JPG"></span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348747253_7209.JPG"></span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">第二张图中的菜单项都依赖于"Enable the block layer"对应的菜单项，所以系统将它们整理成子菜单项。只有"Enable the block layer"对应的菜单项不为N时，这些子菜单项才可以配置。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">menu与endmenu关键字</span></strong></p>
+<p><span style="font-size:14px">这个关键字主要是为了给菜单项分组，使菜单结构看起来更有条理。menu用来定义一个子菜单，这个子菜单里包括一些相关的菜单项，在menu和endmenu关键字之间定义的菜单项都属于这个子菜单。还以那上面两张图为例，"Enable the block layer-----&gt;"菜单项下面的"system type---&gt;"就是一个子菜单的名称。将这个子菜单展开就可以看到这个子菜单包含的菜单项了。</span></p>
+<p><span style="font-size:14px"><span style="color:#cc0000">menu</span> "System type"</span></p>
+<p><span style="font-size:14px">config ……</span></p>
+<p><span style="font-size:14px">…………</span></p>
+<p><span style="font-size:14px">config……</span></p>
+<p><span style="font-size:14px">…………</span></p>
+<p><span style="font-size:14px">config………</span></p>
+<p><span style="font-size:14px">…………</span></p>
+<p><span style="font-size:14px">…………</span></p>
+<p><span style="font-size:14px; color:#cc0000">endmenu</span></p>
+<p><span style="font-size:14px">这里再额外解释一下，在上面的图中，"Enable the block layer---&gt;"和"system type--&gt;"，这两个虽然看起来很像，都可以展开，但其性质是不同的。前者是根据各菜单项间的依赖关系建立起来的，"Enable the block layer"本身就对应一个菜单项或者说配置项，它也有自己的值(Y/M/N)，而"system type"则只是一个子菜单的名称，它下面包含了一些相关的配置项，但他本身不对应某个配置项，因而没有值（所以菜单列表中"system
+ type---&gt;"的前面没有*或M这些符号）。</span></p>
+<p><span style="color:#cc0000"></span><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">choices与endchoice关键字</span></strong></p>
+<p><span style="font-size:14px">跟menu与endmenu用法基本一样，唯一的区别在于，choices定义的“子菜单”（应该叫选项表）中的多个菜单项只能有一个被选中，相当于menu定义一个可多选的子菜单，choices定义一个单选的子菜单。篇幅限制，不再截图详述。</span></p>
+<p><strong></strong><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">if与endif关键字</span></strong></p>
+<p><span style="font-size:14px">这两个真心不用解释，原谅我直接略过。&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:14px">comment关键字</span></strong></p>
+<p><span style="font-size:14px">用来在菜单列表中插入一行文字，也是为了优化菜单结构。</span></p>
+<p><span style="font-size:14px"><img alt="" src="./KConfig、Makefile详解以及ARM平台Linux内核的编译_files/1348749571_7901.JPG"></span></p>
+<p><span style="font-size:14px">如上图中的第四、五行，就是通过&nbsp; comment "Processor Type"&nbsp; 和 comment "Processor Features"插入的。这两行既不能展开，也不能被配置，他们只是为菜单列表分段的一行文字。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">终于把Kconfig中的关键字连图带字的解说完了，好累啊。（很多教材和博客上介绍这些关键字的时候都是只有文字描述，而不结合make menuconfig后出现的菜单界面联系着说明，读起来不够直观，现在我就把这些整理出来，供新手们快速掌握和理解这些关键字的作用）。大家现在可以试着去阅读一个Kconfig文件了。</span></p>
+<p><span style="font-size:14px">好了，对这些关键字有了认识之后，我们来说一下这个菜单列表的形成过程。运行make menuconfig后，系统的配置工具先分析与体系结构对应的/arch/ARCH/Kconfig<br>
+文件（这里出现的ARCH参数在本文最后会讲到。它其实指的就是所用的&lt;cpu&gt;），/arch/ARCH/Kconfig文件中定义了一个主菜单mainmenu，它除了包含一些配置项和配置菜单以外，还通过source语句引用了一系列其他子目录中的Kconfig文件，被引用进来的Kconfig 文件内部可能再次通过source 引入下一级目录中的Kconfig，系统就根据所有这些Kconfig文件中包含的菜单项（配置项）形成了菜单列表，然后根据用户对各个菜单项设置的值，最后生成.config文件。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:32px">二、另一个重要角色------kbuild Makefile的介绍</span></strong></p>
+<p><strong></strong><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">Kconfig文件帮助用户完成配置过程，而真正编译内核则是在各个子目录中的一系列Makefile共同完成的。Makefile中的重要语法就三个，比较好理解，这里直接引用书中的内容。我把需要注意的地方用粗体标示。</span></p>
+<p><span style="font-size:14px">引自 华清远见嵌入式培训中心 宋宝华 编著的《Linux设备驱动开发详解》（这本书真的很好，需要电子版的同仁可以直接联系我）：</span></p>
+<p><span style="font-size:12px">（1）目标定义。<br>
+目标定义用来定义哪些内容要作为模块编译，哪些要编译并连接进内核。<br>
+例如：<br>
+obj-y += foo.o<br>
+表示要由foo.c 或者foo.s 文件编译得到foo.o 并连接进内核，而obj-m 则表示该<br>
+文件要作为模块编译。除了y、m以外的obj-x形式的目标都不会被编译。<br>
+而更常见的做法是根据.config 文件的CONFIG_变量来决定文件的编译方式，如<br>
+下所示：<br>
+obj-$(CONFIG_ISDN) += isdn.o<br>
+obj-$(CONFIG_ISDN_PPP_BSDCOMP) += isdn_bsdcomp.o<br>
+除了obj-形式的目标以外，还有lib-y library库、hostprogs-y 主机程序等目标，但<br>
+是基本都应用在特定的目录和场合下。<br>
+（2）多文件模块的定义。<br>
+如果一个模块由多个文件组成，这时候应采用模块名加-objs后缀或者-y后缀的形<br>
+式来定义模块的组成文件。如下面的例子所示：<br>
+obj-$(CONFIG_EXT2_FS) += ext2.o<br>
+ext2-y := balloc.o bitmap.o<br>
+ext2-$(CONFIG_EXT2_FS_XATTR) += xattr.o<br>
+模块的名字为ext2，由balloc.o和bitmap.o两个目标文件最终连接生成ext2.o 直<br>
+至ext2.ko 文件，是否包括xattr.o 取决于内核配置文件的配置情况。如果<br>
+CONFIG_EXT2_FS 的值是y 也没有关系，在此过程中生成的 ext2.o 将被连接进<br>
+built-in.o最终连接进内核。这里需要注意的一点是，</span><span style="font-size:12px"><strong>该kbuild Makefile所在的目录中<br>
+不能再包含和模块名相同的源文件如ext2.c/ext2.s。<br>
+</strong>或者写成如-objs的形式：<br>
+obj-$(CONFIG_ISDN) += isdn.o<br>
+isdn-objs := isdn_net_lib.o isdn_v110.o isdn_common.o<br>
+（3）目录层次的迭代。<br>
+示例：<br>
+obj-$(CONFIG_EXT2_FS) += ext2/<br>
+当CONFIG_EXT2_FS 的值为y或m时，kbuild将会把ext2 目录列入向下迭代的<br>
+目标中，具体ext2 目录下的文件是要作为模块编译还是链入内核由ext2 目录下的<br>
+Makefile文件的内容决定。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">引用结束。</span></p>
+<p><span style="font-size:14px">上面所述的（3）特别关键，目录层次的迭代使得整个Makefile系统呈现一个树状结构，条理清晰，加载新的编译目录也很方便。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong></strong><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:32px">三、牛刀初试</span></strong></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">假如我们自己开发了一个新的模块，要如何才能把我们自己的模块加到配置系统中？上面已经介绍了Kconfig和Makefile文件的基本语法，为了确保我们掌握了这两种文件的配置方法，我们最好做一下练习，。这里我要再次偷懒，直接COPY书中内容了。</span></p>
+<p><span style="font-size:14px">引用开始：</span></p>
+<p><span style="font-size:12px">下面讲解一个综合实例，假设我们要在内核源代码drivers目录下为ARM体系结<br>
+构新增如下用于test driver 的树型目录：<br>
+|--test<br>
+|-- cpu<br>
+| -- cpu.c<br>
+|-- test.c<br>
+|-- test_client.c<br>
+|-- test_ioctl.c<br>
+|-- test_proc.c<br>
+|-- test_queue.c<br>
+在内核中增加目录和子目录，我们需为相应的新增目录创建Kconfig 和Makefile<br>
+文件，而新增目录的父目录中的Kconfig 和Makefile 文件也需要修改，以便新增的<br>
+Kconfig和Makefile文件能被引用。<br>
+在新增的test目录下，应该包含如下Kconfig文件：<br>
+#<br>
+# TEST driver configuration<br>
+#<br>
+menu "TEST Driver "<br>
+comment " TEST Driver"<br>
+config CONFIG_TEST<br>
+bool "TEST support "<br>
+config CONFIG_TEST_USER<br>
+tristate "TEST user-space interface"<br>
+depends on CONFIG_TEST<br>
+endmenu<br>
+由于TEST driver 对于内核来说是新的功能，所以首先需要创建一个菜单TEST<br>
+Driver；然后显示“TEST support”，等待用户选择；接下来判断用户是否选择了TEST<br>
+Driver，如果是（CONFIG_TEST=y），则进一步显示子功能：用户接口与CPU功能支<br>
+持；由于用户接口功能可以被编译成内核模块，所以这里的询问语句使用了tristate。<br>
+为了使这个Kconfig文件能起作用，需要修改arch/arm/Kconfig文件，增加以下内<br>
+容：<br>
+source "drivers/test/Kconfig"<br>
+脚本中的source意味着引用新的Kconfig文件。<br>
+在新增的test目录下，应该包含如下Makefile文件：<br>
+# drivers/test/Makefile<br>
+#<br>
+# Makefile for the TEST.<br>
+#<br>
+obj-$(CONFIG_TEST) += test.o test_queue.o test_client.o<br>
+obj-$(CONFIG_TEST_USER) += test_ioctl.o<br>
+obj-$(CONFIG_PROC_FS) += test_proc.o<br>
+obj-$(CONFIG_TEST_CPU) += cpu/<br>
+该脚本根据配置变量的取值构建obj-*列表。由于test目录中包含一个子目录cpu，<br>
+当CONFIG_ TEST_CPU=y时，需要将cpu目录加入列表。<br>
+test目录中的cpu子目录也需包含如下的Makefile文件：<br>
+# drivers/test/test/Makefile<br>
+#<br>
+# Makefile for the TEST CPU<br>
+#<br>
+obj-$(CONFIG_TEST_CPU) += cpu.o<br>
+为了使得整个test 目录能够被编译命令作用到，test 目录父目录中的Makefile 文<br>
+件也需新增如下脚本：<br>
+obj-$(CONFIG_TEST) += test/<br>
+在drivers/Makefile中加入obj-$(CONFIG_TEST) += test/，使得用户在进行内核编<br>
+译时能够进入test目录。<br>
+增加了Kconfig和Makefile文件之后的新的test树型目录如下所示：<br>
+|--test<br>
+|-- cpu<br>
+| -- cpu.c<br>
+| -- Makefile<br>
+|-- test.c<br>
+|-- test_client.c<br>
+|-- test_ioctl.c<br>
+|-- test_proc.c<br>
+|-- test_queue.c<br>
+|-- Makefile<br>
+|-- Kconfig</span></p>
+<p><span style="font-size:12px">&nbsp;</span></p>
+<p><span style="font-size:12px">&nbsp;</span></p>
+<p><span style="font-size:12px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><strong><span style="font-size:32px">附：（顶层Makefile中的ARCH参数、编译ARM平台Linux内核的方法）</span></strong></p>
+<p><span style="font-size:14px">源代码目录顶层目录中的Makefile文件被称作顶层Makefile，它里面涉及到一个ARCH参数，还有一个CROSS_COMPILE参数，分别对应处理器内核架构和交叉编译器。一般情况下，ARCH默认为x86，CROSS_COMPILE默认也是x86平台上的交叉编译器。在执行make menuconfig,make bzImage,make modules等命令时，系统都会首先分析ARCH的值，根据选择的平台来执行相应操作。因此，如果想编译ARM平台的Linux内核，在输入相应命令时要加上架构和交叉编译器选项，如</span></p>
+<p><span style="font-size:14px">make ARCH=arm CROSS_COMPILE=arm-linux- menuconfig</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">make ARCH=arm CROSS_COMPILE=arm-linux- bzImage</span></p>
+<p><span style="font-size:14px">make ARCH=arm CROSS_COMPILE=arm-linux- modules</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">如果直接将</span></p>
+<p><span style="font-size:14px">ARCH=arm</span></p>
+<p><span style="font-size:14px">CROSS_COMPILE=arm-linux-</span></p>
+<p><span style="font-size:14px">这两行添加到顶层Makefile的开头，就可以将ARCH和CROSS_COMPILE的默认值改成"arm"和"arm-linux-"了。以后再编译ARM平台的Linux内核时就可以直接使用make menuconfig/bzImage/modules等命令，而不用再加"ARCH=arm CROSS_COMPILE=arm-linux-"。</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+<p><span style="font-size:14px">&nbsp;</span></p>
+
+</div>
+
+
+
+
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="clear"></div>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</body></html>

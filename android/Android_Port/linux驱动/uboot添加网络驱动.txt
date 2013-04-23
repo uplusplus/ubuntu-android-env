@@ -1,0 +1,56 @@
+1 修改原来的cs8900驱动为dm9000的:
+	打开文件 include/configs/smdk6410.h
+	找到
+	#ifdef  CONFIG_DRIVER_SMC911X   
+	#undef  CONFIG_DRIVER_CS8900    
+	#define CONFIG_DRIVER_SMC911X_BASE      0x18800300
+	#else
+	#define CONFIG_DRIVER_CS8900    0       /* wehave a CS8900 on-board */
+	#define CS8900_BASE            0x18800300
+	#define CS8900_BUS16            1      /* the Linux driver does accesses as shorts */
+	#endif
+	替换为
+	#define CONFIG_DRIVER_DM9000AE  1
+	#define CONFIG_DRIVER_DM9000    1
+	#define CONFIG_DM9000_BASE      (0x18000000) 
+	#define DM9000_IO              (CONFIG_DM9000_BASE)
+	#define DM9000_DATA             (CONFIG_DM9000_BASE+0x4)
+	//#define CONFIG_DM9000_DEBUG     1
+	#define CONFIG_DM9000_USE_16BIT 1
+
+2 问题:ping后网络自动断掉,根本来不及在主机端配置IP
+	每次ping结束后都会进入eth_halt，关闭网络，可能导致传输出现问题，遂屏蔽halt函数内容。
+	修改drivers/dm9000.c:
+	void
+	eth_halt(void)
+	{
+	DM9000_DBG("eth_halt dummy by kyon\n");
+
+	phy_write(0, 0x8000);
+	//DM9000_iow(DM9000_GPR, 0x01);
+	//DM9000_iow(DM9000_IMR, 0x80);
+	//DM9000_iow(DM9000_RCR, 0x00);
+	}
+
+3 ping显示not alive,checksum bad
+	rx函数中添加do while循环
+	do{
+	}
+	while (rxbyte == DM9000_PKT_RDY);
+	return RxLen;
+
+	测试结果：
+	大部分时候都可以ping通了，因为有调试信息，tftp速度十几k。
+	网上还有个建议在tx函数前加入以上内容清空dm9000ae寄存器
+	DM9000_ior(DM9000_MRRH);
+	DM9000_ior(DM9000_MRRL);
+	
+	
+4 下载和启动内核(0x50008000 是uboot.bin内存地址,0xc0008000是zImage内存地址)
+   确认网络是通的,并且启动网卡:
+   ping ${serverip} 
+   传输内核
+   tftp 0xc0008000 zImage / tftpboot 0xc0008000 zImage
+   启动传输的内核
+   bootm 0xc0008000   /  bootm
+   
