@@ -1,0 +1,1006 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0063)http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head profile="http://gmpg.org/xfn/11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Adb over TCP/IP | Takeshi Kanemoto's Blog</title>
+
+<link rel="stylesheet" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/style.css" type="text/css" media="screen">
+
+<script src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/quant.js" async="" type="text/javascript"></script><script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/base.js"></script><style type="text/css"></style>
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/menu.js"></script>
+
+<link rel="pingback" href="http://takeshikanemoto.wordpress.com/xmlrpc.php">
+<link rel="alternate" type="application/rss+xml" title="Takeshi Kanemoto&#39;s Blog » Feed" href="http://takeshikanemoto.wordpress.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Takeshi Kanemoto&#39;s Blog » Comments Feed" href="http://takeshikanemoto.wordpress.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Takeshi Kanemoto&#39;s Blog » Adb over TCP/IP Comments Feed" href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/feed/">
+<script type="text/javascript">
+/* <![CDATA[ */
+function addLoadEvent(func){var oldonload=window.onload;if(typeof window.onload!='function'){window.onload=func;}else{window.onload=function(){oldonload();func();}}}
+/* ]]> */
+</script>
+<link rel="stylesheet" id="all-css-0" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/saved_resource" type="text/css" media="all">
+<script type="text/javascript">
+/* <![CDATA[ */
+var LoggedOutFollow = {"invalid_email":"Your subscription did not succeed, please try again with a valid email address."};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/saved_resource(1)"></script>
+<link rel="stylesheet" id="all-css-0" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/style(1).css" type="text/css" media="all">
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='http://s2.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563g&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://takeshikanemoto.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://takeshikanemoto.wordpress.com/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Saving many-to-many relations across multiple databases in Django" href="http://takeshikanemoto.wordpress.com/2012/05/26/saving-many-to-many-relations-across-multiple-databases-in-django/">
+<link rel="next" title="De-peado-ifying Japanese Google Market App" href="http://takeshikanemoto.wordpress.com/2012/12/06/de-peado-ifying-japanese-google-market-app/">
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/Adb over TCP IP   Takeshi Kanemoto's Blog.html">
+<link rel="shortlink" href="http://wp.me/p12JGT-5Ku">
+<link rel="alternate" type="application/json+oembed" href="http://public-api.wordpress.com/oembed/1.0/?format=json&url=http%3A%2F%2Ftakeshikanemoto.wordpress.com%2F2012%2F07%2F08%2Fadb-over-tcpip%2F&for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="http://public-api.wordpress.com/oembed/1.0/?format=xml&url=http%3A%2F%2Ftakeshikanemoto.wordpress.com%2F2012%2F07%2F08%2Fadb-over-tcpip%2F&for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Adb over TCP/IP">
+<meta property="og:url" content="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/">
+<meta property="og:description" content="One thing I have had problems with my TF101 is that I can&#39;t charge it while connected to the PC via USB - I have to charge it using the mains adapter thingie they provide. This means that I cannot ...">
+<meta property="og:site_name" content="Takeshi Kanemoto&#39;s Blog">
+<meta name="twitter:site" content="@wordpressdotcom">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@wordpressdotcom">
+<meta property="fb:app_id" content="249643311490">
+<link rel="shortcut icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311976026g" sizes="16x16 24x24 32x32 48x48">
+<link rel="icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311976026g" sizes="16x16 24x24 32x32 48x48">
+<link rel="apple-touch-icon-precomposed" href="http://s0.wp.com/i/webclip.png?m=1355642671g">
+<link rel="openid.server" href="http://takeshikanemoto.wordpress.com/?openidserver=1">
+<link rel="openid.delegate" href="http://takeshikanemoto.wordpress.com/">
+<link rel="search" type="application/opensearchdescription+xml" href="http://takeshikanemoto.wordpress.com/osd.xml" title="Takeshi Kanemoto&#39;s Blog">
+<link rel="search" type="application/opensearchdescription+xml" href="http://wordpress.com/opensearch.xml" title="WordPress.com">
+		<style>
+		/* <![CDATA[ */
+		/* Block: reblog */
+		
+		.reblog-from img                   { margin: 0 10px 0 0; vertical-align: middle; padding: 0; border: 0; }
+		.reblogger-note img.avatar         { float: left; padding: 0; border: 0; }
+		.reblogger-note-content            { margin: 0 0 20px; }
+		.reblog-post .wpcom-enhanced-excerpt-content { border-left: 3px solid #eee; padding-left: 15px; }
+		.reblog-post ul.thumb-list         { display: block; list-style: none; margin: 2px 0; padding: 0; clear: both; }
+		.reblog-post ul.thumb-list li      { display: inline; margin: 0; padding: 0 1px; border: 0; }
+		.reblog-post ul.thumb-list li a    { margin: 0; padding: 0; border: 0; }
+		.reblog-post ul.thumb-list li img  { margin: 0; padding: 0; border: 0; }
+		
+		.reblog-post .wpcom-enhanced-excerpt { clear: both; }
+		
+		.reblog-post .wpcom-enhanced-excerpt address,
+		.reblog-post .wpcom-enhanced-excerpt li,
+		.reblog-post .wpcom-enhanced-excerpt h1,
+		.reblog-post .wpcom-enhanced-excerpt h2,
+		.reblog-post .wpcom-enhanced-excerpt h3,
+		.reblog-post .wpcom-enhanced-excerpt h4,
+		.reblog-post .wpcom-enhanced-excerpt h5,
+		.reblog-post .wpcom-enhanced-excerpt h6,
+		.reblog-post .wpcom-enhanced-excerpt p { font-size: 100% !important; }
+		
+		.reblog-post .wpcom-enhanced-excerpt blockquote,
+		.reblog-post .wpcom-enhanced-excerpt pre,
+		.reblog-post .wpcom-enhanced-excerpt code,
+		.reblog-post .wpcom-enhanced-excerpt q { font-size: 98% !important; }
+		
+
+		/* ]]> */
+		</style>
+		<meta name="application-name" content="Takeshi Kanemoto&#39;s Blog"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="Just another WordPress.com site"><meta name="msapplication-task" content="name=Subscribe;action-uri=http://takeshikanemoto.wordpress.com/feed/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="title" content="Adb over TCP/IP | Takeshi Kanemoto&#39;s Blog on WordPress.com">
+<meta name="description" content="Just another WordPress.com site">
+
+<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js">
+</script>
+<script type="text/javascript">
+if ( typeof GS_googleAddAdSenseService == 'function' ) { GS_googleAddAdSenseService("ca-pub-3443918307802676"); }
+if ( typeof GS_googleEnableAllServices == 'function' ) { GS_googleEnableAllServices() };
+</script>
+<script type="text/javascript">
+if ( typeof GA_googleAddSlot == 'function' ) { GA_googleAddSlot("ca-pub-3443918307802676", "wpcom_below_post"); }
+</script>
+<script type="text/javascript">
+if ( typeof GA_googleFetchAds == 'function' ) { GA_googleFetchAds(); }
+</script>
+
+<script type="text/javascript">
+var wpcom_ads = { bid: 15428631, pt: 'permalink', wa: 0, as: 0, domain: 'takeshikanemoto.wordpress.com', url: 'http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/', gid: '', };
+</script>
+<style id="syntaxhighlighteranchor"></style>
+<script type="text/javascript"> 
+	window.google_analytics_uacct = "UA-52447-2"; 
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script><script type="text/javascript" async="" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/ga.js"></script>
+<link rel="stylesheet" type="text/css" id="gravatar-card-css" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/hovercard.css"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/services.css"></head>
+
+<body class="single single-post postid-22102 single-format-standard highlander-enabled highlander-light">
+<!-- wrap START -->
+<div id="wrap">
+
+<!-- container START -->
+<div id="container">
+
+<!-- header START -->
+<div id="header">
+
+	<!-- banner START -->
+		<!-- banner END -->
+
+	<div id="caption">
+		<h1 id="title"><a href="http://takeshikanemoto.wordpress.com/">Takeshi Kanemoto's Blog</a></h1>
+		<div id="tagline">Just another WordPress.com site</div>
+	</div>
+
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+
+<!-- navigation START -->
+<div id="navigation">
+	<!-- menus START -->
+	<ul id="menus">
+	<li class="page_item"><a class="home" title="Home" href="http://takeshikanemoto.wordpress.com/">Home</a></li>
+	<li class="page_item page-item-2"><a href="http://takeshikanemoto.wordpress.com/about/">About</a></li>
+<li class="page_item page-item-376"><a href="http://takeshikanemoto.wordpress.com/about-2/">About</a></li>
+<li class="page_item page-item-125"><a href="http://takeshikanemoto.wordpress.com/links/">Links</a></li>
+	<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+</ul>
+
+	<!-- menus END -->
+
+	<!-- searchbox START -->
+	<div id="searchbox">
+		<form action="http://takeshikanemoto.wordpress.com/" method="get">
+			<div class="content">
+				<input type="text" class="textfield searchtip" name="s" size="24" value="">
+				<input type="submit" class="button" value="">
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+//<![CDATA[
+	var searchbox = MGJS.$("searchbox");
+	var searchtxt = MGJS.getElementsByClassName("textfield", "input", searchbox)[0];
+	var searchbtn = MGJS.getElementsByClassName("button", "input", searchbox)[0];
+	var tiptext = "Type text to search here...";
+	if(searchtxt.value == "" || searchtxt.value == tiptext) {
+		searchtxt.className += " searchtip";
+		searchtxt.value = tiptext;
+	}
+	searchtxt.onfocus = function(e) {
+		if(searchtxt.value == tiptext) {
+			searchtxt.value = "";
+			searchtxt.className = searchtxt.className.replace(" searchtip", "");
+		}
+	}
+	searchtxt.onblur = function(e) {
+		if(searchtxt.value == "") {
+			searchtxt.className += " searchtip";
+			searchtxt.value = tiptext;
+		}
+	}
+	searchbtn.onclick = function(e) {
+		if(searchtxt.value == "" || searchtxt.value == tiptext) {
+			return false;
+		}
+	}
+//]]>
+</script>
+	<!-- searchbox END -->
+
+	<div class="fixed"></div>
+</div>
+<!-- navigation END -->
+
+<!-- content START -->
+<div id="content">
+
+	<!-- main START -->
+	<div id="main">
+
+
+	<div id="postpath">
+		<a title="Go to homepage" href="http://takeshikanemoto.wordpress.com/">Home</a>
+		 &gt; <a href="http://takeshikanemoto.wordpress.com/category/geeky-stuff/android/" title="View all posts in Android" rel="category tag">Android</a>, <a href="http://takeshikanemoto.wordpress.com/category/featured/" title="View all posts in Featured" rel="category tag">Featured</a>, <a href="http://takeshikanemoto.wordpress.com/category/geeky-stuff/" title="View all posts in Geeky Stuff" rel="category tag">Geeky Stuff</a>		 &gt; Adb over&nbsp;TCP/IP	</div>
+
+	<div id="post-22102" class="post-22102 post type-post status-publish format-standard hentry category-android category-featured category-geeky-stuff">
+		<h2>Adb over&nbsp;TCP/IP</h2>
+		<div class="info">
+			<span class="date">July 8, 2012</span>
+			<span class="author"><a href="http://takeshikanemoto.wordpress.com/author/admin/" title="Posts by Super Admin" rel="author">Super Admin</a></span>										<span class="addcomment"><a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#respond">Leave a comment</a></span>
+				<span class="comments"><a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#comments">Go to comments</a></span>
+						<div class="fixed"></div>
+		</div>
+		<div class="content">
+			<p>One thing I have had problems with my TF101 is that I can’t charge it while connected to the PC via USB – I have to charge it using the mains adapter thingie they provide. This means that I cannot adb into it whilst charging. This is a bit rubbish since I wanted to run scheduled Jenkins jobs to sync files automatically.</p>
+<p>With a bit of searching on xda, I found that I can solve the problem by letting adbd listen to TCP/IP port instead of USB.</p>
+<ol>
+<li>Gain root-access – because everything requires root-access.</li>
+<li>Make sure your device is connected to the WiFi network.</li>
+<li>In root-shell, execute the following:
+<pre>setprop service.adb.tcp.port 5555
+stop adbd
+start adbd</pre>
+</li>
+<li>On your host PC/Mac, connect to the device via:
+<pre>adb connect 192.168.11.11:5555</pre>
+</li>
+<li>You can now use <code>adb shell</code>, etc, via WiFi</li>
+</ol>
+<p>To disable it and return ADB to listening on USB:</p>
+<pre>setprop service.adb.tcp.port -1
+stop adbd
+start adbd</pre>
+<p>If you have USB access already, it is even easier to switch to using WiFi. From a command line on the computer that has the device connected via USB, issue the commands</p>
+<pre>adb tcpip 5555
+adb connect 192.168.11.11:5555</pre>
+<p>To tell the ADB daemon return to listening over USB</p>
+<pre>adb usb</pre>
+
+<div class="wpa" style="position: relative; width:300px; text-align: center; padding: 0; margin: 10px auto; overflow: hidden; clear: both;">
+<a style="position: absolute; text-align: left; display: block; font: 9px/1 sans-serif; text-decoration: underline;" href="http://en.wordpress.com/about-these-ads/" rel="nofollow">About these ads</a>
+<script type="text/javascript">
+		var wpcom_adclk_hovering = false;
+		var wpcom_adclk_recorded = false;
+		var wpcom_adclk_theme = "INove";
+		var wpcom_adclk_slot = "wpcom_below_post";
+		var wpcom_adclk_network = ( typeof wpcom_adclk_network === "undefined" ) ? "" : wpcom_adclk_network ;
+
+		jQuery(document).ready( function() {
+			function wpcom_adclk_hover_yes() { wpcom_adclk_hovering = true; }
+			function wpcom_adclk_hover_no() { wpcom_adclk_hovering = false; }
+			jQuery(".wpa").click(wpcom_adclk_click);
+			jQuery(".wpa iframe").hover( wpcom_adclk_hover_yes, wpcom_adclk_hover_no );
+			jQuery(".wpa object").hover( wpcom_adclk_hover_yes, wpcom_adclk_hover_no );
+
+			jQuery(window).blur( function() {
+				if ( wpcom_adclk_hovering ) { wpcom_adclk_click(); }
+			});
+		});
+
+		function wpcom_adclk_impression() {
+			var stat_gif = document.location.protocol + "//stats.wordpress.com/g.gif?v=wpcom-no-pv";
+			stat_gif += "&x_ads_imp_theme=" + wpcom_adclk_theme;
+			stat_gif += "&x_ads_imp_placement="+wpcom_adclk_slot;
+			stat_gif += "&x_ads_imp_network=" + wpcom_adclk_network;
+			stat_gif += "&x_ads_imp_theme_network="+wpcom_adclk_theme+"_"+wpcom_adclk_network;
+			new Image().src = stat_gif + "&baba=" + Math.random();
+			return true;
+		}
+
+		function wpcom_adclk_click() {
+			if (wpcom_adclk_recorded) { return true; } // no double counting
+			var stat_gif = document.location.protocol + "//stats.wordpress.com/g.gif?v=wpcom-no-pv";
+			stat_gif += "&x_ads_click_theme=" + wpcom_adclk_theme;
+			stat_gif += "&x_ads_click_placement="+wpcom_adclk_slot;
+			stat_gif += "&x_ads_click_network=" + wpcom_adclk_network;
+			stat_gif += "&x_ads_click_theme_network="+wpcom_adclk_theme+"_"+wpcom_adclk_network;
+
+			new Image().src = stat_gif + "&baba=" + Math.random();
+			wpcom_adclk_recorded = true;
+			var now=new Date(); var end=now.getTime()+250;
+			while(true){now=new Date();if(now.getTime()>end){break;}}
+			return true;
+		}
+	
+if ( typeof GA_googleAddAttr == 'function' ) {
+GA_googleAddAttr("AdOpt", "1");
+GA_googleAddAttr("Origin", "extsearch");
+GA_googleAddAttr("LangId", "1");
+GA_googleAddAttr("Domain", "takeshikanemoto.wordpress.com");
+GA_googleAddAttr("BlogId", "15428631");
+GA_googleAddAttr("Autotag", "gadgets");
+GA_googleAddAttr("Autotag", "technology");
+GA_googleAddAttr("Tag", "android");
+GA_googleAddAttr("Tag", "featured");
+GA_googleAddAttr("Tag", "geeky-stuff");
+GA_googleAddAttr("theme_bg", "ffffff");
+GA_googleAddAttr("theme_border", "eeeeee");
+GA_googleAddAttr("theme_text", "555555");
+GA_googleAddAttr("theme_link", "2970A6");
+GA_googleAddAttr("theme_url", "c8c7c7");
+GA_googleAddAdSensePageAttr("google_page_url", "http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/");
+GA_googleFillSlot("wpcom_below_post");
+}
+</script>
+</div>
+<style type="text/css">
+div.wpa>div { margin-top: 1em; }
+</style>
+<script type="text/javascript">
+jQuery( window ).load( function() {
+    if ( jQuery(".wpa script[src*='shareth.ru']").length > 0 || jQuery(".wpa iframe[src*='boomvideo.tv']").length > 0 || jQuery(".wpa iframe[src*='viewablemedia.net']").length > 0 || jQuery(".wpa .sharethrough-placement").length > 0 ) {
+        jQuery( '.wpa' ).css( 'width', '400px' );
+    }
+setTimeout(function(){if(typeof GS_googleAddAdSenseService !== 'function'){new Image().src=document.location.protocol+"//stats.wordpress.com/g.gif?v=wpcom-no-pv&x_noads=adblock&baba="+Math.random()}},100);
+} );
+</script>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-15428631-22102-5192236bec8e4" data-src="http://widgets.wp.com/likes/#blog_id=15428631&amp;post_id=22102&amp;origin=http://takeshikanemoto.wordpress.com&amp;obj_id=15428631-22102-5192236bec8e4" data-name="like-post-frame-15428631-22102-5192236bec8e4"><h3 class="sd-title">Like this:</h3><div class="post-likes-widget-placeholder" style="height:55px"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-15428631-22102-5192236bec8e4" height="55px" width="100%" frameborder="0" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/saved_resource(2).html" style=""></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div></div>						<div class="fixed"></div>
+		</div>
+		<div class="under">
+			<span><span class="categories">Categories: </span><a href="http://takeshikanemoto.wordpress.com/category/geeky-stuff/android/" title="View all posts in Android" rel="category tag">Android</a>, <a href="http://takeshikanemoto.wordpress.com/category/featured/" title="View all posts in Featured" rel="category tag">Featured</a>, <a href="http://takeshikanemoto.wordpress.com/category/geeky-stuff/" title="View all posts in Geeky Stuff" rel="category tag">Geeky Stuff</a></span>
+			<span></span>
+		</div>
+		<div class="fixed"></div>
+	</div>
+
+	
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/comment.js"></script>
+
+
+
+<div id="comments">
+
+<div id="cmtswitcher">
+			<a id="commenttab" class="curtab" href="javascript:void(0);" onclick="MGJS.switchTab(&#39;thecomments,commentnavi&#39;, &#39;thetrackbacks&#39;, &#39;commenttab&#39;, &#39;curtab&#39;, &#39;trackbacktab&#39;, &#39;tab&#39;);">Comments (0)</a>
+		<a id="trackbacktab" class="tab" href="javascript:void(0);" onclick="MGJS.switchTab(&#39;thetrackbacks&#39;, &#39;thecomments,commentnavi&#39;, &#39;trackbacktab&#39;, &#39;curtab&#39;, &#39;commenttab&#39;, &#39;tab&#39;);">Trackbacks (0)</a>
+				<span class="addcomment"><a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#respond">Leave a comment</a></span>
+				<span class="addtrackback"><a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/trackback/">Trackback</a></span>
+		<div class="fixed"></div>
+</div>
+
+<div id="commentlist">
+	<!-- comments START -->
+	<ol id="thecomments">
+			<li class="messagebox">
+			No comments yet.		</li>
+		</ol>
+	<!-- comments END -->
+
+
+	<!-- trackbacks START -->
+			<ol id="thetrackbacks">
+							<li class="messagebox">
+					No trackbacks yet.				</li>
+
+					</ol>
+		<div class="fixed"></div>
+	<!-- trackbacks END -->
+</div>
+
+</div>
+
+
+								<div id="respond" class="js">
+				<h3 id="reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://takeshikanemoto.wordpress.com/wp-comments-post.php" method="post" id="commentform">
+																										
+
+
+												
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest">
+
+<div class="comment-form-field comment-textarea">
+	
+	<div id="comment-form-comment"><textarea placeholder="Enter your comment here..." style="height: 36px; resize: none; overflow-y: hidden; position: absolute; top: 0px; left: -9999px; width: 583px; line-height: normal; text-decoration: none; letter-spacing: 0px;" tabindex="-1"></textarea><textarea id="comment" name="comment" placeholder="Enter your comment here..." style="height: 36px; resize: none; overflow-y: hidden;"></textarea></div>
+</div>
+
+<div id="comment-form-identity" style="display: none;">
+
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#comment-form-guest" id="postas-guest" title="Guest">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+					<span></span>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Gravatar" width="25" class="no-grav">
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="text" value=""></div>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/wplogo.png" alt="WordPress.com Logo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="">
+				<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Twitter picture" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="">
+				<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Facebook photo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="">
+				<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+	
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+});
+</script>
+
+<div id="comment-form-subscribe" style="display: none;">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;" tabindex="6"> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of follow-up comments via email.</label></p></div>
+
+												<p class="form-submit" style="display: none;">
+							<input name="submit" type="submit" id="comment-submit" value="Post Comment">
+							<input type="hidden" name="comment_post_ID" value="22102" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+						</p>
+						
+<input type="hidden" name="genseq" value="1368531819">
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="814a7a0939"></p><script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/form.js"></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="1368531821285"></p>					</form>
+							</div><!-- #respond -->
+			<div style="clear: both"></div>			
+	
+
+	<div id="postnavi">
+		<span class="prev"><a href="http://takeshikanemoto.wordpress.com/2012/12/06/de-peado-ifying-japanese-google-market-app/" rel="next">De-peado-ifying Japanese Google Market&nbsp;App</a></span>
+		<span class="next"><a href="http://takeshikanemoto.wordpress.com/2012/05/26/saving-many-to-many-relations-across-multiple-databases-in-django/" rel="prev">Saving many-to-many relations across multiple databases in&nbsp;Django</a></span>
+		<div class="fixed"></div>
+	</div>
+
+
+	</div>
+	<!-- main END -->
+
+	
+<!-- sidebar START -->
+<div id="sidebar">
+
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe-feeds"><a rel="external nofollow" id="feedrss" title="Subscribe to this blog..." href="http://takeshikanemoto.wordpress.com/feed/"><abbr title="Really Simple Syndication">RSS</abbr> feed</a><ul id="feed_readers" style="visibility: hidden; display: block;"><li id="google_reader"><a rel="external nofollow" class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://takeshikanemoto.wordpress.com/feed/"><span>Google</span></a></li><li id="youdao_reader"><a rel="external nofollow" class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://takeshikanemoto.wordpress.com/feed/"><span>Youdao</span></a></li><li id="xianguo_reader"><a rel="external nofollow" class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://takeshikanemoto.wordpress.com/feed/"><span>Xian Guo</span></a></li><li id="zhuaxia_reader"><a rel="external nofollow" class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://takeshikanemoto.wordpress.com/feed/"><span>Zhua Xia</span></a></li><li id="yahoo_reader"><a rel="external nofollow" class="reader" title="Subscribe with My Yahoo!" href="http://add.my.yahoo.com/rss?url=http://takeshikanemoto.wordpress.com/feed/"><span>My Yahoo!</span></a></li><li id="newsgator_reader"><a rel="external nofollow" class="reader" title="Subscribe with newsgator" href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://takeshikanemoto.wordpress.com/feed/"><span>newsgator</span></a></li><li id="bloglines_reader"><a rel="external nofollow" class="reader" title="Subscribe with Bloglines" href="http://www.bloglines.com/sub/http://takeshikanemoto.wordpress.com/feed/"><span>Bloglines</span></a></li><li id="inezha_reader"><a rel="external nofollow" class="reader last" title="Subscribe with iNezha" href="http://inezha.com/add?url=http://takeshikanemoto.wordpress.com/feed/"><span>iNezha</span></a></li></ul></div>
+
+			<!-- twitter -->
+			
+			<div class="fixed"></div>
+		</div>
+	</div>
+
+	<!-- showcase -->
+	
+<div id="categories-3" class="widget widget_categories"><h3>Categories</h3><select name="cat" id="cat" class="postform">
+	<option value="-1">Select Category</option>
+	<option class="level-0" value="41275903">Bashing About&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="35890">Featured&nbsp;&nbsp;(17)</option>
+	<option class="level-0" value="21">Games&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="443">Geeky Stuff&nbsp;&nbsp;(50)</option>
+	<option class="level-1" value="641922">&nbsp;&nbsp;&nbsp;Android&nbsp;&nbsp;(8)</option>
+	<option class="level-1" value="2674">&nbsp;&nbsp;&nbsp;Bashing About&nbsp;&nbsp;(3)</option>
+	<option class="level-1" value="106595">&nbsp;&nbsp;&nbsp;iPhone&nbsp;&nbsp;(7)</option>
+	<option class="level-1" value="10919">&nbsp;&nbsp;&nbsp;Reference&nbsp;&nbsp;(12)</option>
+	<option class="level-1" value="18568">&nbsp;&nbsp;&nbsp;Server Admin&nbsp;&nbsp;(16)</option>
+	<option class="level-1" value="255">&nbsp;&nbsp;&nbsp;Ubuntu&nbsp;&nbsp;(6)</option>
+	<option class="level-1" value="800">&nbsp;&nbsp;&nbsp;Windows&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="41275845">Japan&nbsp;&nbsp;(10)</option>
+	<option class="level-0" value="18">Music&nbsp;&nbsp;(6)</option>
+	<option class="level-0" value="790">Out ‘n’ About&nbsp;&nbsp;(326)</option>
+	<option class="level-0" value="8757">Out \’n\’ About&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="30">Random&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="4866262">Server Admin&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="1">Uncategorized&nbsp;&nbsp;(13)</option>
+</select>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+	var dropdown = document.getElementById("cat");
+	function onCatChange() {
+		if ( dropdown.options[dropdown.selectedIndex].value > 0 ) {
+			location.href = "http://takeshikanemoto.wordpress.com/?cat="+dropdown.options[dropdown.selectedIndex].value;
+		}
+	}
+	dropdown.onchange = onCatChange;
+/* ]]> */
+</script>
+
+</div><div id="wp_tag_cloud-2" class="widget wp_widget_tag_cloud"><h3>Tags</h3><div style="overflow:hidden"><a href="http://takeshikanemoto.wordpress.com/tag/ajax/" class="tag-link-141" title="2 topics" style="font-size: 9.1454545454545pt;">ajax</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/android/" class="tag-link-641922" title="3 topics" style="font-size: 9.9090909090909pt;">Android</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/apache/" class="tag-link-3768" title="3 topics" style="font-size: 9.9090909090909pt;">Apache</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/apple/" class="tag-link-291" title="1 topic" style="font-size: 8pt;">apple</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/bar/" class="tag-link-25453" title="1 topic" style="font-size: 8pt;">bar</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/bashing-about/" class="tag-link-41275903" title="3 topics" style="font-size: 9.9090909090909pt;">Bashing About</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/cd/" class="tag-link-3729" title="4 topics" style="font-size: 10.545454545455pt;">CD</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/chillin/" class="tag-link-62240" title="1 topic" style="font-size: 8pt;">chillin'</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/customizing-your-desktop/" class="tag-link-41275847" title="1 topic" style="font-size: 8pt;">Customizing your desktop</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/fails/" class="tag-link-151030" title="2 topics" style="font-size: 9.1454545454545pt;">Fails</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/froyo/" class="tag-link-1748345" title="2 topics" style="font-size: 9.1454545454545pt;">Froyo</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/gerrit/" class="tag-link-1307989" title="2 topics" style="font-size: 9.1454545454545pt;">Gerrit</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/git/" class="tag-link-209196" title="3 topics" style="font-size: 9.9090909090909pt;">Git</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/growling/" class="tag-link-482590" title="2 topics" style="font-size: 9.1454545454545pt;">Growling</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/iphone/" class="tag-link-106595" title="4 topics" style="font-size: 10.545454545455pt;">iPhone</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/japan-global-ness/" class="tag-link-41275845" title="3 topics" style="font-size: 9.9090909090909pt;">Japan</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/jquery/" class="tag-link-203308" title="2 topics" style="font-size: 9.1454545454545pt;">jquery</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/jquery-ui/" class="tag-link-8431750" title="2 topics" style="font-size: 9.1454545454545pt;">jquery-ui</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/linux/" class="tag-link-610" title="3 topics" style="font-size: 9.9090909090909pt;">Linux</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/lunch-places-nothing-beats-a-nice-bolognese/" class="tag-link-41275850" title="314 topics" style="font-size: 22pt;">lunch places. nothing beats a nice bolognese.</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/lunch-places-around-shinagawa/" class="tag-link-57930028" title="2 topics" style="font-size: 9.1454545454545pt;">Lunch places around Shinagawa</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/mac/" class="tag-link-808" title="5 topics" style="font-size: 11.054545454545pt;">Mac</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/music/" class="tag-link-18" title="4 topics" style="font-size: 10.545454545455pt;">Music</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/nu-metal/" class="tag-link-263183" title="2 topics" style="font-size: 9.1454545454545pt;">Nu-metal</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/opeth/" class="tag-link-151489" title="2 topics" style="font-size: 9.1454545454545pt;">Opeth</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/os-x/" class="tag-link-2438" title="3 topics" style="font-size: 9.9090909090909pt;">OS X</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/outings/" class="tag-link-9330" title="2 topics" style="font-size: 9.1454545454545pt;">outings</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/out-n-about/" class="tag-link-8757" title="2 topics" style="font-size: 9.1454545454545pt;">Out \'n\' About</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/php/" class="tag-link-458" title="2 topics" style="font-size: 9.1454545454545pt;">php</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/procrastication/" class="tag-link-29100623" title="2 topics" style="font-size: 9.1454545454545pt;">procrastication</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/procrastination/" class="tag-link-13550" title="8 topics" style="font-size: 12.136363636364pt;">procrastination</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/proxy/" class="tag-link-9628" title="2 topics" style="font-size: 9.1454545454545pt;">proxy</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/rails/" class="tag-link-6652" title="3 topics" style="font-size: 9.9090909090909pt;">Rails</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/redmine/" class="tag-link-1078015" title="3 topics" style="font-size: 9.9090909090909pt;">Redmine</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/reviews/" class="tag-link-309" title="2 topics" style="font-size: 9.1454545454545pt;">Reviews</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/ruby/" class="tag-link-4872" title="2 topics" style="font-size: 9.1454545454545pt;">Ruby</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/skins/" class="tag-link-11080" title="2 topics" style="font-size: 9.1454545454545pt;">skins</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/sweden/" class="tag-link-3055" title="2 topics" style="font-size: 9.1454545454545pt;">Sweden</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/swedish-death-metal/" class="tag-link-4497377" title="2 topics" style="font-size: 9.1454545454545pt;">Swedish Death Metal</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/things-ill-never-remember/" class="tag-link-41275859" title="3 topics" style="font-size: 9.9090909090909pt;">Things I'll never remember</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/things-that-remind-me-of-school/" class="tag-link-41275860" title="2 topics" style="font-size: 9.1454545454545pt;">Things that remind me of school</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/tutorials/" class="tag-link-1124" title="2 topics" style="font-size: 9.1454545454545pt;">tutorials</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/ubuntu/" class="tag-link-255" title="3 topics" style="font-size: 9.9090909090909pt;">Ubuntu</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/wordpress/" class="tag-link-33" title="3 topics" style="font-size: 9.9090909090909pt;">wordpress</a>
+<a href="http://takeshikanemoto.wordpress.com/tag/writing-something-useful-for-a-change/" class="tag-link-57930031" title="2 topics" style="font-size: 9.1454545454545pt;">Writing something useful for a change</a></div></div>	</div>
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/#" onclick="MGJS.goTop();return false;">Top</a>
+	<a id="powered" href="http://wordpress.com/">WordPress</a>
+	<div id="themeinfo">
+		<a href="http://wordpress.com/?ref=footer" rel="generator">Blog at WordPress.com</a>. Theme: <a href="http://theme.wordpress.com/themes/inove/" title="Learn more about this theme">INove</a> by <a href="http://www.neoease.com/" rel="designer">NeoEase</a>.	</div>
+</div>
+<!-- footer END -->
+
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+
+
+<script type="text/javascript">
+var _qevents = _qevents || [], wpcomQuantcastData = {"qacct":"p-18-mFEk4J448M","labels":",language.en,type.wpcom,as"};
+function wpcomQuantcastPixel( labels, options ) {
+	var i, defaults = wpcomQuantcastData, data = { event: 'ajax' };
+
+	labels  = labels  || '';
+	options = options || {};
+
+	if ( typeof labels != 'string' )
+		options = labels;
+
+	for ( i in defaults ) {
+		data[i] = defaults[i];
+	}
+
+	for ( i in options ) {
+		data[i] = options[i];
+	}
+
+	if ( data.labels ) {
+		data.labels += ',' + labels;
+	} else {
+		data.labels = labels;
+	}
+
+	_qevents.push( data );
+};
+(function() {var elem = document.createElement('script');elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";elem.async = true;elem.type = "text/javascript";var scpt = document.getElementsByTagName('script')[0];scpt.parentNode.insertBefore(elem, scpt);  })();
+_qevents.push( wpcomQuantcastData );
+</script>
+<noscript>&lt;div style="display: none;"&gt;&lt;img src="//pixel.quantserve.com/pixel/p-18-mFEk4J448M.gif?labels=%2Clanguage.en%2Ctype.wpcom%2Cas" height="1" width="1" alt="" /&gt;&lt;/div&gt;</noscript>
+
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/gprofiles.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/wpgroho.js"></script>
+<script>jQuery(document).ready(function($){ Gravatar.profile_cb = function( h, d ) { WPGroHo.syncProfileData( h, d );	}; Gravatar.my_hash = WPGroHo.my_hash; Gravatar.init( 'body', '#wp-admin-bar-my-account' ); });</script>	<div style="display:none">
+	</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"http:\/\/takeshikanemoto.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"http:\/\/takeshikanemoto.wordpress.com\/wp-login.php?action=logout&_wpnonce=3e05e20052","homeURL":"http:\/\/takeshikanemoto.wordpress.com\/","postID":"22102","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"0","userIsLoggedIn":"","isJetpack":"0"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/script.js"></script>
+
+	<div id="bit" class="loggedout-follow-normal" style="bottom: -229px;">
+		<a class="bsub" href="javascript:void(0)"><span id="bsub-text">Follow</span></a>
+		<div id="bitsubscribe">
+
+					<h3><label for="loggedout-follow-field">Follow “Takeshi Kanemoto's Blog”</label></h3>
+
+			<form action="https://subscribe.wordpress.com/" method="post" accept-charset="utf-8" id="loggedout-follow">
+			<p>Get every new post delivered to your Inbox.</p>
+
+			<p id="loggedout-follow-error" style="display: none;"></p>
+
+			
+			<p><input type="email" name="email" style="width: 95%; padding: 1px 2px" value="Enter your email address" onfocus="this.value=(this.value==&quot;Enter your email address&quot;) ? &quot;&quot; : this.value;" onblur="this.value=(this.value==&quot;&quot;) ? &quot;Enter email address&quot; : this.value;" id="loggedout-follow-field"></p>
+
+			<input type="hidden" name="action" value="subscribe">
+			<input type="hidden" name="blog_id" value="15428631">
+			<input type="hidden" name="source" value="http://takeshikanemoto.wordpress.com/2012/07/08/adb-over-tcpip/">
+			<input type="hidden" name="sub-type" value="loggedout-follow">
+
+			<input type="hidden" id="_wpnonce" name="_wpnonce" value="57e36c64b2"><input type="hidden" name="_wp_http_referer" value="/2012/07/08/adb-over-tcpip/">
+			<p id="bsub-subscribe-button"><input type="submit" value="Sign me up"></p>
+			</form>
+					<div id="bsub-credit"><a href="http://wordpress.com/signup/?ref=lof">Powered by WordPress.com</a></div>
+		</div><!-- #bitsubscribe -->
+	</div><!-- #bit -->
+		<iframe src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/master.html" id="likes-master" name="likes-master" style="display:none;"></iframe>
+		<div id="likes-other-gravatars"><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+		<script type="text/javascript">
+		//<![CDATA[
+			var jetpackLikesWidgetQueue = [];
+			var jetpackLikesMasterReady = false;
+
+			function JetpackLikespostMessage( message, target ) {
+				if ( "string" === typeof message ){
+					try{
+						message = JSON.parse( message );
+					}
+					catch(e) {
+						return;
+					}
+				}
+
+				pm( {
+					target: target,
+					type: 'likesMessage',
+					data: message,
+					origin: '*'
+				} );
+			}
+
+			function JetpackLikesMessageListener( event ) {
+				if ( "undefined" == typeof event.event )
+					return;
+
+				if ( 'masterReady' == event.event ) {
+					jQuery( document ).ready( function() {
+						jetpackLikesMasterReady = true;
+
+						var stylesData = {
+								event: 'injectStyles'
+						};
+
+						if ( jQuery( 'iframe.admin-bar-likes-widget' ).length > 0 ) {
+							JetpackLikespostMessage( { event: 'adminBarEnabled' }, window.frames[ 'likes-master' ] );
+
+							stylesData.adminBarStyles = {
+								background: jQuery( '#wpadminbar .quicklinks li#wp-admin-bar-wpl-like > a' ).css( 'background' )
+							};
+						}
+
+						if ( !window.addEventListener )
+							jQuery( '#wp-admin-bar-admin-bar-likes-widget' ).hide();
+
+						stylesData.textStyles = {
+							color: jQuery( '.sd-text-color').css( 'color' ),
+							fontFamily: jQuery( '.sd-text-color' ).css( 'font-family' ),
+							fontSize: jQuery( '.sd-text-color' ).css( 'font-size' ),
+							direction: jQuery( '.sd-text-color' ).css( 'direction' ),
+							fontWeight: jQuery( '.sd-text-color' ).css( 'font-weight' ),
+							fontStyle: jQuery( '.sd-text-color' ).css( 'font-style' ),
+							textDecoration: jQuery( '.sd-text-color' ).css('text-decoration')
+						};
+
+						stylesData.linkStyles = {
+							color: jQuery( '.sd-link-color' ).css('color'),
+							fontFamily: jQuery( '.sd-link-color' ).css('font-family'),
+							fontSize: jQuery( '.sd-link-color' ).css('font-size'),
+							textDecoration: jQuery( '.sd-link-color' ).css('text-decoration'),
+							fontWeight: jQuery( '.sd-link-color' ).css( 'font-weight' ),
+							fontStyle: jQuery( '.sd-link-color' ).css( 'font-style' )
+						};
+
+						JetpackLikespostMessage( stylesData, window.frames[ 'likes-master' ] );
+
+						var requests = [];
+						jQuery( '.jetpack-likes-widget-wrapper' ).each( function( i ) {
+							var regex = /like-(post|comment)-wrapper-(\d+)-(\d+)-(\w+)/;
+							var match = regex.exec( this.id );
+							if ( ! match || match.length != 5 )
+								return;
+
+							var info = {
+								blog_id: match[2],
+								width:   this.width
+							};
+
+							if ( 'post' == match[1] ) {
+								info.post_id = match[3];
+							} else if ( 'comment' == match[1] ) {
+								info.comment_id = match[3];
+							}
+
+							info.obj_id = match[4];
+
+							requests.push( info );
+						});
+
+						JetpackLikespostMessage( { event: 'initialBatch', requests: requests }, window.frames['likes-master'] );
+
+						jQuery( document ).on( 'inview', 'div.jetpack-likes-widget-unloaded', function() {
+							jetpackLikesWidgetQueue.push( this.id );
+						});
+					});
+				}
+
+				if ( 'showLikeWidget' == event.event ) {
+					setTimeout( JetpackLikesWidgetQueueHandler, 10 );
+					jQuery( '#' + event.id + ' .post-likes-widget-placeholder'  ).fadeOut( 'fast', function() {
+						jQuery( '#' + event.id + ' .post-likes-widget' ).fadeIn( 'fast', function() {
+							JetpackLikespostMessage( { event: 'likeWidgetDisplayed', blog_id: event.blog_id, post_id: event.post_id, obj_id: event.obj_id }, window.frames['likes-master'] );
+						});
+					});
+				}
+
+				if ( 'showOtherGravatars' == event.event ) {
+					var $container = jQuery( '#likes-other-gravatars' );
+					var $list = $container.find( 'ul' );
+
+					$container.hide();
+					$list.html( '' );
+
+					$container.find( '.likes-text span' ).text( event.total );
+
+					jQuery.each( event.likers, function( i, liker ) {
+						$list.append( '<li class="' + liker.css_class + '"><a href="' + liker.profile_URL + '" class="wpl-liker" rel="nofollow" target="_parent"><img src="' + liker.avatar_URL + '" alt="' + liker.name + '" width="30" height="30" style="padding-right: 3px;" /></a></li>');
+					} );
+
+					var offset = jQuery( "[name='" + event.parent + "']" ).offset();
+
+					$container.css( 'left', offset.left + event.position.left - 10 + 'px' );
+					$container.css( 'top', offset.top + event.position.top - 33 + 'px' );
+
+					var rowLength = Math.floor( event.width / 37 );
+					var height = ( Math.ceil( event.likers.length / rowLength ) * 37 ) + 13;
+					if ( height > 204 ) {
+						height = 204;
+					}
+
+					$container.css( 'height', height + 'px' );
+					$container.css( 'width', rowLength * 37 - 7 + 'px' );
+
+					$list.css( 'width', rowLength * 37 + 'px' );
+
+					$container.fadeIn( 'slow' );
+
+					var scrollbarWidth = $list[0].offsetWidth - $list[0].clientWidth;
+					if ( scrollbarWidth > 0 ) {
+						$container.width( $container.width() + scrollbarWidth );
+						$list.width( $list.width() + scrollbarWidth );
+					}
+				}
+			}
+
+			pm.bind( 'likesMessage', function(e) { JetpackLikesMessageListener(e); } );
+
+			jQuery( document ).click( function( e ) {
+				var $container = jQuery( '#likes-other-gravatars' );
+
+				if ( $container.has( e.target ).length === 0 ) {
+					$container.fadeOut( 'slow' );
+				}
+			});
+
+			function JetpackLikesWidgetQueueHandler() {
+				var wrapperID;
+				if ( ! jetpackLikesMasterReady ) {
+					setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+					return;
+				}
+
+				if ( jetpackLikesWidgetQueue.length > 0 ) {
+					// We may have a widget that needs creating now
+					var found = false;
+					while( jetpackLikesWidgetQueue.length > 0 ) {
+						// Grab the first member of the queue that isn't already loading.
+						wrapperID = jetpackLikesWidgetQueue.splice( 0, 1 )[0];
+						if ( jQuery( '#' + wrapperID ).hasClass( 'jetpack-likes-widget-unloaded' ) ) {
+							found = true;
+							break;
+						}
+					}
+					if ( ! found ) {
+						setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+						return;
+					}
+				} else if ( jQuery( 'div.jetpack-likes-widget-unloaded' ).length > 0 ) {
+					// Get the next unloaded widget
+					wrapperID = jQuery( 'div.jetpack-likes-widget-unloaded' ).first()[0].id;
+					if ( ! wrapperID ) {
+						// Everything is currently loaded
+						setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+						return;
+					}
+				}
+
+				var $wrapper = jQuery( '#' + wrapperID );
+				$wrapper.find( 'iframe' ).remove();
+
+				if ( $wrapper.hasClass( 'slim-likes-widget' ) ) {
+					$wrapper.find( '.post-likes-widget-placeholder' ).after( "<iframe class='post-likes-widget jetpack-likes-widget' name='" + $wrapper.data( 'name' ) + "' height='22px' width='68px' frameBorder='0' scrolling='no' src='" + $wrapper.data( 'src' ) + "'></iframe>" );
+				} else {
+					$wrapper.find( '.post-likes-widget-placeholder' ).after( "<iframe class='post-likes-widget jetpack-likes-widget' name='" + $wrapper.data( 'name' ) + "' height='55px' width='100%' frameBorder='0' src='" + $wrapper.data( 'src' ) + "'></iframe>" );
+				}
+
+				$wrapper.removeClass( 'jetpack-likes-widget-unloaded' ).addClass( 'jetpack-likes-widget-loading' );
+
+				$wrapper.find( 'iframe' ).load( function( e ) {
+					var $iframe = jQuery( e.target );
+					$wrapper.removeClass( 'jetpack-likes-widget-loading' ).addClass( 'jetpack-likes-widget-loaded' );
+
+					JetpackLikespostMessage( { event: 'loadLikeWidget', name: $iframe.attr( 'name' ), width: $iframe.width() }, window.frames[ 'likes-master' ] );
+
+					if ( $wrapper.hasClass( 'slim-likes-widget' ) ) {
+						$wrapper.find( 'iframe' ).Jetpack( 'resizeable' );
+					}
+				});
+			}
+			setInterval( JetpackLikesWidgetQueueHandler, 250 );
+		//]]>
+		</script>
+<script type="text/javascript" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/devicepx.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script><script src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/w.js" type="text/javascript"></script>
+<script type="text/javascript">
+st_go({'blog':'15428631','v':'wpcom','tz':'0','user_id':'0','post':'22102','subd':'takeshikanemoto'});
+ex_go({'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWtpP0NsWnVkPS9sL0ViLndld3AlSGN8YmRCSmtFZTBZY2VYM18tRTc0R0Rhcm9Sd1p2YT9qb3hCTyYrazIlL1lYd1FFc0hoYiwzZUlQSnFpfCZoW2ZKQXBJRlJsQTVzM2VKfD9hditxbFV2K3lCNHpfS2gxYzFuNiVBYUFwbjZNQz1KeUMyb0YvbWJxanQuYzdGSEktOD9JdFEsK11PfGNSbXBKX19ocFhZVkJISmgtOVF2bnR4bURLcHNkMnZMbSZqbE1LKy93Sllwc0tvJSxNMyVoLVtPNUZhT212Vz9FVHNnT21aR112U0FFc0QlQmVTdDlSXy9IdVBlLWp6eHcvV3hdcGU9ZzBRLUJmJV8='});
+addLoadEvent(function(){linktracker_init('15428631',22102);});
+	</script><img id="wpstats" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/g.gif" alt=""><img id="wpstats2" src="./Adb over TCP IP   Takeshi Kanemoto's Blog_files/g(1).gif" alt="" style="display:none">
+<noscript>&lt;img src="http://stats.wordpress.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt="" /&gt;</noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//stats.wordpress.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+
+</body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>LMSAPI3D: Referencia de la Clase LMSAPI::LMSAPI_CONNECTION</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- Generado por Doxygen 1.5.2 -->
+<div class="tabs">
+  <ul>
+    <li><a href="index.html"><span>Página&nbsp;principal</span></a></li>
+    <li><a href="modules.html"><span>Módulos</span></a></li>
+    <li class="current"><a href="annotated.html"><span>Estructuras&nbsp;de&nbsp;Datos</span></a></li>
+  </ul>
+</div>
+<div class="tabs">
+  <ul>
+    <li><a href="annotated.html"><span>Estructura&nbsp;de&nbsp;datos</span></a></li>
+    <li><a href="functions.html"><span>Campos&nbsp;de&nbsp;datos</span></a></li>
+  </ul>
+</div>
+<div class="nav">
+<b>LMSAPI</b>::<a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html">LMSAPI_CONNECTION</a></div>
+<h1>Referencia de la Clase LMSAPI::LMSAPI_CONNECTION</h1><!-- doxytag: class="LMSAPI::LMSAPI_CONNECTION" -->Clase envoltorio para administrar una conexión al sensor.  
+<a href="#_details">Más...</a>
+<p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Métodos públicos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#021eab637ac6da10614acee1b3795b8a">LMSAPI_CONNECTION</a> (IntPtr handle)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Constructor.  <a href="#021eab637ac6da10614acee1b3795b8a"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#ab928e321e2a4c43cab213f90224c4b6">config</a> (int distance_range, int handle_intensity)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Configura el rango de distancias y habilita el manejo de intensidades en las mediciones.  <a href="#ab928e321e2a4c43cab213f90224c4b6"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#b79c76fc569506d484cb4f0836294ac6">set_resolution</a> (int width, int res)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Establece la resolución angular del sensor.  <a href="#b79c76fc569506d484cb4f0836294ac6"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#5bcd1c42cbc31f1ca9754e338b025778">request_measurement</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Utiliza el miembro m_scale_distance para la distancia, y crea un objeto de datos del laser (<a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html" title="Clase envoltorio para contener los datos de medición.">LMSAPI_DATA</a>) si la medición tuvo exito.  <a href="#5bcd1c42cbc31f1ca9754e338b025778"></a><br></td></tr>
+<tr><td colspan="2"><br><h2>Campos de datos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#e50648d9726d0c9b0d1aa58ece13d3c8">m_scale_distance</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Escala de distancias usada para la obtención de mediciones. (Por defecto en centímetros 10.0f).  <a href="#e50648d9726d0c9b0d1aa58ece13d3c8"></a><br></td></tr>
+</table>
+<hr><a name="_details"></a><h2>Descripción detallada</h2>
+Clase envoltorio para administrar una conexión al sensor. 
+<p>
+
+<p>
+<hr><h2>Documentación del constructor y destructor</h2>
+<a class="anchor" name="021eab637ac6da10614acee1b3795b8a"></a><!-- doxytag: member="LMSAPI::LMSAPI_CONNECTION::LMSAPI_CONNECTION" ref="021eab637ac6da10614acee1b3795b8a" args="(IntPtr handle)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LMSAPI::LMSAPI_CONNECTION::LMSAPI_CONNECTION           </td>
+          <td>(</td>
+          <td class="paramtype">IntPtr&nbsp;</td>
+          <td class="paramname"> <em>handle</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Constructor. 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>handle</em>&nbsp;</td><td>Parámetro ingresado en la funcion <a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___l_i_b.html#cb0fcd6c4bfcbbcec904ee4c98a77f63" title="Factoria de clase para objetos LMSLASER_CONNECTION. Preferiblemente utilice esta...">LMSAPI_LIB.create_connection_object</a> </td></tr>
+  </table>
+</dl>
+<dl class="see" compact><dt><b>Ver también:</b></dt><dd><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___l_i_b.html#cb0fcd6c4bfcbbcec904ee4c98a77f63" title="Factoria de clase para objetos LMSLASER_CONNECTION. Preferiblemente utilice esta...">LMSAPI_LIB.create_connection_object</a><p>
+</dd></dl>
+
+</div>
+</div><p>
+<hr><h2>Documentación de las funciones miembro</h2>
+<a class="anchor" name="ab928e321e2a4c43cab213f90224c4b6"></a><!-- doxytag: member="LMSAPI::LMSAPI_CONNECTION::config" ref="ab928e321e2a4c43cab213f90224c4b6" args="(int distance_range, int handle_intensity)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LMSAPI::LMSAPI_CONNECTION::config           </td>
+          <td>(</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>distance_range</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>handle_intensity</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Configura el rango de distancias y habilita el manejo de intensidades en las mediciones. 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>distance_range</em>&nbsp;</td><td>Rango de distancias en Metros. Una de las constantes de distancias: 8, 80 o 150 metros respectivamente.</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>handle_intensity</em>&nbsp;</td><td>Booleano con el cual se habilita la medición de distancias.Asignese 1 o 0.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd>0 si la operacion fue exitosa, o un codigo de error.</dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="b79c76fc569506d484cb4f0836294ac6"></a><!-- doxytag: member="LMSAPI::LMSAPI_CONNECTION::set_resolution" ref="b79c76fc569506d484cb4f0836294ac6" args="(int width, int res)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LMSAPI::LMSAPI_CONNECTION::set_resolution           </td>
+          <td>(</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>res</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Establece la resolución angular del sensor. 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>res</em>&nbsp;</td><td>Resolución angular, uno de los siguientes valores: 25, 50, 100 (Cada valor es un porcentaje de grado, 1/100).</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>width</em>&nbsp;</td><td>Rango angular del barrido. Los valores válidos son: 100 y 180 grados de circunferencia.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd>0 si la operación fué exitosa, o un valor de error.</dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="5bcd1c42cbc31f1ca9754e338b025778"></a><!-- doxytag: member="LMSAPI::LMSAPI_CONNECTION::request_measurement" ref="5bcd1c42cbc31f1ca9754e338b025778" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a> LMSAPI::LMSAPI_CONNECTION::request_measurement           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Utiliza el miembro m_scale_distance para la distancia, y crea un objeto de datos del laser (<a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html" title="Clase envoltorio para contener los datos de medición.">LMSAPI_DATA</a>) si la medición tuvo exito. 
+<p>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd>Un objeto <a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html" title="Clase envoltorio para contener los datos de medición.">LMSAPI_DATA</a> con los datos de medición, o null si hubo un error</dd></dl>
+
+</div>
+</div><p>
+<hr><h2>Documentación de los campos</h2>
+<a class="anchor" name="e50648d9726d0c9b0d1aa58ece13d3c8"></a><!-- doxytag: member="LMSAPI::LMSAPI_CONNECTION::m_scale_distance" ref="e50648d9726d0c9b0d1aa58ece13d3c8" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___c_o_n_n_e_c_t_i_o_n.html#e50648d9726d0c9b0d1aa58ece13d3c8">LMSAPI::LMSAPI_CONNECTION::m_scale_distance</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Escala de distancias usada para la obtención de mediciones. (Por defecto en centímetros 10.0f). 
+<p>
+
+</div>
+</div><p>
+<hr size="1">
+<table border = 0 width = "100%">
+<tr>
+<td width="10px">
+<a href="http://www.umb.edu.co">
+<img src="umb.jpg" alt="Unversidad Manuela Beltran"   align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://www.sick.es/es/es.html">
+<img src="logosick.gif" alt="SICK AG" height="46px" align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://sourceforge.net">
+<img src="sflogo.png" alt="Source Forge" height="46px" align="left" border="0"></a>
+</td>
+<td>
+<address style="text-align: right;"><small> Documento generado en&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.2 </small>
+</address>
+</td>
+</tr>
+</table>
+</body>
+</html>

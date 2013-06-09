@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/ -->
+<html lang="en"><!--<![endif]--><!--
+	generated 134 seconds ago
+	generated in 0.412 seconds
+	served from batcache in 0.003 seconds
+	expires in 166 seconds
+--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Using Eclipse for Android C/C++ Debugging | Android blog</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="stylesheet" type="text/css" media="all" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/style.css">
+<link rel="pingback" href="http://mhandroid.wordpress.com/xmlrpc.php">
+<link rel="alternate" type="application/rss+xml" title="Android blog » Feed" href="http://mhandroid.wordpress.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Android blog » Comments Feed" href="http://mhandroid.wordpress.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Android blog » Using Eclipse for Android C/C++ Debugging Comments Feed" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/feed/">
+<script src="./Using Eclipse for Android C C++ Debugging   Android blog_files/quant.js" async="" type="text/javascript"></script><script type="text/javascript">
+/* <![CDATA[ */
+function addLoadEvent(func){var oldonload=window.onload;if(typeof window.onload!='function'){window.onload=func;}else{window.onload=function(){oldonload();func();}}}
+/* ]]> */
+</script><style type="text/css"></style>
+<link rel="stylesheet" id="all-css-0" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/saved_resource" type="text/css" media="all">
+<script type="text/javascript">
+/* <![CDATA[ */
+var LoggedOutFollow = {"invalid_email":"Your subscription did not succeed, please try again with a valid email address."};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/saved_resource(1)"></script>
+<link rel="stylesheet" id="all-css-0" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/style(1).css" type="text/css" media="all">
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='http://s2.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563g&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://mhandroid.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://mhandroid.wordpress.com/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Using cgdb with ndk-debug (and cgdb tutorial)" href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/">
+<link rel="next" title="How C/C++ Debugging Works on Android" href="http://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/">
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/Using Eclipse for Android C C++ Debugging   Android blog.html">
+<link rel="shortlink" href="http://wp.me/p1cYm7-n">
+<link rel="alternate" type="application/json+oembed" href="http://public-api.wordpress.com/oembed/1.0/?format=json&url=http%3A%2F%2Fmhandroid.wordpress.com%2F2011%2F01%2F23%2Fusing-eclipse-for-android-cc-debugging%2F&for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="http://public-api.wordpress.com/oembed/1.0/?format=xml&url=http%3A%2F%2Fmhandroid.wordpress.com%2F2011%2F01%2F23%2Fusing-eclipse-for-android-cc-debugging%2F&for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Using Eclipse for Android C/C++ Debugging">
+<meta property="og:url" content="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/">
+<meta property="og:description" content="Yes. You can use Eclipse for debugging of C/C++ code. I personally prefer cgdb but if you want to debug in Eclipse here is how. See my previous spot how to set up cgdb debugger if you think it...">
+<meta property="og:site_name" content="Android blog">
+<meta property="og:image" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/71.png?fit=1000%2C1000">
+<meta property="og:image" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/61.png?fit=1000%2C1000">
+<meta property="og:image" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/51.png?fit=1000%2C1000">
+<meta property="og:image" content="http://i2.wp.com/mhandroid.files.wordpress.com/2011/01/31.png?fit=1000%2C1000">
+<meta property="og:image" content="http://i0.wp.com/mhandroid.files.wordpress.com/2011/01/41.png?fit=1000%2C1000">
+<meta name="twitter:site" content="@wordpressdotcom">
+<meta name="twitter:image0" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/71.png?fit=1000%2C1000">
+<meta name="twitter:image1" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/61.png?fit=1000%2C1000">
+<meta name="twitter:image2" content="http://i1.wp.com/mhandroid.files.wordpress.com/2011/01/51.png?fit=1000%2C1000">
+<meta name="twitter:image3" content="http://i2.wp.com/mhandroid.files.wordpress.com/2011/01/31.png?fit=1000%2C1000">
+<meta name="twitter:card" content="gallery">
+<meta name="twitter:creator" content="@wordpressdotcom">
+<meta property="fb:app_id" content="249643311490">
+<link rel="shortcut icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311975824g" sizes="16x16 24x24 32x32 48x48">
+<link rel="icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311975824g" sizes="16x16 24x24 32x32 48x48">
+<link rel="apple-touch-icon-precomposed" href="http://s0.wp.com/i/webclip.png?m=1355642671g">
+<link rel="openid.server" href="http://mhandroid.wordpress.com/?openidserver=1">
+<link rel="openid.delegate" href="http://mhandroid.wordpress.com/">
+<link rel="search" type="application/opensearchdescription+xml" href="http://mhandroid.wordpress.com/osd.xml" title="Android blog">
+<link rel="search" type="application/opensearchdescription+xml" href="http://wordpress.com/opensearch.xml" title="WordPress.com">
+		<style>
+		/* <![CDATA[ */
+		/* Block: reblog */
+		
+		.reblog-from img                   { margin: 0 10px 0 0; vertical-align: middle; padding: 0; border: 0; }
+		.reblogger-note img.avatar         { float: left; padding: 0; border: 0; }
+		.reblogger-note-content            { margin: 0 0 20px; }
+		.reblog-post .wpcom-enhanced-excerpt-content { border-left: 3px solid #eee; padding-left: 15px; }
+		.reblog-post ul.thumb-list         { display: block; list-style: none; margin: 2px 0; padding: 0; clear: both; }
+		.reblog-post ul.thumb-list li      { display: inline; margin: 0; padding: 0 1px; border: 0; }
+		.reblog-post ul.thumb-list li a    { margin: 0; padding: 0; border: 0; }
+		.reblog-post ul.thumb-list li img  { margin: 0; padding: 0; border: 0; }
+		
+		.reblog-post .wpcom-enhanced-excerpt { clear: both; }
+		
+		.reblog-post .wpcom-enhanced-excerpt address,
+		.reblog-post .wpcom-enhanced-excerpt li,
+		.reblog-post .wpcom-enhanced-excerpt h1,
+		.reblog-post .wpcom-enhanced-excerpt h2,
+		.reblog-post .wpcom-enhanced-excerpt h3,
+		.reblog-post .wpcom-enhanced-excerpt h4,
+		.reblog-post .wpcom-enhanced-excerpt h5,
+		.reblog-post .wpcom-enhanced-excerpt h6,
+		.reblog-post .wpcom-enhanced-excerpt p { font-size: 100% !important; }
+		
+		.reblog-post .wpcom-enhanced-excerpt blockquote,
+		.reblog-post .wpcom-enhanced-excerpt pre,
+		.reblog-post .wpcom-enhanced-excerpt code,
+		.reblog-post .wpcom-enhanced-excerpt q { font-size: 98% !important; }
+		
+
+		/* ]]> */
+		</style>
+		<meta name="application-name" content="Android blog"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="by Martin Hejna"><meta name="msapplication-task" content="name=Subscribe;action-uri=http://mhandroid.wordpress.com/feed/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"><meta name="title" content="Using Eclipse for Android C/C++ Debugging | Android blog on WordPress.com">
+<meta name="description" content="by Martin Hejna (by MartinH)">
+
+<script type="text/javascript" src="http://partner.googleadservices.com/gampad/google_service.js">
+</script>
+<script type="text/javascript">
+if ( typeof GS_googleAddAdSenseService == 'function' ) { GS_googleAddAdSenseService("ca-pub-3443918307802676"); }
+if ( typeof GS_googleEnableAllServices == 'function' ) { GS_googleEnableAllServices() };
+</script>
+<script type="text/javascript">
+if ( typeof GA_googleAddSlot == 'function' ) { GA_googleAddSlot("ca-pub-3443918307802676", "wpcom_below_post_adsafe"); }
+</script>
+<script type="text/javascript">
+if ( typeof GA_googleFetchAds == 'function' ) { GA_googleFetchAds(); }
+</script>
+
+<script type="text/javascript">
+var wpcom_ads = { bid: 17868283, pt: 'permalink', wa: 0, as: 1, domain: 'mhandroid.wordpress.com', url: 'http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/', gid: '', };
+</script>
+<link rel="stylesheet" type="text/css" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/shCore.css"><link rel="stylesheet" type="text/css" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/shThemeDefault.css"><style id="syntaxhighlighteranchor"></style>
+<script type="text/javascript"> 
+	window.google_analytics_uacct = "UA-52447-2"; 
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script><script type="text/javascript" async="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/ga.js"></script>
+<link rel="stylesheet" type="text/css" id="gravatar-card-css" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/hovercard.css"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="./Using Eclipse for Android C C++ Debugging   Android blog_files/services.css"></head>
+
+<body class="single single-post postid-23 single-format-standard single-author highlander-enabled highlander-light">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://mhandroid.wordpress.com/" title="Android blog" rel="home">Android blog</a>
+					</span>
+				</div>
+				<div id="site-description">by Martin Hejna</div>
+
+										<a class="home-link" href="http://mhandroid.wordpress.com/" title="Android blog" rel="home">
+							<img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/path.jpg" width="940" height="198" alt="">
+						</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#content" title="Skip to content">Skip to content</a></div>
+								<div class="menu"><ul><li><a href="http://mhandroid.wordpress.com/" title="Home">Home</a></li><li class="page_item page-item-2"><a href="http://mhandroid.wordpress.com/about/">About</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/" rel="prev"><span class="meta-nav">←</span> Using cgdb with ndk-debug (and cgdb&nbsp;tutorial)</a></div>
+					<div class="nav-next"><a href="http://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/" rel="next">How C/C++ Debugging Works on&nbsp;Android <span class="meta-nav">→</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-23" class="post-23 post type-post status-publish format-standard hentry category-android tag-android tag-cc tag-debug tag-eclipse tag-ndk">
+											<h2 class="entry-title"><a href="./Using Eclipse for Android C C++ Debugging   Android blog_files/Using Eclipse for Android C C++ Debugging   Android blog.html" rel="bookmark">Using Eclipse for Android C/C++&nbsp;Debugging</a></h2>					
+					<div class="entry-meta">
+													<span class="meta-prep meta-prep-author">Posted on</span> <a href="./Using Eclipse for Android C C++ Debugging   Android blog_files/Using Eclipse for Android C C++ Debugging   Android blog.html" title="12:29" rel="bookmark"><span class="entry-date">January 23, 2011</span></a>							<span class="by-author"><span class="sep">by</span> <span class="author vcard"><a class="url fn n" href="http://mhandroid.wordpress.com/author/mhandroid/" title="View all posts by MartinH" rel="author">MartinH</a></span> </span>											</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>Yes. You can use Eclipse for debugging of C/C++ code. I personally prefer <em>cgdb</em> but if you want to debug in Eclipse here is how.</p>
+<p><span id="more-23"></span></p>
+<p>See my&nbsp;<a title="Using cgdb with ndk-debug (and cgdb tutorial)" href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/">previous spot</a> how to set up <em>cgdb</em> debugger if you think it will suit you.</p>
+<p>See my <a title="Using Eclipse for Android C/C++ Development" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/">blog spot</a> how to set up Eclipse for compiling and editing C/C++ code.</p>
+<p><strong>0) Prerequisities</strong></p>
+<p>You need Eclipse with CDT installed.<br>
+See <a title="Using Eclipse for Android C/C++ Development" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/">my previous spot</a> how to do it.</p>
+<p>You also need Android ndk. Download it from&nbsp;<a rel="noreferrer" href="http://developer.android.com/sdk/ndk/index.html">http://developer.android.com/sdk/ndk/index.html</a> and unpack it somewhere.</p>
+<p><strong>1) In Eclipse open your Android project which contains C/C++ code that you want to debug.</strong></p>
+<p>For this tutorial I’ve created simple MyAndroidProject.</p>
+<p><strong>2) Set android:debuggable=”true”. Set android:targetSdkVersion=”9″. </strong></p>
+<p><em>android:debuggable</em> is&nbsp;a property of&nbsp;<em>&lt;application&gt;</em> tag in your&nbsp;<em>AndroidManifest.xml</em>. You can set it either directly in xml or in <em>Application</em> tab as in the screenshot.</p>
+<p><strong> </strong><a href="http://mhandroid.files.wordpress.com/2011/01/12.png"><img class="alignnone size-full wp-image-152" title="Set android:debuggable=&quot;true&quot;" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/12.png" alt="" width="640" height="448"></a></p>
+<p><em>android:targetSdkVersion=”9″</em> is a property of <em>&lt;uses-sdk&gt;</em> tag&nbsp;in your&nbsp;<em>AndroidManifest.xml</em>. You can set it either directly in xml or in&nbsp;<em>Manifest</em> tab as in the screenshot.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/41.png"><img class="alignnone size-full wp-image-157" title="Set android:targetSdkVersion=&quot;9&quot;" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/41.png" alt="" width="640" height="448"></a></p>
+<p><strong>3) Run your application in debug mode and try to run <em>ndk-gdb</em> from console</strong></p>
+<p>To run application in debug mode press debug button (green bug/spider button in toolbox). In console go to your project directory and run <em>ndk-gdb</em>. It should succeed. If it fails you have to resolve the problem. Running <em>ndk-gdb</em> does not only ensure us that we are doing everything right so far, but also creates <em>app_process</em>, <em>gdb.setup</em> and<em> libc.so</em> files in <em>obj/local/armeabi/</em> subdirectory of our project. Those files will be needed in later steps.</p>
+<p><strong>4) Create C/C++ debug configuration</strong></p>
+<p>Click on combo-box like down arrow next to debug button. Pop-up menu will appear and then select <em>Debug Configurations…</em></p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/21.png"><img class="alignnone size-full wp-image-156" title="Select Debug Configurations... in Debug button pop-up" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/21.png" alt="" width="640" height="448"></a></p>
+<p>In <em>Debug Configurations</em> window select <em>C/C++ Application</em> and press <em>New</em> button as advised on the right pane.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/31.png"><img class="alignnone size-full wp-image-160" title="Create new C/C++ debug configuration" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/31.png" alt="" width="640" height="476"></a></p>
+<p><strong>5) Set <em>name</em> of the debug configuration, and fill information on <em>Main</em> tab.</strong></p>
+<p>Select <em>Standard Create Process Launcher</em> by clicking on the blue&nbsp;<em>Select other…</em> link at the bottom of the window.</p>
+<p>In <em>C/C++ Application</em> entry fill the path to the <em>app_process</em> binary which is located in <em>obj/local/armeabi/</em> subdirectory of your project.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/51.png"><img class="alignnone size-full wp-image-163" title="Fill Main tab with information about C/C++ debug configuration" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/51.png" alt="" width="640" height="414"></a></p>
+<p><strong>6) Click on <em>Debugger</em> tab and fill information about debugger.</strong></p>
+<p>Choose <em>gdbserver Debugger</em> as a Debugger.</p>
+<p>It’s good idea to set initial breakpoint to some function but Android projects do not contain <em>main</em> function so fill some appropriate function name in <em>Stop on startup</em> field (I filled&nbsp;<em>Java_com_example_map_MyAndroidProject_doSomething</em> but you can see only&nbsp;<em>Java_com_exam</em> on the screenshot).</p>
+<p>Set path to <em>GDB debugger</em>. The debugger is distributed with the Android ndk. Its located at <em>toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb</em>.</p>
+<p>Set path to <em>GDB command line</em>. This path should point to&nbsp;<em>obj/local/armeabi/gdb2.setup</em> file inside your project. You don’t have <em>gdb2.setup</em> file there yet but you will create one in a while.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/61.png"><img class="alignnone size-full wp-image-164" title="Fill Debugger-&gt;Main with information about debugger" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/61.png" alt="" width="640" height="312"></a></p>
+<p><strong>7) Click on the <em>Connection</em> tab (so you are in <em>Debugger-&gt;Connection</em> section of your C/C++ debug configuration) and fill information about connecting <em>gdb</em> with <em>gdbserver</em>.</strong></p>
+<p>Choose <em>TCP</em> as a type of connection and choose <em>5039</em> as a <em>Port number</em>.</p>
+<p><strong><a href="http://mhandroid.files.wordpress.com/2011/01/71.png"><img class="alignnone size-full wp-image-165" title="Fill Debugger-&gt;Connection with information about connection" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/71.png" alt="" width="640" height="312"></a></strong></p>
+<p><strong>8) Finally click <em>Apply</em> to save all the information about your C/C++ debug configuration.</strong></p>
+<p>This will save your new C/C++ debug configuration. Later, when running your application in debug mode you can choose in combo box associated with Debug button what debug configuration you want to use.&nbsp;Now you have two debug configurations. Android Java one which was created automatically for you when you’ve created Android project. And C/C++ one you’ve just created.</p>
+<p><strong>9) Go to the&nbsp;<em>obj/local/armeabi/</em> subdirectory of your project and copy <em>gdb.setup</em> file to <em>gdb2.setup</em> file. Remove&nbsp;<em>target remote :5039</em> line from <em>gdb2.setup</em>.</strong></p>
+<p>Eclipse don’t like&nbsp;<em>target remote :5039</em> line in gdb setup file because it wants to enter this command internally (that is why you configured port 5039 in the previous step). Because the <em>gdb.setup</em> file is recreated by ndk scripts you have to copy it to the&nbsp;<em>gdb2.setup</em> and point Eclipse to the <em>gdb2.setup</em> file (we did this in step 6).</p>
+<p><strong>10) Go to the directory with Android ndk and copy <em>ndk-gdb</em> to <em>ndk-gdb-eclipse</em>. Remove execution of gdb command from <em>ndk-gdb-eclipse</em>.</strong></p>
+<p>Original content of ndk-gdb (Android NDK, r5):</p>
+<div><div id="highlighter_537189" class="syntaxhighlighter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number578 index0 alt1">578</div><div class="line number579 index1 alt2">579</div><div class="line number580 index2 alt1">580</div><div class="line number581 index3 alt2">581</div></td><td class="code"><div class="container"><div class="line number578 index0 alt1"><code class="bash keyword">if</code> <code class="bash plain">[ -n </code><code class="bash string">"$OPTION_EXEC"</code> <code class="bash plain">] ; </code><code class="bash keyword">then</code></div><div class="line number579 index1 alt2"><code class="bash spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="bash functions">cat</code> <code class="bash plain">$OPTION_EXEC &gt;&gt; $GDBSETUP</code></div><div class="line number580 index2 alt1"><code class="bash keyword">fi</code></div><div class="line number581 index3 alt2"><code class="bash plain">$GDBCLIENT -x `native_path $GDBSETUP`</code></div></div></td></tr></tbody></table></div></div>
+<p><em> </em><br>
+Content of ndk-gdb-eclipse:</p>
+<div><div id="highlighter_88676" class="syntaxhighlighter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number578 index0 alt1">578</div><div class="line number579 index1 alt2">579</div><div class="line number580 index2 alt1">580</div><div class="line number581 index3 alt2">581</div></td><td class="code"><div class="container"><div class="line number578 index0 alt1"><code class="bash keyword">if</code> <code class="bash plain">[ -n </code><code class="bash string">"$OPTION_EXEC"</code> <code class="bash plain">] ; </code><code class="bash keyword">then</code></div><div class="line number579 index1 alt2"><code class="bash spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="bash functions">cat</code> <code class="bash plain">$OPTION_EXEC &gt;&gt; $GDBSETUP</code></div><div class="line number580 index2 alt1"><code class="bash keyword">fi</code></div><div class="line number581 index3 alt2"><code class="bash comments">## $GDBCLIENT -x `native_path $GDBSETUP`</code></div></div></td></tr></tbody></table></div></div>
+<p>Eclipse will run the <em>gdb</em> binary itself. So we have to remove the execution of <em>gdb</em> from<em> ndk-gdb</em>. To save original content it is good idea to copy the <em>ndk-gdb</em> to <em>ndk-gdb-eclipse</em>.</p>
+<p><strong>11) Now you are done. Put breakpoint in Java code after the execution of <em>System.loadLibrary()</em> and start your application in Debug mode.</strong></p>
+<p>Start your application in debug mode by clicking on Debug button. It will automatically choose Android debug mode. Later you will have to take care to choose Android Java debugging configuration by clicking on combo arrow associated with the debug button.</p>
+<p>The reason that breakpoint should be after <em>System.loadLibrary()</em> call is that our C/C++ code will be already loaded in that point and we can set breakpoints in it.</p>
+<p><strong>12) When execution reach the breakpoint run <em>ndk-gdb-eclipse</em> from your project directory and start debugging in C/C++ debug mode.</strong></p>
+<p>Go to the directory with your project and run <em>ndk-gdb-eclipse</em>. This will start server-part of the debugging infrastructure. Now click on the combo arrow associated with the debug button in Eclipse and choose <em>Debug Configurations…</em> Choose your C/C++ debug configuration and click <em>Debug</em> button.</p>
+<p>The C/C++ debug configuration will be added to recently used debug configurations so later you don’t have to walk into the <em>Debug Configurations…</em> window again and you can choose between Android Java debug configuration and C/C++ debug configuration by just clicking on the combo arrow associated with debug button in Eclipse. However always make sure which debug configuration you are about to execute as this is where mistakes happen very often (at least for me).</p>
+<p>After you’ve started C/C++ debug configuration click <em>Resume</em> button (or press F8). The application should resume its run and stop on C/C++ breakpoint (if you have one).</p>
+<p><strong>13) Now you are debugging the C/C++ code. Have fun!</strong></p>
+<p>Try to set some breakpoints in C/C++ code, etc.</p>
+<p><strong>Note on running <em>ndk-gdb-eclipse</em></strong></p>
+<p>You have to run <em>ndk-gdb-eclipse</em> every time before starting C/C++ debug session. This script starts the <em>gdbserver</em> binary on device/emulator so gdb (run by Eclipse) can connect to it.</p>
+<p>I made several attempts to force Eclipse to run <em>ndk-gdb-eclipse</em> script itself on start of C/C++ debug session. The most logical point is to write small script which will run <em>ndk-gdb-eclipse</em> without parameters (or with <em>–force</em> parameter) and then run <em>gdb</em> from Android ndk toolchain with all the parameters. This script can be used as <em>GDB debugger</em> command in the <em>Debugger</em> tab. But even if this script (and <em>ndk-gdb-eclipse</em> inside) was run successfully, the resulting connection of gdb and gdbserver always broke apart.</p>
+<p><strong>Final note and thanks!</strong></p>
+<p>This tutorial is heavily inspired by Sequoyah Project native debug tutorial.&nbsp;See&nbsp;<a href="http://www.eclipse.org/sequoyah/documentation/native_debug.php">http://www.eclipse.org/sequoyah/documentation/native_debug.php</a></p>
+<p>Many thanks to you guys.</p>
+
+<div class="wpa" style="position: relative; width:300px; text-align: center; padding: 0; margin: 10px auto; overflow: hidden; clear: both;">
+<a style="position: absolute; text-align: left; display: block; font: 9px/1 sans-serif; text-decoration: underline;" href="http://en.wordpress.com/about-these-ads/" rel="nofollow">About these ads</a>
+<script type="text/javascript">
+		var wpcom_adclk_hovering = false;
+		var wpcom_adclk_recorded = false;
+		var wpcom_adclk_theme = "Twenty Ten";
+		var wpcom_adclk_slot = "wpcom_below_post_adsafe";
+		var wpcom_adclk_network = ( typeof wpcom_adclk_network === "undefined" ) ? "" : wpcom_adclk_network ;
+
+		jQuery(document).ready( function() {
+			function wpcom_adclk_hover_yes() { wpcom_adclk_hovering = true; }
+			function wpcom_adclk_hover_no() { wpcom_adclk_hovering = false; }
+			jQuery(".wpa").click(wpcom_adclk_click);
+			jQuery(".wpa iframe").hover( wpcom_adclk_hover_yes, wpcom_adclk_hover_no );
+			jQuery(".wpa object").hover( wpcom_adclk_hover_yes, wpcom_adclk_hover_no );
+
+			jQuery(window).blur( function() {
+				if ( wpcom_adclk_hovering ) { wpcom_adclk_click(); }
+			});
+		});
+
+		function wpcom_adclk_impression() {
+			var stat_gif = document.location.protocol + "//stats.wordpress.com/g.gif?v=wpcom-no-pv";
+			stat_gif += "&x_ads_imp_theme=" + wpcom_adclk_theme;
+			stat_gif += "&x_ads_imp_placement="+wpcom_adclk_slot;
+			stat_gif += "&x_ads_imp_network=" + wpcom_adclk_network;
+			stat_gif += "&x_ads_imp_theme_network="+wpcom_adclk_theme+"_"+wpcom_adclk_network;
+			new Image().src = stat_gif + "&baba=" + Math.random();
+			return true;
+		}
+
+		function wpcom_adclk_click() {
+			if (wpcom_adclk_recorded) { return true; } // no double counting
+			var stat_gif = document.location.protocol + "//stats.wordpress.com/g.gif?v=wpcom-no-pv";
+			stat_gif += "&x_ads_click_theme=" + wpcom_adclk_theme;
+			stat_gif += "&x_ads_click_placement="+wpcom_adclk_slot;
+			stat_gif += "&x_ads_click_network=" + wpcom_adclk_network;
+			stat_gif += "&x_ads_click_theme_network="+wpcom_adclk_theme+"_"+wpcom_adclk_network;
+
+			new Image().src = stat_gif + "&baba=" + Math.random();
+			wpcom_adclk_recorded = true;
+			var now=new Date(); var end=now.getTime()+250;
+			while(true){now=new Date();if(now.getTime()>end){break;}}
+			return true;
+		}
+	
+if ( typeof GA_googleAddAttr == 'function' ) {
+GA_googleAddAttr("AdOpt", "1");
+GA_googleAddAttr("Origin", "extsearch");
+GA_googleAddAttr("LangId", "1");
+GA_googleAddAttr("Domain", "mhandroid.wordpress.com");
+GA_googleAddAttr("BlogId", "17868283");
+GA_googleAddAttr("AdSafe", "1");
+GA_googleAddAttr("Autotag", "technology");
+GA_googleAddAttr("Tag", "android");
+GA_googleAddAttr("Tag", "android");
+GA_googleAddAttr("Tag", "cc");
+GA_googleAddAttr("Tag", "debug");
+GA_googleAddAttr("Tag", "eclipse");
+GA_googleAddAttr("Tag", "ndk");
+GA_googleAddAttr("Partner", "AOL");
+GA_googleAddAttr("theme_bg", "ffffff");
+GA_googleAddAttr("theme_text", "333333");
+GA_googleAddAttr("theme_link", "0066cc");
+GA_googleAddAttr("theme_border", "cccccc");
+GA_googleAddAttr("theme_url", "ff4b33");
+GA_googleAddAdSensePageAttr("google_page_url", "http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/");
+GA_googleFillSlot("wpcom_below_post_adsafe");
+}
+</script>
+</div>
+<style type="text/css">
+div.wpa>div { margin-top: 1em; }
+</style>
+<script type="text/javascript">
+jQuery( window ).load( function() {
+    if ( jQuery(".wpa script[src*='shareth.ru']").length > 0 || jQuery(".wpa iframe[src*='boomvideo.tv']").length > 0 || jQuery(".wpa iframe[src*='viewablemedia.net']").length > 0 || jQuery(".wpa .sharethrough-placement").length > 0 ) {
+        jQuery( '.wpa' ).css( 'width', '400px' );
+    }
+setTimeout(function(){if(typeof GS_googleAddAdSenseService !== 'function'){new Image().src=document.location.protocol+"//stats.wordpress.com/g.gif?v=wpcom-no-pv&x_noads=adblock&baba="+Math.random()}},100);
+} );
+</script>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-17868283-23-519231f0d52db" data-src="http://widgets.wp.com/likes/#blog_id=17868283&amp;post_id=23&amp;origin=http://mhandroid.wordpress.com&amp;obj_id=17868283-23-519231f0d52db" data-name="like-post-frame-17868283-23-519231f0d52db"><h3 class="sd-title">Like this:</h3><div class="post-likes-widget-placeholder" style="height:55px"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-17868283-23-519231f0d52db" height="55px" width="100%" frameborder="0" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/saved_resource(3).html" style=""></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div></div>											</div><!-- .entry-content -->
+
+					<div id="entry-author-info">
+						<div id="author-avatar">
+							<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/024bd611c1757a2c96f4f1a0e335507a" class="avatar avatar-60 grav-hashed grav-hijack" height="60" width="60" id="grav-024bd611c1757a2c96f4f1a0e335507a-0">						</div><!-- #author-avatar -->
+						<div id="author-description">
+							<h2>About MartinH</h2>
+							--							<div id="author-link">
+								<a href="http://mhandroid.wordpress.com/author/mhandroid/" rel="author">
+									View all posts by MartinH <span class="meta-nav">→</span>								</a>
+							</div><!-- #author-link	-->
+						</div><!-- #author-description -->
+					</div><!-- #entry-author-info -->
+
+					<div class="entry-utility">
+												This entry was posted in <a href="http://mhandroid.wordpress.com/category/android/" title="View all posts in Android" rel="category tag">Android</a> and tagged <a href="http://mhandroid.wordpress.com/tag/android/" rel="tag">Android</a>, <a href="http://mhandroid.wordpress.com/tag/cc/" rel="tag">C/C++</a>, <a href="http://mhandroid.wordpress.com/tag/debug/" rel="tag">debug</a>, <a href="http://mhandroid.wordpress.com/tag/eclipse/" rel="tag">eclipse</a>, <a href="http://mhandroid.wordpress.com/tag/ndk/" rel="tag">ndk</a>. Bookmark the <a href="./Using Eclipse for Android C C++ Debugging   Android blog_files/Using Eclipse for Android C C++ Debugging   Android blog.html" title="Permalink to Using Eclipse for Android C/C++ Debugging" rel="bookmark">permalink</a>.											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/" rel="prev"><span class="meta-nav">←</span> Using cgdb with ndk-debug (and cgdb&nbsp;tutorial)</a></div>
+					<div class="nav-next"><a href="http://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/" rel="next">How C/C++ Debugging Works on&nbsp;Android <span class="meta-nav">→</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">56 Responses to <em>Using Eclipse for Android C/C++&nbsp;Debugging</em></h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-12">
+		<div id="comment-12">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/257c5f6469e22d680b6fe8dc8ff15c70" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-257c5f6469e22d680b6fe8dc8ff15c70-0">				<cite class="fn">Graham</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-12">
+				May 31, 2011 at 21:47</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I have tried following these instructions to debug one of the NDK example projects. However it seems to want a C/C++ project for the debug configuration and I am unclear how to set this up within the existing sample directory. There is no option for creating a project from existing source for a C/C++ project as there is for an Android project.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=12#respond" onclick="return addComment.moveForm(&quot;comment-12&quot;, &quot;12&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="li-comment-14">
+		<div id="comment-14">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/41e23daf42fb0f1605acecf7469d00e9" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-41e23daf42fb0f1605acecf7469d00e9-0">				<cite class="fn">Grubby</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-14">
+				July 28, 2011 at 17:00</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>hi,</p>
+<p>first of all thank you very much for your posts.<br>
+i’m running from mac and i have one problem though: i don’t have the app_process, maybe because i’m deploying directly o a device? i’m trying to debug the OpenGL sample app that came with the Android NDK r6, which cannot run on the emulator.</p>
+<p>any advice would be appreciated.</p>
+<p>thanks</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=14#respond" onclick="return addComment.moveForm(&quot;comment-14&quot;, &quot;14&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-15">
+		<div id="comment-15">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/c558a57ce815359e40656a3fa134589b" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-c558a57ce815359e40656a3fa134589b-0">				<cite class="fn">yuli</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-15">
+				July 29, 2011 at 05:44</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Amazing! I liked it!  Spend the whole day to figure how to debug C on android, and this is the only tutorial which actually made sense/</p>
+<p>Followed to the letter, and all worked fine!</p>
+<p>One piece of advice – I started with HelloJni application which came with ndk_rev6</p>
+<p>Yuli</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=15#respond" onclick="return addComment.moveForm(&quot;comment-15&quot;, &quot;15&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2 highlander-comment" id="li-comment-16">
+		<div id="comment-16">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/41e23daf42fb0f1605acecf7469d00e9" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-41e23daf42fb0f1605acecf7469d00e9-1">				<cite class="fn">Grubby</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-16">
+				July 29, 2011 at 07:56</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi Yuli,</p>
+<p>Did you deploy on the device or on the emulator.<br>
+In either case, what did you complete on Step 5 for C/C++ Application path?</p>
+<p>Thanks,<br>
+Grubby</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=16#respond" onclick="return addComment.moveForm(&quot;comment-16&quot;, &quot;16&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-17">
+		<div id="comment-17">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/41e23daf42fb0f1605acecf7469d00e9" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-41e23daf42fb0f1605acecf7469d00e9-2">				<cite class="fn">Grubby</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-17">
+				July 29, 2011 at 08:04</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Nevermind, i’ve missed these yesterday :</p>
+<p>“Running ndk-gdb does not only ensure us that we are doing everything right so far, but also creates app_process”</p>
+<p>Sorry</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=17#respond" onclick="return addComment.moveForm(&quot;comment-17&quot;, &quot;17&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-18">
+		<div id="comment-18">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/7cd2a8c28ff0c576684033fe2ef66892" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-7cd2a8c28ff0c576684033fe2ef66892-0">				<cite class="fn">Dipraj</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-18">
+				July 30, 2011 at 00:39</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Great ! Really very helpful !<br>
+Out of several options I tried, this one worked the best. Another good thing is that this even works with ndk r6.</p>
+<p>Thanks a bunch Martin.</p>
+<p>Dipraj</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=18#respond" onclick="return addComment.moveForm(&quot;comment-18&quot;, &quot;18&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-21">
+		<div id="comment-21">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-0">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-21">
+				August 1, 2011 at 18:33</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi. Great tutorial but I run in into the same issue as Graham did.<br>
+When I try to start the native debugging eclipse moans that this is not a C/C++ project.<br>
+Do I need to convert the whole project to a CDT project ?<br>
+Thanks for any hints,<br>
+Claus</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=21#respond" onclick="return addComment.moveForm(&quot;comment-21&quot;, &quot;21&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2 highlander-comment" id="li-comment-22">
+		<div id="comment-22">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-1">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-22">
+				August 1, 2011 at 18:57</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Ok. Find the solution for this. I first need to create teh CDT project, resp. the “mixed” project.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=22#respond" onclick="return addComment.moveForm(&quot;comment-22&quot;, &quot;22&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-3 highlander-comment" id="li-comment-45">
+		<div id="comment-45">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/5edf3f3126bc9dc229868c1548104a28" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-5edf3f3126bc9dc229868c1548104a28-0">				<cite class="fn">jmallios</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-45">
+				October 6, 2011 at 01:23</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Can you elaborate on this?  Did you convert the project to C++, and if so, how?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt depth-3 highlander-comment" id="li-comment-46">
+		<div id="comment-46">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-2">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-46">
+				October 6, 2011 at 09:39</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>jmallios, i follow the instructions martin posted here:<br>
+<a href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/" rel="nofollow">http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/</a><br>
+HTH,<br>
+claus</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even depth-3 highlander-comment" id="li-comment-47">
+		<div id="comment-47">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-3">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-47">
+				October 6, 2011 at 09:41</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>wrong link… this is the correct one:<br>
+<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/" rel="nofollow">http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/</a></p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt depth-3 highlander-comment" id="li-comment-49">
+		<div id="comment-49">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/5edf3f3126bc9dc229868c1548104a28" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-5edf3f3126bc9dc229868c1548104a28-1">				<cite class="fn">jmallios</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-49">
+				October 6, 2011 at 20:24</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>So, after conversion to a C++ project and creating the C++ debug configuration, eclipse cannot find ndk-build when I debug.</p>
+<p>My environment is Mac OS X 10.6.8, Eclipse 3.7.1 with CDT 8.0.0.201109151620 and ADTools 12.0.0.v201106281929-138431, Android SDK 2.2 (version 8, Froyo), Android NDK r6b.</p>
+<p>To keep it simple, I’m trying to hit a breakpoint on the single line of C++ code in the NDK sample hello-jni.</p>
+<p>After following these instructions as best I can (clearly a different version of Eclipse according to the screenshots), I get the following console output when I try to Debug:</p>
+<p>     **** Build of configuration Default for project HelloJni ****</p>
+<p>     ndk-build all </p>
+<p>     Cannot run program “ndk-build”: Unknown reason<br>
+     Error: Program “ndk-build” is not found in PATH</p>
+<p>     PATH=[/usr/bin:/bin:/usr/sbin:/sbin]</p>
+<p>     **** Build Finished ****</p>
+<p>Any ideas?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even depth-3 highlander-comment" id="li-comment-50">
+		<div id="comment-50">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-4">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-50">
+				October 7, 2011 at 10:11</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>so did you try to add ndk-build to your $PATH ?</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt depth-3 highlander-comment" id="li-comment-51">
+		<div id="comment-51">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/5edf3f3126bc9dc229868c1548104a28" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-5edf3f3126bc9dc229868c1548104a28-2">				<cite class="fn">jmallios</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-51">
+				October 7, 2011 at 19:12</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Yes, but now when I debug the app using the new C++ debug config, I see:</p>
+<p>(no debugging symbols found)<br>
+(no debugging symbols found)<br>
+1-gdb-set confirm off<br>
+1^done<br>
+(gdb)<br>
+2-gdb-set width 0<br>
+2^done<br>
+(gdb)<br>
+3-gdb-set height 0<br>
+3^done<br>
+(gdb)<br>
+4-interpreter-exec console echo<br>
+4^done<br>
+(gdb)<br>
+5-gdb-show prompt<br>
+5^done,value=”(gdb) ”<br>
+(gdb)<br>
+6-gdb-set auto-solib-add on<br>
+6^done<br>
+(gdb)<br>
+7-gdb-set stop-on-solib-events 0<br>
+7^done<br>
+(gdb)<br>
+8-gdb-set stop-on-solib-events 1<br>
+8^done<br>
+(gdb)<br>
+9-target-select remote localhost:5039<br>
+&amp;”localhost:5039: Connection refused.\n”<br>
+localhost:5039: Connection refused.<br>
+9^error,msg=”localhost:5039: Connection refused.”<br>
+(gdb)<br>
+10-gdb-exit<br>
+10^exit</p>
+<p>I’m confused about the exact sequence of events needed to hit a C++ breakpoint.  I think I need eclipse to start the gdbserver itself on the emulator, meanwhile pausing execution until it connects…then resuming execution.</p>
+<p>The prescribed method seems to be setting a java breakpoint after the LoadLibrary call of the C lib, then opening a separate terminal and running ndk-gdb to start the server, then resuming in eclipse, but that seems ridiculous and slow for C development.</p>
+<p>Thx,<br>
+Jason</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-24">
+		<div id="comment-24">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/19267c947b45c862a0e7b896f01fc439" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-19267c947b45c862a0e7b896f01fc439-0">				<cite class="fn">Jim</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-24">
+				August 2, 2011 at 19:54</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I had a few more steps to get close to the same results, and fails in fine… In my case, gdb refuses to recognize the symbols and has no effect, though it gets connected properly…</p>
+<p>1) First of all, I had to add “LOCAL_CFLAGS := -Wall -g” in the project “jni/Android.mk” (btw this way I finally got C/C++ compilation warnings at last)</p>
+<p>2) Then, I had to comment out the line “$(hide) $(call cmd-strip, $(PRIVATE_DST))” in the “build/core/build-binary.mk” NDK installation folder, because it was stripping all the symbols from the the resulting JNI shared lib anyway (I spent some time on this one…)</p>
+<p>3) I do not understand why I have a different folder setup. May be I misconfigured my project, but my “app_process” is located in “./obj/local/armeabi-v7a/app_process” and not in “./obj/local/armeabi/app_process” as the rest of the world… I set up the other folders accordingly then, but I am somehowe unsure, especially since I fail to get the gas plant work at the end ;)</p>
+<p>4) Anyway, I can get Eclipse to connect to the debugger with the usual procedure (start Java debug with a breakpoint in System.loadLibrary, then ndk-gdb-eclipse, and finally start C++ debug.<br>
+However almost every time, it complains and fails to load the symbols though. OK, I can tell it via gdb “file” option (just provide the path to the .so file). Then I can set/disables breakpoints in the C++ source, but they really have no effect. If I pause the C++ execution, then the Java side gets frozen, but I cannot do much more then continue execution.</p>
+<p>I’m getting out of ideas to have it work properly, may be some of you would have some nice advice of experience with these issues?</p>
+<p>Jim</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=24#respond" onclick="return addComment.moveForm(&quot;comment-24&quot;, &quot;24&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2 highlander-comment" id="li-comment-25">
+		<div id="comment-25">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-5">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-25">
+				August 2, 2011 at 22:33</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Did you try setting the pathes to the *.so files in  gdb2.setup with “set solib-search-path”.<br>
+As well as pathes to other source files with “directories”.<br>
+HTH,<br>
+Claus</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=25#respond" onclick="return addComment.moveForm(&quot;comment-25&quot;, &quot;25&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-3 highlander-comment" id="li-comment-26">
+		<div id="comment-26">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/19267c947b45c862a0e7b896f01fc439" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-19267c947b45c862a0e7b896f01fc439-1">				<cite class="fn">Jim</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-26">
+				August 3, 2011 at 11:00</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks for your help, you probably are pointing in the right direction since the symbols are not loaded by default. I’m not sure what is the app_process that gets pulled from the device (it has np symbols btw). So I added an explicit “file obj/local/armeabi-v7a/myproject.so” in gdb2.setup, even though I guess Eclipse does or should usually do this on its own (I found nobody talking about this).</p>
+<p>ndk-gdb-eclipse –verbose tells me this though: “Using gdb setup init: /home/jeremie/workspace/smartgrappe/libs/armeabi-v7a/gdb.setup”, it seems to conflict with gdb2.setup as specified in eclipse. But may be it’s meaningless at this stage b/c the deal is first to get the gdb server up and ready if I understand.</p>
+<p>OK so the debugger really gets connected (as seen in adb logcat for example), and I start the  C/C++ debugging configuration from Eclipse after having started the Java debug and breaked on System.loadLibrary.<br>
+The eclipse debug console dumps a warning though:<br>
+94-target-select remote localhost:5039<br>
+&amp;”warning: shared library handler failed to enable breakpoint\n”</p>
+<p>However it continues, dumps some thread infos (where symbols and line numbers are OK). Then it gets very slow dumping information about current breakpoints (~2sec per line), and finally pops up a dialog telling me “Target is not responding”, which locks in turn all the session including java debugging. No way to continue at all.</p>
+<p>Here is the end of the debug console in eclipse. At line 75+ it slows down to a halt. I entered none of the commands btw.</p>
+<p>74 info threads<br>
+&amp;”info threads\n”<br>
+~”* 1 Thread 1340  NonCopyable (this=0×1) at /home/jeremie/workspace/smartgrappe/jni/Base.h:79\n”<br>
+74^done<br>
+(gdb)<br>
+75-stack-info-depth<br>
+76-data-list-register-names<br>
+77-data-list-register-names<br>
+78-stack-list-frames 0 1<br>
+79-break-insert /home/jeremie/workspace/smartgrappe/jni/imgprocessing.cpp:84<br>
+80-break-insert /home/jeremie/workspace/smartgrappe/jni/imgprocessing.cpp:126<br>
+81-exec-continue<br>
+82 kill<br>
+83-gdb-exit</p>
+<p>Hope someone can get me through…</p>
+</div>
+
+			<div class="reply">
+							</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="li-comment-27">
+		<div id="comment-27">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/19267c947b45c862a0e7b896f01fc439" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-19267c947b45c862a0e7b896f01fc439-2">				<cite class="fn">Jim</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-27">
+				August 3, 2011 at 14:29</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>My bad, the slow down / freeze went away after I rebooted the device :)</p>
+<p>Now my problem now seems unrelated to eclipse since I get the same issue with cgdb, so I’ll move my polluting thread to the sister page <a href="http://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/" rel="nofollow">http://mhandroid.wordpress.com/2011/01/25/how-cc-debugging-works-on-android/</a></p>
+<p>If there is an admin here, he/she can delete my previous post to keep this page clean ;)</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=27#respond" onclick="return addComment.moveForm(&quot;comment-27&quot;, &quot;27&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-34">
+		<div id="comment-34">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/goebish_bigger_normal.png" class="avatar avatar-40" height="40" width="40">				<cite class="fn"><a href="http://twitter.com/goebish" rel="external nofollow" class="url">Goebish (@goebish)</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-34">
+				August 6, 2011 at 16:58</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Many thanks for the tutorial, works like a charm !</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=34#respond" onclick="return addComment.moveForm(&quot;comment-34&quot;, &quot;34&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="li-comment-36">
+		<div id="comment-36">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-6">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-36">
+				August 15, 2011 at 13:09</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi,<br>
+One more issue from my side: After I ran the GDB first time I changed a lot of function names.<br>
+As well native functions wher I had set breakpoints. But now when I try to start the native part of the<br>
+app, eclipse refers still to the old function names.</p>
+<p>I assume that this is cached somewhere, but I did not find the cache location, yet.<br>
+If someone has a hint on this …</p>
+<p>Thanks, CLaus</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=36#respond" onclick="return addComment.moveForm(&quot;comment-36&quot;, &quot;36&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-2 highlander-comment" id="li-comment-37">
+		<div id="comment-37">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-7">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-37">
+				August 17, 2011 at 16:42</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>once again i overseen something…<br>
+forgot to change the “Stop on srtup” value.</p>
+<p>cheers, Claus</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=37#respond" onclick="return addComment.moveForm(&quot;comment-37&quot;, &quot;37&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-38">
+		<div id="comment-38">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/a4aafa174df4d55b2559cdee38002876" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-a4aafa174df4d55b2559cdee38002876-0">				<cite class="fn">Kak0</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-38">
+				August 22, 2011 at 11:39</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Trying to get it working, unfortunately when I launch the debug configuration of the C/C++ app I get a ton of errors like<br>
+“Error while mapping shared library sections:<br>
+libstdc++.so: No such file or directory”, </p>
+<p>followed by “(no debugging symbols found)” </p>
+<p>and ends with “warning: Unable to find dynamic linker breakpoint function.<br>
+GDB will be unable to debug shared library initializers<br>
+and track explicitly loaded dynamic code.<br>
+Cannot access memory at address 0x9620f0<br>
+No symbol table is loaded.  Use the “file” command.”</p>
+<p>Any clue about what it could come from ?</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=38#respond" onclick="return addComment.moveForm(&quot;comment-38&quot;, &quot;38&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-40">
+		<div id="comment-40">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/030e5e08844afb631a9833510c121329" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-030e5e08844afb631a9833510c121329-0">				<cite class="fn">stipus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-40">
+				September 4, 2011 at 10:43</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thank you very much for your procedure ! It worked fine with ndk r6 !</p>
+<p>I first tried to debug my C++ Lib using __android_log_vprint(), but I quickly realized a real debugger would be a lot better …</p>
+<p>I searched for hours, tried several other procedures without success until I found and followed your procedure… it took me some time as:<br>
+- some paths were different  (“app_process” is located in “./obj/local/armeabi-v7a/app_process” and not in “./obj/local/armeabi/app_process” like Jim above)<br>
+- the environment variable ANDROID_NDK_ROOT was not set on my system,<br>
+- I did not select gdbserver in the C++ debug configuration (and as a result there was no connection tab with the port 5039 setting).<br>
+- I was using stlport_static without running build/core/build-stlport.sh, and this produced warning messages that crashed the ndk-gdb and ndk-gdb-eclipse scripts (took me a long time to figure out this one!)</p>
+<p>Then I could set C++ breakpoints … find and fix my bugs ! </p>
+<p>Thanks again :)</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=40#respond" onclick="return addComment.moveForm(&quot;comment-40&quot;, &quot;40&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2 highlander-comment" id="li-comment-91">
+		<div id="comment-91">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/483ddd5e7ccab8a3b08969bfe44fa2e6" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-483ddd5e7ccab8a3b08969bfe44fa2e6-0">				<cite class="fn">Tony</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-91">
+				June 25, 2012 at 16:24</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>How did you figure out that you had warning messages that were causing crashes?  How exactly do you run ‘build/core/build-stlport.sh’ (I think you mean build/tools/build-stlport.sh)?  I tried to run it and got errors.  Is putting the following lines in my Application.mk the same:<br>
+APP_STL := stlport_static<br>
+STLPORT_FORCE_REBUILD := true<br>
+?</p>
+<p>Thanks.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=91#respond" onclick="return addComment.moveForm(&quot;comment-91&quot;, &quot;91&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-41">
+		<div id="comment-41">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/17a97e09a1b23bc733ae22880a961b59" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-17a97e09a1b23bc733ae22880a961b59-0">				<cite class="fn"><a href="http://engineering.bowery.com/" rel="external nofollow" class="url">bowerymarc</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-41">
+				September 16, 2011 at 18:27</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>great guide — there’s no way in hell i would have figured out how to do that without this page – thanks.  I did have to do some of the extras in some of the comments.  #1 &amp; 2 from Jim above<br>
+- LOCAL_CFLAGS := -Wall -g<br>
+- comment out the line “$(hide) $(call cmd-strip, $(PRIVATE_DST))” in the “build/core/build-binary.mk” NDK installation folder<br>
+- added the extra paths though i’m not sure i needed to<br>
+- build/core/build-stlport.sh since I’m using static stl – this was huge, as without doing it, the warning messages were piped into the next thing, in ndk_gdb script, thereby screwing the pooch.</p>
+<p>it is too bad that somehow ndk_gdb_exclipse can’t be made to run automatically, but i’m sure some eclipse expert out there will figure it out finally.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=41#respond" onclick="return addComment.moveForm(&quot;comment-41&quot;, &quot;41&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://blog.plicatibu.com/how-to-debug-cocos2d-x-and-java-code-using-eclipse/" rel="external nofollow" class="url">How to debug cocos2d-x and Java code using Eclipse | Plicatibu Software Development</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="li-comment-43">
+		<div id="comment-43">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/fff23288e67fb5b84e3063afdbb7ad49" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-fff23288e67fb5b84e3063afdbb7ad49-0">				<cite class="fn">charley</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-43">
+				September 26, 2011 at 08:00</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Dear all,<br>
+I have done all the setups and also followed the others who have commented about the post…<br>
+I get the following error finally</p>
+<p>Error while mapping shared library sections:<br>
+/system/bin/linker: No such file or directory.<br>
+Error while mapping shared library sections:<br>
+libstdc++.so: No such file or directory.<br>
+……. and so on..<br>
+I understand i need to link few libraries but am not clear about the steps ???<br>
+Kindly guide.. any steps or pointers would be of great help…</p>
+<p>regards<br>
+Charley</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=43#respond" onclick="return addComment.moveForm(&quot;comment-43&quot;, &quot;43&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-2 highlander-comment" id="li-comment-67">
+		<div id="comment-67">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/8b38ba378d298d74669d8a18bfad8576" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-8b38ba378d298d74669d8a18bfad8576-0">				<cite class="fn">Régis</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-67">
+				February 20, 2012 at 16:03</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I have got the same problem as yours. Did you find any solution ? Thanks !!</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=67#respond" onclick="return addComment.moveForm(&quot;comment-67&quot;, &quot;67&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-44">
+		<div id="comment-44">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/84981364580652b8ac8005299e3e6a85" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-84981364580652b8ac8005299e3e6a85-8">				<cite class="fn">Claus</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-44">
+				September 29, 2011 at 11:05</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi,<br>
+Is it also possible to do native debugging when using an external jar that has native components ?<br>
+I have split my application into a pure Java application and an API project that has now the native stuff and just generates the *.jar and the *.so files. So i have no app_process file which I need to have in the debug configuration.<br>
+Someone ever tried this ?<br>
+Thanks,<br>
+Claus</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=44#respond" onclick="return addComment.moveForm(&quot;comment-44&quot;, &quot;44&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-48">
+		<div id="comment-48">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/93596030de1b94e0f49f40d92e4a77c8" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-93596030de1b94e0f49f40d92e4a77c8-0">				<cite class="fn"><a href="http://gravatar.com/grndvl1" rel="external nofollow" class="url">grndvl1John</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-48">
+				October 6, 2011 at 16:38</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I couldn’t get this to work at all.  Would be nice if this was updated to newer versions of Eclipse, since none of these screen shots look like the Eclipse I am using.  Also the location of the gdb.setup is not the same either.</p>
+<p>Thanks</p>
+<p>John</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=48#respond" onclick="return addComment.moveForm(&quot;comment-48&quot;, &quot;48&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-53">
+		<div id="comment-53">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/picture" class="avatar avatar-40" height="40" width="40">				<cite class="fn"><a href="http://www.facebook.com/anuj.saluja" rel="external nofollow" class="url">Anuj Saluja</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-53">
+				October 22, 2011 at 06:30</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I followed the steps to the T, but when I try to debug the C++ configuration, I get an error that it is not a valid C\C++ configuration. Any ideas?<br>
+M</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=53#respond" onclick="return addComment.moveForm(&quot;comment-53&quot;, &quot;53&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-60">
+		<div id="comment-60">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/8209b5508be8cd4db3bea999baffa956" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-8209b5508be8cd4db3bea999baffa956-0">				<cite class="fn">Nick</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-60">
+				December 10, 2011 at 10:11</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I managed to get this to work and can debug native code in the emulator. But how to debug on the device? I guess the debug configuration needs to be set up differently, but how. Thanks in advance.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=60#respond" onclick="return addComment.moveForm(&quot;comment-60&quot;, &quot;60&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-68">
+		<div id="comment-68">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/8b38ba378d298d74669d8a18bfad8576" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-8b38ba378d298d74669d8a18bfad8576-1">				<cite class="fn">Regis</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-68">
+				February 20, 2012 at 17:36</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Please, have a look to the question posted here: <a href="http://www.cocos2d-x.org/boards/6/topics/8512" rel="nofollow">http://www.cocos2d-x.org/boards/6/topics/8512</a> and give an answer if you know how to solve this problem ! Thanks !</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=68#respond" onclick="return addComment.moveForm(&quot;comment-68&quot;, &quot;68&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-69">
+		<div id="comment-69">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/fc071b72ef5d3e43bccb144caf963fb5" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-fc071b72ef5d3e43bccb144caf963fb5-0">				<cite class="fn"><a href="http://serpents-iz.blogspot.com/" rel="external nofollow" class="url">Michael</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-69">
+				February 23, 2012 at 14:45</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks for such detailed instructions! I had an error with PATH variable too. And after almost 1,5 weeks found solution.<br>
+Development IDE may hide system PATH and use it’s own instead. Detailed solution is here:<br>
+<a href="http://serpents-iz.blogspot.com/2012/02/how-to-solve-problem-with-motodev.html" rel="nofollow">How to solve problem with Motodev Eclipse for Android 3.1: wrong PATH</a> It is for MOTODEV IDE, but Eclipse may have same thing.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=69#respond" onclick="return addComment.moveForm(&quot;comment-69&quot;, &quot;69&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-70">
+		<div id="comment-70">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/59c1efa7adf1c310466411b45ff97bb5" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-59c1efa7adf1c310466411b45ff97bb5-0">				<cite class="fn">Simon</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-70">
+				March 12, 2012 at 11:41</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks for the tutorial. I found it difficult to get going, and even now while I think it works as expected in HelloJNI, it has odd segfaults and extreme slowness that have me unsure.</p>
+<p>I want to highlight what I found most difficult, as I think other people have had the same problem with the instructions here and at sequoyah:</p>
+<p>I was stuck wondering what was causing debug not to start, with message “connection refused” etc. My failure was not reading the instructions here precisely enough, making a few false assumptions.<br>
+The steps 11 &amp; 12 need to be reread a few times to realize – they tell you after setting up this new debug configuration and scripts etc –<br>
+1. Start the Normal-Java-Android debug config, that is used for debugging java code, and stop that on a breakpoint<br>
+2. then, run ndk-gdb-eclipse from the shell, (it runs for me with no output normally)<br>
+3. only then, start the new android native debug configuration that we’ve been instructed to make<br>
+4. After it seems to be running, continue the debug session in the normal java mode, such that breakpoints in native code should now be hit</p>
+<p>I think the steps are obvious once you recognize them, but when I was just trying to blindly follow steps I was missing what was actually been said, and I think other people were too.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=70#respond" onclick="return addComment.moveForm(&quot;comment-70&quot;, &quot;70&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-72">
+		<div id="comment-72">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/eccf899547de5194479c0bd3cab537fa" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-eccf899547de5194479c0bd3cab537fa-0">				<cite class="fn">Henry</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-72">
+				March 23, 2012 at 20:14</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I followed the steps and the comments on NDK r7b with Eclipse Indigo Windows 7 64-bit. It works on one of my project, but failed on my other project. Additional step I have to do is to uncheck the “Use full file path to set the breakpoints” checkbox in “Debugger” tab, I guess this is only needed for Windows operating system.</p>
+<p>I also experienced issues like “(no debugging symbols found)”, “cannot access address 0″, “cannot access address 0xfffffef8″, etc. Even with working project, the debugger seems too slow to use. </p>
+<p>With another project I got “Remote communication error: Bad file descriptor” error. Debugger cannot be launched successfully.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=72#respond" onclick="return addComment.moveForm(&quot;comment-72&quot;, &quot;72&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-77">
+		<div id="comment-77">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/307fe759978ad86e4916f71883be1cf1" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-307fe759978ad86e4916f71883be1cf1-0">				<cite class="fn">Bruno Marques</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-77">
+				May 5, 2012 at 22:47</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi!<br>
+And thanks a lot for this tutorial.<br>
+I still have a strange problem:<br>
+When I start debugging the native code, I’ve got this message:</p>
+<p>&gt;Error creating session<br>
+&gt;Cannot run program “C:\SDK\android-ndk-r8\toolchains\arm-linux-androideabi-4.4.3\prebuilt\windows\bin\arm-linux-androideabi-gdb.exe”: Le fichier spécifié est introuvable.</p>
+<p>This file is the one I set in the “GDB Debugger” field, in the debugger options. And it’s a valid path (I can write this line in windows shell, and it execute the program…)</p>
+<p>Do you have an idea about my problem?</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=77#respond" onclick="return addComment.moveForm(&quot;comment-77&quot;, &quot;77&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://www.dkphp.com/questions-2/crash-in-android-native-while-changing-to-new-activity.html" rel="external nofollow" class="url">Crash in Android Native while changing to new Activity | PHP Developer Resource</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-86">
+		<div id="comment-86">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/511b0f32d8501942a6f090442ad4ef0a" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-511b0f32d8501942a6f090442ad4ef0a-0">				<cite class="fn">Virendra Shakya</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-86">
+				May 25, 2012 at 07:13</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>can you please tell what version of eclipse needs to be used? i don’t see any options in my eclipse (helios SR2) on mac.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=86#respond" onclick="return addComment.moveForm(&quot;comment-86&quot;, &quot;86&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-87">
+		<div id="comment-87">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/483ddd5e7ccab8a3b08969bfe44fa2e6" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-483ddd5e7ccab8a3b08969bfe44fa2e6-1">				<cite class="fn">Tony</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-87">
+				May 29, 2012 at 21:52</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thank you for this tutorial as well as the previous tutorial “Using Eclipse for Android C/C++ Development”.  Both were very helpful.</p>
+<p>After getting everything working (I think!), I was wondering about “Note on running ndk-gdb-eclipse”, so I thought I would try a slightly different approach, which seems to be working – at least on the version of Eclipse I am running (Indigo SR2) on a Mac.</p>
+<p>1. I made a new external tool to run ndk-gdb-eclipse: Run-&gt;External Tools-&gt;External Tools Configuration.  Select Program, click “New”.  Name: ndk-gdb-eclipse (or whatever you like), Location: (absolute path to ndk-gdb-eclipse – the script we made), Working Directory: (set to project directory), Arguments: –adb=(absolute path to adb).<br>
+2. I made a new Launch Group to run the external tool and my C++ debug configuration: Run-&gt;Debug Configurations, select Launch Group, click “New”.  Rename it to whatever you want.  Click add, select “run” in Launch Mode dropdown, pick Programs-&gt;ndk-gdb-eclipse (or whatever you named it).  Click add, select “debug” in Launch Mode dropdown, pick C/C++ Application-&gt;”MyAndroidProject C and CPP Debug” (or whatever you named your C++ debug config).<br>
+3. That’s all.  Follow all the other steps, but when you get to step 12 launch your new Launch Group.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=87#respond" onclick="return addComment.moveForm(&quot;comment-87&quot;, &quot;87&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-88">
+		<div id="comment-88">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/3aeb62fe69131fec7e0840b545017aec" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-3aeb62fe69131fec7e0840b545017aec-0">				<cite class="fn">Guy</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-88">
+				June 3, 2012 at 14:37</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi, I followed the post to the letter and got the same problems as mentioned above. The debugger can’t find the library. I saw that the “file” option of the gdb was mentioned. I saw in the gdb2.setup that such command already exists which tell the gdb where to find app_process and I added another line almost identical with the lib file. Now it is impossible to debug the application since it complains that the file does not exists, even that it appears at the same directory as app_process.</p>
+<p>my gdb2.setup looks like that:<br>
+———————————————————<br>
+set solib-search-path ./obj/local/armeabi</p>
+<p>directory E:/Android/android-ndk-r8-windows/android-ndk-r8/platforms/android-14/arch-arm/usr/include jni E:/Android/android-ndk-r8-windows/android-ndk-r8/sources/cxx-stl/system</p>
+<p>file obj/local/armeabi/app_process<br>
+file obj/local/armeabi/libhello-jni.so<br>
+———————————————————<br>
+anyone can see the problem? (The only thing I thought of is that the library is deleted in the clean process and created after the gdb attempt to use it, but it doesn’t make  much sense)</p>
+<p>Thanks,<br>
+ Guy.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=88#respond" onclick="return addComment.moveForm(&quot;comment-88&quot;, &quot;88&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-89">
+		<div id="comment-89">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/e4a9957508aa1bdb16018793cfc1bb40" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-e4a9957508aa1bdb16018793cfc1bb40-0">				<cite class="fn"><a href="http://loyc-etc.blogspot.com/" rel="external nofollow" class="url">David Piepgrass</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-89">
+				June 19, 2012 at 17:18</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Uhh… my app targets API 8 (Android 2.2). Why do you say we should use android:targetSdkVersion=”9″? API 9 isn’t listed in SDK Manager (just API 8 and API 10=Android 2.3.3). I am also curious what android:debuggable=”true” does, given that Java debugging works without that attribute.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=89#respond" onclick="return addComment.moveForm(&quot;comment-89&quot;, &quot;89&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-90">
+		<div id="comment-90">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/e4a9957508aa1bdb16018793cfc1bb40" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-e4a9957508aa1bdb16018793cfc1bb40-1">				<cite class="fn"><a href="http://loyc-etc.blogspot.com/" rel="external nofollow" class="url">David Piepgrass</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-90">
+				June 19, 2012 at 22:12</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hmm, looks like I have to give up on this Eclipse debugging idea. After converting the project to C++, my program always crashes on startup! I can’t even reach step 3. LogCat spits out a whole lot of nonsense, I think the most relevant line is “signal 4 (SIGILL), code 1 (ILL_ILLOPC), fault addr 80b3d454″</p>
+<p>It’s a good thing I was modifying a backup copy of the project! Another weird thing is that after restarting Eclipse (Indigo), the C/C++ options are no longer accessible (the two C/C++ sections are missing from Project Properties). I retried the conversion a second time, with the same results (both times, the C/C++ options disappear after restarting.)</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=90#respond" onclick="return addComment.moveForm(&quot;comment-90&quot;, &quot;90&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-97">
+		<div id="comment-97">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/9d1a85b1b51a3d9a2e97fe5022563569" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-9d1a85b1b51a3d9a2e97fe5022563569-0">				<cite class="fn">Klodrik</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-97">
+				August 3, 2012 at 01:19</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thanks for the tutorial, would never have got this to work without it.<br>
+I did get the error “no symbol table is loaded” when running the c/c++ debugging, fixed it by editing the gdb2.setup file. Changed the line “(path-to-ndk-folder)/platforms/android-14/arch-arm/usr/include (path-to-ndk-folder)/sources/cxx-stl/system/include jni”<br>
+to<br>
+“(path-to-ndk-folder)/platforms/android-9/arch-arm/usr/include (path-to-ndk-folder)/sources/cxx-stl/system/include jni”</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=97#respond" onclick="return addComment.moveForm(&quot;comment-97&quot;, &quot;97&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-99">
+		<div id="comment-99">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/cee05f82c57e924cf7bc9dd6912ad22b" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-cee05f82c57e924cf7bc9dd6912ad22b-0">				<cite class="fn">Tarun</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-99">
+				August 9, 2012 at 09:39</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Can u give me a link to your tutorial in which i can debug the both j2me and c++ code simultaneously,as i am making a jar file of c++ code and adding it to the my j2me code,i want to debug both code simultaneously</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=99#respond" onclick="return addComment.moveForm(&quot;comment-99&quot;, &quot;99&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-106">
+		<div id="comment-106">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/6eb575d324d4487fd801a16a7f7c8406" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-6eb575d324d4487fd801a16a7f7c8406-0">				<cite class="fn">Haris</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-106">
+				October 16, 2012 at 08:56</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi Martin thanks for your post…<br>
+In my case Everything OK as you said other than the last step. First I ran the gdb server from my project root directory by the command  “ndk-gdb-eclipse” and it is exiting without any error. But   when I start debugging on c/c++ mode from the eclipse,   I am getting the error like</p>
+<p>Target selection failed.</p>
+<p>Remote ‘g’ packet reply is too long: fcffffffc81783be10000000ffffffffe89e110000000000fffffffffc0000000000000014000000d42d9a42f84b5340688e12a8a01783bee32612a81cc5d0af10000020030205007574436f6e6e656374696f6e380000000000000054000000040000000000e0400700000000809c430000a04300809c430000c0410000b8410000f042000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004400000007000000000000000000000000000000000000000000000000000000000000000000f03f00000000000000800000000000000000000000000000000000000000000000000000000000000000b0f50c000000000000000000000000005bcf000000000000000000000000f03f0000000000000000000000000000f03f12000060 </p>
+<p>Any Idea….?<br>
+Thanks in advance………..</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=106#respond" onclick="return addComment.moveForm(&quot;comment-106&quot;, &quot;106&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-107">
+		<div id="comment-107">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/2f7b9ec8cad3306d5f26f3d42e3c1475" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-2f7b9ec8cad3306d5f26f3d42e3c1475-0">				<cite class="fn">Haris</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-107">
+				October 16, 2012 at 09:01</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>fds</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=107#respond" onclick="return addComment.moveForm(&quot;comment-107&quot;, &quot;107&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://www.codeschneider.de/programmierereien/android/android-nativ-c" rel="external nofollow" class="url">Android Nativ (C++) « Softwareplaudertäschchen</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1 highlander-comment" id="li-comment-112">
+		<div id="comment-112">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/b71280eda62815576be77dcfa55995da" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-b71280eda62815576be77dcfa55995da-0">				<cite class="fn">abama7</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-112">
+				December 19, 2012 at 18:16</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Excellent document! All explained in detail, and saved a lot of time for a novice developer! Many thanks to the author!</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=112#respond" onclick="return addComment.moveForm(&quot;comment-112&quot;, &quot;112&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://howtovideo.eu/cannot-step-through-code-while-debugging-android-ndk-project/" rel="external nofollow" class="url">Cannot step through code while debugging android NDK project video</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://www.ofcodeprogramming.com/27699/cannot-step-through-code-while-debugging-android-ndk-project" rel="external nofollow" class="url">Cannot step through code while debugging android NDK project | Code and Programming</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href="http://androiddev.orkitra.com/?p=38964" rel="external nofollow" class="url">debug ndk Jni that is a prt of andriod application : Android Community - For Application Development</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1 highlander-comment" id="li-comment-125">
+		<div id="comment-125">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/53404bb32fd3ba52fc46a7c071c664e4" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-53404bb32fd3ba52fc46a7c071c664e4-0">				<cite class="fn">Krish</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-125">
+				April 12, 2013 at 15:59</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I tried this on windows 64 bit (without and it works with some adjustments to paths.<br>
+1. There is no app_process of windows. you need to get it from device and put it in libs folder yourself.<br>
+2. The gdb.setup file does not need any changes.<br>
+3. In my case, i had to edit the ndk-gdb.py file myself as it has wrong paths for utility executables( C:\Development\NDK\prebuilt\windows-x86_64 instead of C:\Development\NDK\prebuilt\windows) i essentially renamed the folder as per needs of the script.<br>
+4. comment out last lines in  ndk-gdb.py file.<br>
+ #   gdbargs = [GDBCLIENT, '-x', '%s' % (GDBSETUP)]<br>
+ #   if OPTION_TUI:<br>
+ #       gdbhelp = subprocess.check_output([GDBCLIENT, '--help']).decode(‘ascii’)<br>
+ #       try:<br>
+ #           gdbhelp.index(‘–tui’)<br>
+ #           gdbargs.append(‘–tui’)<br>
+ #           OPTION_TUI = ‘running’<br>
+ #       except:<br>
+ #           print(‘Warning: Disabled tui mode as %s does not support it’ % (os.path.basename(GDBCLIENT)))<br>
+ #   subprocess.call(gdbargs)</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=125#respond" onclick="return addComment.moveForm(&quot;comment-125&quot;, &quot;125&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2 highlander-comment" id="li-comment-127">
+		<div id="comment-127">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/dff491f2ed237bee35cb5fb9e98b42a0" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-dff491f2ed237bee35cb5fb9e98b42a0-0">				<cite class="fn">Arthur</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-127">
+				April 23, 2013 at 14:43</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thank you! Your item 4 with commenting of Python script has solved my problem.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=127#respond" onclick="return addComment.moveForm(&quot;comment-127&quot;, &quot;127&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1 highlander-comment" id="li-comment-126">
+		<div id="comment-126">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/b6a475ce3417172860c54439c8b574e3" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-b6a475ce3417172860c54439c8b574e3-0">				<cite class="fn">Meena</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-126">
+				April 15, 2013 at 07:52</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Hi I tried this on windows 32 bit. I followed every step given in this site and while trying to debug am getting the error:</p>
+<p>Reading symbols from C:\Development\adt-bundle-windows-x86\android-ndk-r8d\workspace\Sample1\obj\local\armeabi\app_process…done.</p>
+<p>WARNING: no debugging symbols found in C:\Development\adt-bundle-windows-x86\android-ndk-r8d\workspace\Sample1\obj\local\armeabi\app_process.<br>
+Either the binary was compiled without debugging information<br>
+or the debugging information was removed (e.g., with strip or strip -g).<br>
+Debugger capabilities will be very limited.<br>
+For further information: <a href="http://wiki/Main/GdbFaq#No_debugging_symbols_found" rel="nofollow">http://wiki/Main/GdbFaq#No_debugging_symbols_found</a></p>
+<p>23-gdb-set confirm off<br>
+23^done<br>
+(gdb)<br>
+24-gdb-set width 0<br>
+24^done<br>
+(gdb)<br>
+25-gdb-set height 0<br>
+25^done<br>
+(gdb)<br>
+26-interpreter-exec console echo<br>
+26^done<br>
+(gdb)<br>
+27-gdb-show prompt<br>
+27^done,value=”(gdb) ”<br>
+(gdb)<br>
+28-gdb-set target-async 0<br>
+28^done<br>
+(gdb)<br>
+29-gdb-set auto-solib-add on<br>
+29^done<br>
+(gdb)<br>
+30-gdb-set stop-on-solib-events 0<br>
+30^done<br>
+(gdb)<br>
+31-gdb-set stop-on-solib-events 1<br>
+31^done<br>
+(gdb)<br>
+32-target-select remote localhost:5039<br>
+32^error,msg=”localhost:5039: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.”<br>
+(gdb)<br>
+33-gdb-exit<br>
+33^exit<br>
+Can anyone please help me. I do not know what is wrong?</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=126#respond" onclick="return addComment.moveForm(&quot;comment-126&quot;, &quot;126&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="li-comment-130">
+		<div id="comment-130">
+			<div class="comment-author vcard">
+				<img alt="" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/6dd034128a6ab1f2f0c0688f44025793" class="avatar avatar-40 grav-hashed grav-hijack" height="40" width="40" id="grav-6dd034128a6ab1f2f0c0688f44025793-0">				<cite class="fn"><a href="http://privi.altervista.org/zenPhoto/index.php?album=berlino&image=berlino_panoramica_1.jpg" rel="external nofollow" class="url">Tonya</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-130">
+				May 9, 2013 at 02:26</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I am regular visitor, how are you everybody? This article posted at this web page is really pleasant.</p>
+</div>
+
+			<div class="reply">
+				<a class="comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/?replytocom=130#respond" onclick="return addComment.moveForm(&quot;comment-130&quot;, &quot;130&quot;, &quot;respond&quot;, &quot;23&quot;)">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+								<div id="respond" class="js">
+				<h3 id="reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://mhandroid.wordpress.com/wp-comments-post.php" method="post" id="commentform">
+																										
+
+
+												
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest">
+
+<div class="comment-form-field comment-textarea">
+	
+	<div id="comment-form-comment"><textarea placeholder="Enter your comment here..." style="height: 44px; resize: none; overflow-y: hidden; position: absolute; top: 0px; left: -9999px; width: 618px; line-height: 24px; text-decoration: none; letter-spacing: 0px;" tabindex="-1"></textarea><textarea id="comment" name="comment" placeholder="Enter your comment here..." style="height: 44px; resize: none; overflow-y: hidden;"></textarea></div>
+</div>
+
+<div id="comment-form-identity" style="display: none;">
+
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-form-guest" id="postas-guest" title="Guest">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+					<span></span>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Gravatar" width="25" class="no-grav">
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="text" value=""></div>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/wplogo.png" alt="WordPress.com Logo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="">
+				<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Twitter picture" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="">
+				<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/ad516503a11cd5ca435acc9bb6523536" alt="Facebook photo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="">
+				<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+	
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+});
+</script>
+
+<div id="comment-form-subscribe" style="display: none;">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;" tabindex="6"> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of follow-up comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;" tabindex="7"> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog" style="display: inline;">Notify me of new posts via email.</label></p></div>
+
+												<p class="form-submit" style="display: none;">
+							<input name="submit" type="submit" id="comment-submit" value="Post Comment">
+							<input type="hidden" name="comment_post_ID" value="23" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+						</p>
+						
+<input type="hidden" name="genseq" value="1368535537">
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="f0198023e0"></p><script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/form.js"></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="1368535672030"></p>					</form>
+							</div><!-- #respond -->
+			<div style="clear: both"></div>			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="http://mhandroid.wordpress.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s">
+					<input type="submit" id="searchsubmit" value="Search">
+				</div>
+			</form></li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>		<ul>
+			<li><a href="http://mhandroid.wordpress.com/2011/01/" title="January 2011">January 2011</a></li>
+		</ul>
+</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>		<ul>
+	<li class="cat-item cat-item-641922"><a href="http://mhandroid.wordpress.com/category/android/" title="View all posts filed under Android">Android</a>
+</li>
+		</ul>
+</li><li id="rss_links-3" class="widget-container widget_rss_links"><h3 class="widget-title">Feeds</h3><p class="size-small"><a class="feed-image-link" href="http://mhandroid.wordpress.com/feed/" title="Subscribe to Posts"><img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/orange-small.png" alt="RSS Feed"></a>&nbsp;<a href="http://mhandroid.wordpress.com/feed/" title="Subscribe to Posts">RSS - Posts</a></p><p class="size-small"><a class="feed-image-link" href="http://mhandroid.wordpress.com/comments/feed/" title="Subscribe to Comments"><img src="./Using Eclipse for Android C C++ Debugging   Android blog_files/orange-small.png" alt="RSS Feed"></a>&nbsp;<a href="http://mhandroid.wordpress.com/comments/feed/" title="Subscribe to Comments">RSS - Comments</a></p>
+</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://mhandroid.wordpress.com/" title="Android blog" rel="home">
+					Android blog				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+				Theme: <a href="http://theme.wordpress.com/themes/twentyten/" title="Learn more about this theme">Twenty Ten</a>				<a href="http://wordpress.com/?ref=footer" rel="generator">Blog at WordPress.com</a>.
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+
+<script type="text/javascript">
+var _qevents = _qevents || [], wpcomQuantcastData = {"qacct":"p-18-mFEk4J448M","labels":",language.en,type.wpcom,posttag.android,posttag.cc,posttag.debug,posttag.eclipse,posttag.ndk,as"};
+function wpcomQuantcastPixel( labels, options ) {
+	var i, defaults = wpcomQuantcastData, data = { event: 'ajax' };
+
+	labels  = labels  || '';
+	options = options || {};
+
+	if ( typeof labels != 'string' )
+		options = labels;
+
+	for ( i in defaults ) {
+		data[i] = defaults[i];
+	}
+
+	for ( i in options ) {
+		data[i] = options[i];
+	}
+
+	if ( data.labels ) {
+		data.labels += ',' + labels;
+	} else {
+		data.labels = labels;
+	}
+
+	_qevents.push( data );
+};
+(function() {var elem = document.createElement('script');elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";elem.async = true;elem.type = "text/javascript";var scpt = document.getElementsByTagName('script')[0];scpt.parentNode.insertBefore(elem, scpt);  })();
+_qevents.push( wpcomQuantcastData );
+</script>
+<noscript>&lt;div style="display: none;"&gt;&lt;img src="//pixel.quantserve.com/pixel/p-18-mFEk4J448M.gif?labels=%2Clanguage.en%2Ctype.wpcom%2Cposttag.android%2Cposttag.cc%2Cposttag.debug%2Cposttag.eclipse%2Cposttag.ndk%2Cas" height="1" width="1" alt="" /&gt;&lt;/div&gt;</noscript>
+
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/gprofiles.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/wpgroho.js"></script>
+<script>jQuery(document).ready(function($){ Gravatar.profile_cb = function( h, d ) { WPGroHo.syncProfileData( h, d );	}; Gravatar.my_hash = WPGroHo.my_hash; Gravatar.init( 'body', '#wp-admin-bar-my-account' ); });</script>	<div style="display:none">
+	<div class="grofile-hash-map-024bd611c1757a2c96f4f1a0e335507a">
+	</div>
+	<div class="grofile-hash-map-257c5f6469e22d680b6fe8dc8ff15c70">
+	</div>
+	<div class="grofile-hash-map-41e23daf42fb0f1605acecf7469d00e9">
+	</div>
+	<div class="grofile-hash-map-c558a57ce815359e40656a3fa134589b">
+	</div>
+	<div class="grofile-hash-map-7cd2a8c28ff0c576684033fe2ef66892">
+	</div>
+	<div class="grofile-hash-map-84981364580652b8ac8005299e3e6a85">
+	</div>
+	<div class="grofile-hash-map-5edf3f3126bc9dc229868c1548104a28">
+	</div>
+	<div class="grofile-hash-map-19267c947b45c862a0e7b896f01fc439">
+	</div>
+	<div class="grofile-hash-map-7938ed26770bce5dd63034b52f667505">
+	</div>
+	<div class="grofile-hash-map-a4aafa174df4d55b2559cdee38002876">
+	</div>
+	<div class="grofile-hash-map-030e5e08844afb631a9833510c121329">
+	</div>
+	<div class="grofile-hash-map-483ddd5e7ccab8a3b08969bfe44fa2e6">
+	</div>
+	<div class="grofile-hash-map-17a97e09a1b23bc733ae22880a961b59">
+	</div>
+	<div class="grofile-hash-map-fff23288e67fb5b84e3063afdbb7ad49">
+	</div>
+	<div class="grofile-hash-map-8b38ba378d298d74669d8a18bfad8576">
+	</div>
+	<div class="grofile-hash-map-93596030de1b94e0f49f40d92e4a77c8">
+	</div>
+	<div class="grofile-hash-map-d8538816d7ac8328a6d5c97609bb9e1b">
+	</div>
+	<div class="grofile-hash-map-8209b5508be8cd4db3bea999baffa956">
+	</div>
+	<div class="grofile-hash-map-fc071b72ef5d3e43bccb144caf963fb5">
+	</div>
+	<div class="grofile-hash-map-59c1efa7adf1c310466411b45ff97bb5">
+	</div>
+	<div class="grofile-hash-map-eccf899547de5194479c0bd3cab537fa">
+	</div>
+	<div class="grofile-hash-map-307fe759978ad86e4916f71883be1cf1">
+	</div>
+	<div class="grofile-hash-map-511b0f32d8501942a6f090442ad4ef0a">
+	</div>
+	<div class="grofile-hash-map-3aeb62fe69131fec7e0840b545017aec">
+	</div>
+	<div class="grofile-hash-map-e4a9957508aa1bdb16018793cfc1bb40">
+	</div>
+	<div class="grofile-hash-map-9d1a85b1b51a3d9a2e97fe5022563569">
+	</div>
+	<div class="grofile-hash-map-cee05f82c57e924cf7bc9dd6912ad22b">
+	</div>
+	<div class="grofile-hash-map-6eb575d324d4487fd801a16a7f7c8406">
+	</div>
+	<div class="grofile-hash-map-2f7b9ec8cad3306d5f26f3d42e3c1475">
+	</div>
+	<div class="grofile-hash-map-b71280eda62815576be77dcfa55995da">
+	</div>
+	<div class="grofile-hash-map-53404bb32fd3ba52fc46a7c071c664e4">
+	</div>
+	<div class="grofile-hash-map-dff491f2ed237bee35cb5fb9e98b42a0">
+	</div>
+	<div class="grofile-hash-map-b6a475ce3417172860c54439c8b574e3">
+	</div>
+	<div class="grofile-hash-map-6dd034128a6ab1f2f0c0688f44025793">
+	</div>
+	</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"http:\/\/mhandroid.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"http:\/\/mhandroid.wordpress.com\/wp-login.php?action=logout&_wpnonce=6b39cd9967","homeURL":"http:\/\/mhandroid.wordpress.com\/","postID":"23","gravDefault":"wavatar","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"","userIsLoggedIn":"","isJetpack":"0"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/script.js"></script>
+
+	<div id="bit" class="loggedout-follow-normal" style="bottom: -215px;">
+		<a class="bsub" href="javascript:void(0)"><span id="bsub-text">Follow</span></a>
+		<div id="bitsubscribe">
+
+					<h3><label for="loggedout-follow-field">Follow “Android blog”</label></h3>
+
+			<form action="https://subscribe.wordpress.com/" method="post" accept-charset="utf-8" id="loggedout-follow">
+			<p>Get every new post delivered to your Inbox.</p>
+
+			<p id="loggedout-follow-error" style="display: none;"></p>
+
+			
+			<p><input type="email" name="email" style="width: 95%; padding: 1px 2px" value="Enter your email address" onfocus="this.value=(this.value==&quot;Enter your email address&quot;) ? &quot;&quot; : this.value;" onblur="this.value=(this.value==&quot;&quot;) ? &quot;Enter email address&quot; : this.value;" id="loggedout-follow-field"></p>
+
+			<input type="hidden" name="action" value="subscribe">
+			<input type="hidden" name="blog_id" value="17868283">
+			<input type="hidden" name="source" value="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/">
+			<input type="hidden" name="sub-type" value="loggedout-follow">
+
+			<input type="hidden" id="_wpnonce" name="_wpnonce" value="8b146f623b"><input type="hidden" name="_wp_http_referer" value="/2011/01/23/using-eclipse-for-android-cc-debugging/">
+			<p id="bsub-subscribe-button"><input type="submit" value="Sign me up"></p>
+			</form>
+					<div id="bsub-credit"><a href="http://wordpress.com/signup/?ref=lof">Powered by WordPress.com</a></div>
+		</div><!-- #bitsubscribe -->
+	</div><!-- #bit -->
+		<iframe src="./Using Eclipse for Android C C++ Debugging   Android blog_files/master.html" id="likes-master" name="likes-master" style="display:none;"></iframe>
+		<div id="likes-other-gravatars"><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+		<script type="text/javascript">
+		//<![CDATA[
+			var jetpackLikesWidgetQueue = [];
+			var jetpackLikesMasterReady = false;
+
+			function JetpackLikespostMessage( message, target ) {
+				if ( "string" === typeof message ){
+					try{
+						message = JSON.parse( message );
+					}
+					catch(e) {
+						return;
+					}
+				}
+
+				pm( {
+					target: target,
+					type: 'likesMessage',
+					data: message,
+					origin: '*'
+				} );
+			}
+
+			function JetpackLikesMessageListener( event ) {
+				if ( "undefined" == typeof event.event )
+					return;
+
+				if ( 'masterReady' == event.event ) {
+					jQuery( document ).ready( function() {
+						jetpackLikesMasterReady = true;
+
+						var stylesData = {
+								event: 'injectStyles'
+						};
+
+						if ( jQuery( 'iframe.admin-bar-likes-widget' ).length > 0 ) {
+							JetpackLikespostMessage( { event: 'adminBarEnabled' }, window.frames[ 'likes-master' ] );
+
+							stylesData.adminBarStyles = {
+								background: jQuery( '#wpadminbar .quicklinks li#wp-admin-bar-wpl-like > a' ).css( 'background' )
+							};
+						}
+
+						if ( !window.addEventListener )
+							jQuery( '#wp-admin-bar-admin-bar-likes-widget' ).hide();
+
+						stylesData.textStyles = {
+							color: jQuery( '.sd-text-color').css( 'color' ),
+							fontFamily: jQuery( '.sd-text-color' ).css( 'font-family' ),
+							fontSize: jQuery( '.sd-text-color' ).css( 'font-size' ),
+							direction: jQuery( '.sd-text-color' ).css( 'direction' ),
+							fontWeight: jQuery( '.sd-text-color' ).css( 'font-weight' ),
+							fontStyle: jQuery( '.sd-text-color' ).css( 'font-style' ),
+							textDecoration: jQuery( '.sd-text-color' ).css('text-decoration')
+						};
+
+						stylesData.linkStyles = {
+							color: jQuery( '.sd-link-color' ).css('color'),
+							fontFamily: jQuery( '.sd-link-color' ).css('font-family'),
+							fontSize: jQuery( '.sd-link-color' ).css('font-size'),
+							textDecoration: jQuery( '.sd-link-color' ).css('text-decoration'),
+							fontWeight: jQuery( '.sd-link-color' ).css( 'font-weight' ),
+							fontStyle: jQuery( '.sd-link-color' ).css( 'font-style' )
+						};
+
+						JetpackLikespostMessage( stylesData, window.frames[ 'likes-master' ] );
+
+						var requests = [];
+						jQuery( '.jetpack-likes-widget-wrapper' ).each( function( i ) {
+							var regex = /like-(post|comment)-wrapper-(\d+)-(\d+)-(\w+)/;
+							var match = regex.exec( this.id );
+							if ( ! match || match.length != 5 )
+								return;
+
+							var info = {
+								blog_id: match[2],
+								width:   this.width
+							};
+
+							if ( 'post' == match[1] ) {
+								info.post_id = match[3];
+							} else if ( 'comment' == match[1] ) {
+								info.comment_id = match[3];
+							}
+
+							info.obj_id = match[4];
+
+							requests.push( info );
+						});
+
+						JetpackLikespostMessage( { event: 'initialBatch', requests: requests }, window.frames['likes-master'] );
+
+						jQuery( document ).on( 'inview', 'div.jetpack-likes-widget-unloaded', function() {
+							jetpackLikesWidgetQueue.push( this.id );
+						});
+					});
+				}
+
+				if ( 'showLikeWidget' == event.event ) {
+					setTimeout( JetpackLikesWidgetQueueHandler, 10 );
+					jQuery( '#' + event.id + ' .post-likes-widget-placeholder'  ).fadeOut( 'fast', function() {
+						jQuery( '#' + event.id + ' .post-likes-widget' ).fadeIn( 'fast', function() {
+							JetpackLikespostMessage( { event: 'likeWidgetDisplayed', blog_id: event.blog_id, post_id: event.post_id, obj_id: event.obj_id }, window.frames['likes-master'] );
+						});
+					});
+				}
+
+				if ( 'showOtherGravatars' == event.event ) {
+					var $container = jQuery( '#likes-other-gravatars' );
+					var $list = $container.find( 'ul' );
+
+					$container.hide();
+					$list.html( '' );
+
+					$container.find( '.likes-text span' ).text( event.total );
+
+					jQuery.each( event.likers, function( i, liker ) {
+						$list.append( '<li class="' + liker.css_class + '"><a href="' + liker.profile_URL + '" class="wpl-liker" rel="nofollow" target="_parent"><img src="' + liker.avatar_URL + '" alt="' + liker.name + '" width="30" height="30" style="padding-right: 3px;" /></a></li>');
+					} );
+
+					var offset = jQuery( "[name='" + event.parent + "']" ).offset();
+
+					$container.css( 'left', offset.left + event.position.left - 10 + 'px' );
+					$container.css( 'top', offset.top + event.position.top - 33 + 'px' );
+
+					var rowLength = Math.floor( event.width / 37 );
+					var height = ( Math.ceil( event.likers.length / rowLength ) * 37 ) + 13;
+					if ( height > 204 ) {
+						height = 204;
+					}
+
+					$container.css( 'height', height + 'px' );
+					$container.css( 'width', rowLength * 37 - 7 + 'px' );
+
+					$list.css( 'width', rowLength * 37 + 'px' );
+
+					$container.fadeIn( 'slow' );
+
+					var scrollbarWidth = $list[0].offsetWidth - $list[0].clientWidth;
+					if ( scrollbarWidth > 0 ) {
+						$container.width( $container.width() + scrollbarWidth );
+						$list.width( $list.width() + scrollbarWidth );
+					}
+				}
+			}
+
+			pm.bind( 'likesMessage', function(e) { JetpackLikesMessageListener(e); } );
+
+			jQuery( document ).click( function( e ) {
+				var $container = jQuery( '#likes-other-gravatars' );
+
+				if ( $container.has( e.target ).length === 0 ) {
+					$container.fadeOut( 'slow' );
+				}
+			});
+
+			function JetpackLikesWidgetQueueHandler() {
+				var wrapperID;
+				if ( ! jetpackLikesMasterReady ) {
+					setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+					return;
+				}
+
+				if ( jetpackLikesWidgetQueue.length > 0 ) {
+					// We may have a widget that needs creating now
+					var found = false;
+					while( jetpackLikesWidgetQueue.length > 0 ) {
+						// Grab the first member of the queue that isn't already loading.
+						wrapperID = jetpackLikesWidgetQueue.splice( 0, 1 )[0];
+						if ( jQuery( '#' + wrapperID ).hasClass( 'jetpack-likes-widget-unloaded' ) ) {
+							found = true;
+							break;
+						}
+					}
+					if ( ! found ) {
+						setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+						return;
+					}
+				} else if ( jQuery( 'div.jetpack-likes-widget-unloaded' ).length > 0 ) {
+					// Get the next unloaded widget
+					wrapperID = jQuery( 'div.jetpack-likes-widget-unloaded' ).first()[0].id;
+					if ( ! wrapperID ) {
+						// Everything is currently loaded
+						setTimeout( JetpackLikesWidgetQueueHandler, 500 );
+						return;
+					}
+				}
+
+				var $wrapper = jQuery( '#' + wrapperID );
+				$wrapper.find( 'iframe' ).remove();
+
+				if ( $wrapper.hasClass( 'slim-likes-widget' ) ) {
+					$wrapper.find( '.post-likes-widget-placeholder' ).after( "<iframe class='post-likes-widget jetpack-likes-widget' name='" + $wrapper.data( 'name' ) + "' height='22px' width='68px' frameBorder='0' scrolling='no' src='" + $wrapper.data( 'src' ) + "'></iframe>" );
+				} else {
+					$wrapper.find( '.post-likes-widget-placeholder' ).after( "<iframe class='post-likes-widget jetpack-likes-widget' name='" + $wrapper.data( 'name' ) + "' height='55px' width='100%' frameBorder='0' src='" + $wrapper.data( 'src' ) + "'></iframe>" );
+				}
+
+				$wrapper.removeClass( 'jetpack-likes-widget-unloaded' ).addClass( 'jetpack-likes-widget-loading' );
+
+				$wrapper.find( 'iframe' ).load( function( e ) {
+					var $iframe = jQuery( e.target );
+					$wrapper.removeClass( 'jetpack-likes-widget-loading' ).addClass( 'jetpack-likes-widget-loaded' );
+
+					JetpackLikespostMessage( { event: 'loadLikeWidget', name: $iframe.attr( 'name' ), width: $iframe.width() }, window.frames[ 'likes-master' ] );
+
+					if ( $wrapper.hasClass( 'slim-likes-widget' ) ) {
+						$wrapper.find( 'iframe' ).Jetpack( 'resizeable' );
+					}
+				});
+			}
+			setInterval( JetpackLikesWidgetQueueHandler, 250 );
+		//]]>
+		</script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/saved_resource(2)"></script>
+<script type="text/javascript">
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "http://s0.wp.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?m=1363661091g&amp;ver=3.0.83c";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.getElementsByTagName("head")[0].insertBefore( corecss, document.getElementById("syntaxhighlighteranchor") );
+		var themecssurl = "http://s0.wp.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?m=1363304414g&amp;ver=3.0.83c";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		//document.getElementById("syntaxhighlighteranchor").appendChild(themecss);
+		document.getElementsByTagName("head")[0].insertBefore( themecss, document.getElementById("syntaxhighlighteranchor") );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+</script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/devicepx.js"></script>
+<script type="text/javascript" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/getaffiliatorjs"></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script><script src="./Using Eclipse for Android C C++ Debugging   Android blog_files/w.js" type="text/javascript"></script>
+<script type="text/javascript">
+st_go({'blog':'17868283','v':'wpcom','tz':'2','user_id':'0','post':'23','subd':'mhandroid'});
+ex_go({'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWFnNncxc1tjZG9XVXhRVz1bVXJlWWRQcV0tS0JbTXJxNVVUT0NCeDg2dFpiV21KZmRocE9xYT1bVDlueno0MW82S3ZUV1hvdHNJUW14JUszdl0zcHgtcnYsZW9xcWFWeG5Sei9SdDVyMGFoZ2Jid29PZjYvLF1ELndYV09DREIlSGhrMixhaUcrRTdZfFdbOEhtZHFHa2ctRlRlNiVpZXhVSXpOZFBsLj9IJi9taTMuQWVWdkx+MnFKd3VbWVRbLHxkcS0ySWR1UDgrRHdwV1t5K2YyUXhuRWE1YmlyZXNDZkNELyVEUm1NcyxqLTloTUYtcCtiMVpucEZ1UWV5dzJUcGgvWWp4WEJXVC4yWyY='});
+addLoadEvent(function(){linktracker_init('17868283',23);});
+	</script><img id="wpstats" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/g.gif" alt=""><img id="wpstats2" src="./Using Eclipse for Android C C++ Debugging   Android blog_files/g(1).gif" alt="" style="display:none">
+<noscript>&lt;img src="http://stats.wordpress.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt="" /&gt;</noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//stats.wordpress.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+</body></html>

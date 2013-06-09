@@ -1,0 +1,17 @@
+bin\Release\LMSAPI3D.exe
+bin\Release\LMSAPI3D.pdb
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\LMSAPI_csharp.LMSAPIForm.resources
+obj\Release\LMSAPI3D.Properties.Resources.resources
+obj\Release\LMSAPI3D.csproj.GenerateResource.Cache
+obj\Release\LMSAPI3D.exe
+obj\Release\LMSAPI3D.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\LMSAPI_csharp.LMSAPIForm.resources
+obj\Debug\LMSAPI3D.Properties.Resources.resources
+obj\Debug\LMSAPI3D.csproj.GenerateResource.Cache
+bin\Debug\LMSAPI3D.exe
+bin\Debug\LMSAPI3D.pdb
+bin\Debug\Irrlicht.NET.dll
+obj\Debug\LMSAPI3D.exe
+obj\Debug\LMSAPI3D.pdb

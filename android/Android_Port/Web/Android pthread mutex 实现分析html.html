@@ -1,0 +1,1024 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://blog.csdn.net/binarypeople/article/details/7607171 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Android pthread mutex 实现分析 - BinaryPeople的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="在Android ICS中，pthead库对应的路径为：Android\bionic\libc\bionic\pthread.cAndroid\bionic\libc\bionic\pthread-atfork.cAndroid\bionic\libc\bionic\pthread-rwlocks.cAndroid\bionic\libc\bionic\pthread-timers">
+<script charset="utf-8" async="" src="./Android pthread mutex 实现分析html_files/log.js"></script><script type="text/javascript" async="" src="./Android pthread mutex 实现分析html_files/getnl"></script><script type="text/javascript" async="" src="./Android pthread mutex 实现分析html_files/ga.js"></script><script src="./Android pthread mutex 实现分析html_files/jquery.js" type="text/javascript"></script><style type="text/css"></style>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+<link rel="Stylesheet" type="text/css" href="./Android pthread mutex 实现分析html_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/BinaryPeople/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./Android pthread mutex 实现分析html_files/default.css">
+<link rel="stylesheet" type="text/css" href="./Android pthread mutex 实现分析html_files/style(1).css"><link rel="stylesheet" type="text/css" href="./Android pthread mutex 实现分析html_files/style(2).css"></head>
+<body>
+<script src="./Android pthread mutex 实现分析html_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./Android pthread mutex 实现分析html_files/navtop_2012.css">
+<div class="nav_top_2011">
+<p><em>uplusplus</em><a href="http://my.csdn.net/my/notifications" class="notice_num" id="header_notice_num" target="_blank">0</a>我的：<a href="http://my.csdn.net/my/letter" target="_blank">收件箱<span id="header_letter_num"></span></a><a href="http://download.csdn.net/my" class="red" target="_top">资源</a><a href="http://write.blog.csdn.net/" class="red" target="_top">博客</a><a href="http://my.csdn.net/" target="_top">空间</a><a href="https://passport.csdn.net/account/profile" target="_blank">设置</a>|<a href="https://passport.csdn.net/help/faq" target="_blank">帮助</a>|<a href="https://passport.csdn.net/account/logout" target="_top">退出</a></p><ul>
+<li><a href="http://www.csdn.net/" target="_blank" style="color: red;">首页</a></li>
+<li><a href="http://news.csdn.net/" target="_blank">业界</a></li>
+<li><a href="http://mobile.csdn.net/" target="_blank">移动</a></li>
+<li><a href="http://cloud.csdn.net/" target="_blank">云计算</a></li>
+<li><a href="http://sd.csdn.net/" target="_blank">研发</a></li>
+<li><a href="http://bbs.csdn.net/" target="_blank">论坛</a></li>
+<li><a href="http://blog.csdn.net/" target="_blank">博客</a></li>
+<li><a href="http://download.csdn.net/" target="_blank">下载</a></li>
+<li class="more"><h2 id="topnav_btnmore" onclick="showNavMore(this)"><a href="javascript:void(0);">更多</a></h2>
+<div id="topnav_hidlist">
+<iframe name="nav_frm" src="about:blank" width="92" height="178" scrolling="no" frameborder="no"></iframe>
+</div>
+</li>
+</ul>
+</div>
+
+
+<div id="container">
+<div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1><a href="http://blog.csdn.net/BinaryPeople">BinaryPeople的专栏</a></h1>
+            <h2></h2>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg"></div>
+    <div class="navigator">
+        <ul>
+            <li id="btnContents"><a href="http://blog.csdn.net/BinaryPeople?viewmode=contents"><span><img src="./Android pthread mutex 实现分析html_files/ico_list.gif">目录视图</span></a></li>
+            <li id="btnView"><a href="http://blog.csdn.net/BinaryPeople?viewmode=list"><span><img src="./Android pthread mutex 实现分析html_files/ico_summary.gif">摘要视图</span></a></li>
+            <li id="btnRss"><a href="http://blog.csdn.net/BinaryPeople/rss/list"><span><img src="./Android pthread mutex 实现分析html_files/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "BinaryPeople";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/binarypeople";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "uplusplus";
+</script>
+
+<div id="body">
+<div id="main">
+<div class="main">
+<div class="notice"> 
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/8899926" target="_blank">
+<font color="red">有奖征集活动系列——【HTML5游戏编程之旅】 
+   </font></a>
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://www.csdn.net/article/2013-06-04/2815534" target="_blank"><font color="blue">专访贺炘：软件测试应讲究策略和方法
+</font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://ocow.csdn.net/" target="_blank">
+<font color="red">低价抢购开源中国论坛门票
+
+
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://www.csdn.net/article/2013-06-07/2815676-open-source-project" target="_blank">
+<font color="red">“2013年度中国优秀开源项目征集”活动最后三天
+
+ </font></a>
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/dscky/article/details/8933208" target="_blank">
+<font color="blue">Intel Perceptual Camera体验之旅 
+ </font></a>
+
+
+
+
+</div>
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./Android pthread mutex 实现分析html_files/Android pthread mutex 实现分析html.html">
+        Android pthread mutex 实现分析
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage">
+        <span class="link_categories">
+        分类：
+            <a href="http://blog.csdn.net/BinaryPeople/article/category/1088442">Android</a> 
+        </span>
+    <span class="link_postdate">2012-05-27 21:07</span>
+    <span class="link_view" title="阅读次数">553人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="http://blog.csdn.net/binarypeople/article/details/7607171#comments">评论</a>(0)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle(&#39;Android pthread mutex 实现分析&#39;,&#39;7607171&#39;);return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="http://blog.csdn.net/binarypeople/article/details/7607171#report" onclick="javascript:report(7607171,2);return false;" title="举报">举报</a></span>
+    
+</div>
+<div class="tag2box"><a href="http://blog.csdn.net/tag/details.html?tag=android" target="_blank">android</a><a href="http://blog.csdn.net/tag/details.html?tag=thread" target="_blank">thread</a><a href="http://blog.csdn.net/tag/details.html?tag=null" target="_blank">null</a><a href="http://blog.csdn.net/tag/details.html?tag=struct" target="_blank">struct</a><a href="http://blog.csdn.net/tag/details.html?tag=integer" target="_blank">integer</a><a href="http://blog.csdn.net/tag/details.html?tag=behavior" target="_blank">behavior</a></div>
+
+
+    
+<div style="clear:both"></div><div style="border:solid 1px #ccc; background:#eee; float:left; min-width:200px;padding:4px 10px;"><p style="text-align:right;margin:0;"><span style="float:left;">目录<a href="http://blog.csdn.net/binarypeople/article/details/7607171#" title="系统根据文章中H1到H6标签自动生成文章目录">(?)</a></span><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" onclick="javascript:return openct(this);" title="展开">[+]</a></p><ol style="display:none;margin-left:14px;padding-left:14px;line-height:160%;"><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t0">Mutex属性</a></li><ol><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t1">init和destory</a></li><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t2">settype 和gettype</a></li><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t3">setpshared和getpshared</a></li></ol><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t4">Mutex实现
+</a></li><ol><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t5">Mutex init和 destory</a></li><li><a href="http://blog.csdn.net/binarypeople/article/details/7607171#t6">lock unlock trylock timedlock</a></li></ol></ol></div><div style="clear:both"></div><div id="article_content" class="article_content">
+
+<p><br>
+在Android ICS中，pthead库对应的路径为：</p>
+<p>Android\bionic\libc\bionic\pthread.c</p>
+<p>Android\bionic\libc\bionic\pthread-atfork.c</p>
+<p>Android\bionic\libc\bionic\pthread-rwlocks.c</p>
+<p>Android\bionic\libc\bionic\pthread-timers.c</p>
+<p>Android\bionic\libc\bionic\pthread_internal.h</p>
+<p>Android\bionic\libc\include\pthread.h</p>
+<p><br>
+</p>
+<p>其中mutex在pthread.c中，相关的API有：</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 815px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">//pthread&nbsp;mutexattr&nbsp;操作</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_init(pthread_mutexattr_t&nbsp;*attr);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_destroy(pthread_mutexattr_t&nbsp;*attr);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_gettype(</span><span class="keyword">const</span><span>&nbsp;pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;*type);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_settype(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;type);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_setpshared(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;&nbsp;pshared);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_getpshared(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;*pshared);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">//pthread&nbsp;mutex&nbsp;操作</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_init(pthread_mutex_t&nbsp;*mutex,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span><span>&nbsp;pthread_mutexattr_t&nbsp;*attr);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_destroy(pthread_mutex_t&nbsp;*mutex);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_lock(pthread_mutex_t&nbsp;*mutex);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_unlock(pthread_mutex_t&nbsp;*mutex);&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_trylock(pthread_mutex_t&nbsp;*mutex);&nbsp;&nbsp;</span></span></li><li class=""><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_timedlock(pthread_mutex_t&nbsp;*mutex,&nbsp;</span><span class="keyword">struct</span><span>&nbsp;timespec*&nbsp;&nbsp;ts);&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="cpp" style="display: none;">//pthread mutexattr 操作
+int pthread_mutexattr_init(pthread_mutexattr_t *attr);
+int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
+
+int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type);
+int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
+
+int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int  pshared);
+int pthread_mutexattr_getpshared(pthread_mutexattr_t *attr, int *pshared);
+
+
+
+
+//pthread mutex 操作
+int pthread_mutex_init(pthread_mutex_t *mutex,
+                       const pthread_mutexattr_t *attr);
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+int pthread_mutex_trylock(pthread_mutex_t *mutex);
+int pthread_mutex_timedlock(pthread_mutex_t *mutex, struct timespec*  ts);
+</pre>
+<p><br>
+</p>
+<p></p>
+<p>pthread_mutex_t对应一个结构体，包含一个int字段</p>
+<p>typedef struct{&nbsp;&nbsp;&nbsp; int volatile value;} pthread_mutex_t;</p>
+<p>int字段分为5个部分，</p>
+<p>/* </p>
+<p>a mutex is implemented as a 32-bit integer holding the following fields</p>
+<p>&nbsp;*&nbsp;* bits:&nbsp;&nbsp;&nbsp;&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp; description </p>
+<p>* 31-16&nbsp;&nbsp;&nbsp;&nbsp; tid&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; owner thread's kernel id (recursive and errorcheck only)<span style="color:#FF0000"></span></p>
+<p style="color:rgb(0,0,0)"><span style="color:#FF0000">&nbsp;* 15-14&nbsp;&nbsp;&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp;&nbsp; mutex type
+</span></p>
+<p><span style="color:#FF0000">* 13&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; shared&nbsp;&nbsp; process-shared flag</span><span style="color:#000000"></span></p>
+<p>* 12-2&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; counter&nbsp; counter of recursive mutexes </p>
+<p>* 1-0&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; state&nbsp;&nbsp;&nbsp; lock state (0, 1 or 2) </p>
+<p>*/</p>
+<p><img src="./Android pthread mutex 实现分析html_files/1338124893_7514.jpg" alt="" height="53" width="647"></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p>定义了一些macro来获得各个部分，其中mutex的type分为3类，有Normal, Recursive, Errorcheck，Recursize允许递归，Errorcheck会检测当前的状态。</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 1893px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_OWNER(m)&nbsp;&nbsp;(((m)-&gt;value&nbsp;&gt;&gt;&nbsp;16)&nbsp;&amp;&nbsp;0xffff)</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_COUNTER(m)&nbsp;(((m)-&gt;value&nbsp;&gt;&gt;&nbsp;2)&nbsp;&amp;&nbsp;0xfff)</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_TYPE_MASK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0xc000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_TYPE_NORMAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0x0000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_TYPE_RECURSIVE&nbsp;&nbsp;0x4000</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_TYPE_ERRORCHECK&nbsp;0x8000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_COUNTER_SHIFT&nbsp;&nbsp;2</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_COUNTER_MASK&nbsp;&nbsp;&nbsp;0x1ffc</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="preprocessor">#define&nbsp;&nbsp;MUTEX_SHARED_MASK&nbsp;&nbsp;&nbsp;&nbsp;0x2000</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">enum</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_NORMAL&nbsp;=&nbsp;0,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_RECURSIVE&nbsp;=&nbsp;1,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_ERRORCHECK&nbsp;=&nbsp;2,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_ERRORCHECK_NP&nbsp;=&nbsp;PTHREAD_MUTEX_ERRORCHECK,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_RECURSIVE_NP&nbsp;&nbsp;=&nbsp;PTHREAD_MUTEX_RECURSIVE,&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;PTHREAD_MUTEX_DEFAULT&nbsp;=&nbsp;PTHREAD_MUTEX_NORMAL&nbsp;&nbsp;</span></li><li class=""><span>};&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">#define  MUTEX_OWNER(m)  (((m)-&gt;value &gt;&gt; 16) &amp; 0xffff)
+#define  MUTEX_COUNTER(m) (((m)-&gt;value &gt;&gt; 2) &amp; 0xfff)
+
+#define  MUTEX_TYPE_MASK       0xc000
+#define  MUTEX_TYPE_NORMAL     0x0000
+#define  MUTEX_TYPE_RECURSIVE  0x4000
+#define  MUTEX_TYPE_ERRORCHECK 0x8000
+
+#define  MUTEX_COUNTER_SHIFT  2
+#define  MUTEX_COUNTER_MASK   0x1ffc
+#define  MUTEX_SHARED_MASK    0x2000
+
+enum {
+    PTHREAD_MUTEX_NORMAL = 0,
+    PTHREAD_MUTEX_RECURSIVE = 1,
+    PTHREAD_MUTEX_ERRORCHECK = 2,
+
+    PTHREAD_MUTEX_ERRORCHECK_NP = PTHREAD_MUTEX_ERRORCHECK,
+    PTHREAD_MUTEX_RECURSIVE_NP  = PTHREAD_MUTEX_RECURSIVE,
+
+    PTHREAD_MUTEX_DEFAULT = PTHREAD_MUTEX_NORMAL
+};
+</pre><br>
+<br>
+<p></p>
+<h2><a name="t0"></a>1 Mutex属性</h2>
+<p>pthread_mutexattr_t用来描述mutex的属性，</p>
+<p>typedef long pthread_mutexattr_t;<br>
+</p>
+<p>属性包含了mutex的<span style="color:#CC0000">type</span>，以及<span style="color:#FF0000">shared</span>flag。对应于mutex_t<span style="color:#FF0000"><br>
+</span></p>
+<p><span style="color:#000000">&nbsp;* 15-14&nbsp;&nbsp;&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp;&nbsp; mutex type</span></p>
+<p><span style="color:#000000">&nbsp;* 13&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; shared&nbsp;&nbsp; process-shared flag</span></p>
+<p><br>
+</p>
+<p><br>
+</p>
+<p>/* a mutex attribute holds the following fields<br>
+&nbsp;*<br>
+&nbsp;* bits:&nbsp;&nbsp;&nbsp;&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; description<br>
+&nbsp;* 0-3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type of mutex<br>
+&nbsp;* 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; shared&nbsp;&nbsp;&nbsp;&nbsp; process-shared flag<br>
+&nbsp;*/<br>
+#define&nbsp; MUTEXATTR_TYPE_MASK&nbsp;&nbsp; 0x000f<br>
+#define&nbsp; MUTEXATTR_SHARED_MASK 0x0010</p>
+<p><br>
+#define PTHREAD_PROCESS_PRIVATE&nbsp; 0<br>
+#define PTHREAD_PROCESS_SHARED&nbsp;&nbsp; 1</p>
+<p><br>
+</p>
+<p><br>
+</p>
+<p><br>
+<img src="./Android pthread mutex 实现分析html_files/1338124852_9833.jpg" alt="" height="97" width="586"><br>
+<br>
+</p>
+<p><br>
+</p>
+<h3><a name="t1"></a>1.1 init和destory</h3>
+<p>init将type设置为Default，也就是Normal（0）也就是，type=Normal， shared&nbsp; 为Private<br>
+</p>
+<p></p><div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 3375px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_init(pthread_mutex_t&nbsp;*mutex,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span><span>&nbsp;pthread_mutexattr_t&nbsp;*attr)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;value&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(mutex&nbsp;==&nbsp;NULL)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__likely(attr&nbsp;==&nbsp;NULL))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;MUTEX_TYPE_NORMAL;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;((*attr&nbsp;&amp;&nbsp;MUTEXATTR_SHARED_MASK)&nbsp;!=&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_SHARED_MASK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">switch</span><span>&nbsp;(*attr&nbsp;&amp;&nbsp;MUTEXATTR_TYPE_MASK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_NORMAL:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_NORMAL;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_RECURSIVE:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_RECURSIVE;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_ERRORCHECK:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_ERRORCHECK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">default</span><span>:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;value;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span><span class="comment">//destory将attr置为-1</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_destroy(pthread_mutex_t&nbsp;*mutex)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;ret;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;use&nbsp;trylock&nbsp;to&nbsp;ensure&nbsp;that&nbsp;the&nbsp;mutex&nbsp;value&nbsp;is</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;valid&nbsp;and&nbsp;is&nbsp;not&nbsp;already&nbsp;locked.&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ret&nbsp;=&nbsp;pthread_mutex_trylock(mutex);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(ret&nbsp;!=&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;ret;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;0xdead10cc;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutex_init(pthread_mutex_t *mutex,
+                       const pthread_mutexattr_t *attr)
+{
+    int value = 0;
+
+    if (mutex == NULL)
+        return EINVAL;
+
+    if (__likely(attr == NULL)) {
+        mutex-&gt;value = MUTEX_TYPE_NORMAL;
+        return 0;
+    }
+
+    if ((*attr &amp; MUTEXATTR_SHARED_MASK) != 0)
+        value |= MUTEX_SHARED_MASK;
+
+    switch (*attr &amp; MUTEXATTR_TYPE_MASK) {
+    case PTHREAD_MUTEX_NORMAL:
+        value |= MUTEX_TYPE_NORMAL;
+        break;
+    case PTHREAD_MUTEX_RECURSIVE:
+        value |= MUTEX_TYPE_RECURSIVE;
+        break;
+    case PTHREAD_MUTEX_ERRORCHECK:
+        value |= MUTEX_TYPE_ERRORCHECK;
+        break;
+    default:
+        return EINVAL;
+    }
+
+    mutex-&gt;value = value;
+    return 0;
+}
+//destory将attr置为-1
+int pthread_mutex_destroy(pthread_mutex_t *mutex)
+{
+    int ret;
+
+    /* use trylock to ensure that the mutex value is
+     * valid and is not already locked. */
+    ret = pthread_mutex_trylock(mutex);
+    if (ret != 0)
+        return ret;
+
+    mutex-&gt;value = 0xdead10cc;
+    return 0;
+}</pre><br>
+<br>
+<p></p>
+<h3><a name="t2"></a>1.2 settype 和gettype</h3>
+<p>对pthread_mutexattr_t的type字段进行取值和赋值</p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 4384px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_4" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_4" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=4&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span>&nbsp;</span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_gettype(</span><span class="keyword">const</span><span>&nbsp;pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;*type)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(attr)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;atype&nbsp;=&nbsp;(*attr&nbsp;&amp;&nbsp;MUTEXATTR_TYPE_MASK);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(atype&nbsp;&gt;=&nbsp;PTHREAD_MUTEX_NORMAL&nbsp;&amp;&amp;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;atype&nbsp;&lt;=&nbsp;PTHREAD_MUTEX_ERRORCHECK)&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*type&nbsp;=&nbsp;atype;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_settype(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;type)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(attr&nbsp;&amp;&amp;&nbsp;type&nbsp;&gt;=&nbsp;PTHREAD_MUTEX_NORMAL&nbsp;&amp;&amp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type&nbsp;&lt;=&nbsp;PTHREAD_MUTEX_ERRORCHECK&nbsp;)&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*attr&nbsp;=&nbsp;(*attr&nbsp;&amp;&nbsp;~MUTEXATTR_TYPE_MASK)&nbsp;|&nbsp;type;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;"> int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type)
+{
+    if (attr) {
+        int  atype = (*attr &amp; MUTEXATTR_TYPE_MASK);
+
+         if (atype &gt;= PTHREAD_MUTEX_NORMAL &amp;&amp;
+             atype &lt;= PTHREAD_MUTEX_ERRORCHECK) {
+            *type = atype;
+            return 0;
+        }
+    }
+    return EINVAL;
+}
+
+int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
+{
+    if (attr &amp;&amp; type &gt;= PTHREAD_MUTEX_NORMAL &amp;&amp;
+                type &lt;= PTHREAD_MUTEX_ERRORCHECK ) {
+        *attr = (*attr &amp; ~MUTEXATTR_TYPE_MASK) | type;
+        return 0;
+    }
+    return EINVAL;
+
+}</pre><br>
+<br>
+<p><br>
+</p>
+<p></p>
+<h3><a name="t3"></a>1.3 setpshared和getpshared</h3>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 4996px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_5" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_5" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=5&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_setpshared(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;&nbsp;pshared)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!attr)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">switch</span><span>&nbsp;(pshared)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_PROCESS_PRIVATE:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*attr&nbsp;&amp;=&nbsp;~MUTEXATTR_SHARED_MASK;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_PROCESS_SHARED:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;our&nbsp;current&nbsp;implementation&nbsp;of&nbsp;pthread&nbsp;actually&nbsp;supports&nbsp;shared</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;mutexes&nbsp;but&nbsp;won't&nbsp;cleanup&nbsp;if&nbsp;a&nbsp;process&nbsp;dies&nbsp;with&nbsp;the&nbsp;mutex&nbsp;held.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Nevertheless,&nbsp;it's&nbsp;better&nbsp;than&nbsp;nothing.&nbsp;Shared&nbsp;mutexes&nbsp;are&nbsp;used</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;surfaceflinger&nbsp;and&nbsp;audioflinger.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*attr&nbsp;|=&nbsp;MUTEXATTR_SHARED_MASK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutexattr_getpshared(pthread_mutexattr_t&nbsp;*attr,&nbsp;</span><span class="datatypes">int</span><span>&nbsp;*pshared)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!attr&nbsp;||&nbsp;!pshared)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;*pshared&nbsp;=&nbsp;(*attr&nbsp;&amp;&nbsp;MUTEXATTR_SHARED_MASK)&nbsp;?&nbsp;PTHREAD_PROCESS_SHARED&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;PTHREAD_PROCESS_PRIVATE;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int  pshared)
+{
+    if (!attr)
+        return EINVAL;
+
+    switch (pshared) {
+    case PTHREAD_PROCESS_PRIVATE:
+        *attr &amp;= ~MUTEXATTR_SHARED_MASK;
+        return 0;
+
+    case PTHREAD_PROCESS_SHARED:
+        /* our current implementation of pthread actually supports shared
+         * mutexes but won't cleanup if a process dies with the mutex held.
+         * Nevertheless, it's better than nothing. Shared mutexes are used
+         * by surfaceflinger and audioflinger.
+         */
+        *attr |= MUTEXATTR_SHARED_MASK;
+        return 0;
+    }
+    return EINVAL;
+}
+
+int pthread_mutexattr_getpshared(pthread_mutexattr_t *attr, int *pshared)
+{
+    if (!attr || !pshared)
+        return EINVAL;
+
+    *pshared = (*attr &amp; MUTEXATTR_SHARED_MASK) ? PTHREAD_PROCESS_SHARED
+                                               : PTHREAD_PROCESS_PRIVATE;
+    return 0;
+}</pre><br>
+<br>
+<p></p>
+<p><br>
+</p>
+<h2><a name="t4"></a>2 Mutex实现<br>
+</h2>
+<h3><a name="t5"></a>2.1 Mutex init和 destory</h3>
+<p>如果attr==NULL，则采用默认属性, type =normal, shared = private,</p>
+<p>否则，感觉属性的type和shared进行设置<br>
+</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 5835px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_6" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_6" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=6&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_init(pthread_mutex_t&nbsp;*mutex,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span><span>&nbsp;pthread_mutexattr_t&nbsp;*attr)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;value&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(mutex&nbsp;==&nbsp;NULL)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__likely(attr&nbsp;==&nbsp;NULL))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;MUTEX_TYPE_NORMAL;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;((*attr&nbsp;&amp;&nbsp;MUTEXATTR_SHARED_MASK)&nbsp;!=&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_SHARED_MASK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">switch</span><span>&nbsp;(*attr&nbsp;&amp;&nbsp;MUTEXATTR_TYPE_MASK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_NORMAL:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_NORMAL;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_RECURSIVE:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_RECURSIVE;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span><span>&nbsp;PTHREAD_MUTEX_ERRORCHECK:&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;|=&nbsp;MUTEX_TYPE_ERRORCHECK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">default</span><span>:&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;value;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>如果mutex当前不被lock，则设置value为0xdead10cc&nbsp;&nbsp;</span></li><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_destroy(pthread_mutex_t&nbsp;*mutex)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;ret;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;use&nbsp;trylock&nbsp;to&nbsp;ensure&nbsp;that&nbsp;the&nbsp;mutex&nbsp;value&nbsp;is</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;valid&nbsp;and&nbsp;is&nbsp;not&nbsp;already&nbsp;locked.&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ret&nbsp;=&nbsp;pthread_mutex_trylock(mutex);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(ret&nbsp;!=&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;ret;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;0xdead10cc;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutex_init(pthread_mutex_t *mutex,
+                       const pthread_mutexattr_t *attr)
+{
+    int value = 0;
+
+    if (mutex == NULL)
+        return EINVAL;
+
+    if (__likely(attr == NULL)) {
+        mutex-&gt;value = MUTEX_TYPE_NORMAL;
+        return 0;
+    }
+
+    if ((*attr &amp; MUTEXATTR_SHARED_MASK) != 0)
+        value |= MUTEX_SHARED_MASK;
+
+    switch (*attr &amp; MUTEXATTR_TYPE_MASK) {
+    case PTHREAD_MUTEX_NORMAL:
+        value |= MUTEX_TYPE_NORMAL;
+        break;
+    case PTHREAD_MUTEX_RECURSIVE:
+        value |= MUTEX_TYPE_RECURSIVE;
+        break;
+    case PTHREAD_MUTEX_ERRORCHECK:
+        value |= MUTEX_TYPE_ERRORCHECK;
+        break;
+    default:
+        return EINVAL;
+    }
+
+    mutex-&gt;value = value;
+    return 0;
+}
+如果mutex当前不被lock，则设置value为0xdead10cc
+int pthread_mutex_destroy(pthread_mutex_t *mutex)
+{
+&nbsp;&nbsp;&nbsp; int ret;
+
+&nbsp;&nbsp;&nbsp; /* use trylock to ensure that the mutex value is
+&nbsp;&nbsp;&nbsp;&nbsp; * valid and is not already locked. */
+&nbsp;&nbsp;&nbsp; ret = pthread_mutex_trylock(mutex);
+&nbsp;&nbsp;&nbsp; if (ret != 0)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return ret;
+
+&nbsp;&nbsp;&nbsp; mutex-&gt;value = 0xdead10cc;
+&nbsp;&nbsp;&nbsp; return 0;
+}
+</pre><br>
+<h3><a name="t6"></a>2.2 lock, unlock, trylock, timedlock</h3>
+<p></p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 6765px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_7" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_7" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=7&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_lock(pthread_mutex_t&nbsp;*mutex)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;mtype,&nbsp;tid,&nbsp;new_lock_type,&nbsp;shared;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__unlikely(mutex&nbsp;==&nbsp;NULL))&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_TYPE_MASK);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;shared&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Handle&nbsp;normal&nbsp;case&nbsp;first&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;__likely(mtype&nbsp;==&nbsp;MUTEX_TYPE_NORMAL)&nbsp;)&nbsp;{</span><span class="comment">//type为normal，</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_normal_lock(mutex);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Do&nbsp;we&nbsp;already&nbsp;own&nbsp;this&nbsp;recursive&nbsp;or&nbsp;error-check&nbsp;mutex&nbsp;?&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;tid&nbsp;=&nbsp;__get_thread()-&gt;kernel_id;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;tid&nbsp;==&nbsp;MUTEX_OWNER(mutex)&nbsp;)</span><span class="comment">//已经持有mutex，递归的情况</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;oldv,&nbsp;counter;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(mtype&nbsp;==&nbsp;MUTEX_TYPE_ERRORCHECK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;trying&nbsp;to&nbsp;re-lock&nbsp;a&nbsp;mutex&nbsp;we&nbsp;already&nbsp;acquired&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EDEADLK;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;We&nbsp;own&nbsp;the&nbsp;mutex,&nbsp;but&nbsp;other&nbsp;threads&nbsp;are&nbsp;able&nbsp;to&nbsp;change</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;contents&nbsp;(e.g.&nbsp;promoting&nbsp;it&nbsp;to&nbsp;"contended"),&nbsp;so&nbsp;we</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;need&nbsp;to&nbsp;hold&nbsp;the&nbsp;global&nbsp;lock.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();<span class="comment">//更新counter</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;counter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;(oldv&nbsp;+&nbsp;(1&nbsp;&lt;&lt;&nbsp;MUTEX_COUNTER_SHIFT))&nbsp;&amp;&nbsp;MUTEX_COUNTER_MASK;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;(oldv&nbsp;&amp;&nbsp;~MUTEX_COUNTER_MASK)&nbsp;|&nbsp;counter;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;We&nbsp;don't&nbsp;own&nbsp;the&nbsp;mutex,&nbsp;so&nbsp;try&nbsp;to&nbsp;get&nbsp;it.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;First,&nbsp;we&nbsp;try&nbsp;to&nbsp;change&nbsp;its&nbsp;state&nbsp;from&nbsp;0&nbsp;to&nbsp;1,&nbsp;if&nbsp;this</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;doesn't&nbsp;work,&nbsp;try&nbsp;to&nbsp;change&nbsp;it&nbsp;to&nbsp;state&nbsp;2.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;new_lock_type&nbsp;=&nbsp;1;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;compute&nbsp;futex&nbsp;wait&nbsp;opcode&nbsp;and&nbsp;restore&nbsp;shared&nbsp;flag&nbsp;in&nbsp;mtype&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;|=&nbsp;shared;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(;;)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;oldv;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;==&nbsp;mtype)&nbsp;{&nbsp;</span><span class="comment">/*&nbsp;uncontended&nbsp;released&nbsp;lock&nbsp;=&gt;&nbsp;1&nbsp;or&nbsp;2&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;((tid&nbsp;&lt;&lt;&nbsp;16)&nbsp;|&nbsp;mtype&nbsp;|&nbsp;new_lock_type);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>&nbsp;((oldv&nbsp;&amp;&nbsp;3)&nbsp;==&nbsp;1)&nbsp;{&nbsp;</span><span class="comment">/*&nbsp;locked&nbsp;state&nbsp;1&nbsp;=&gt;&nbsp;state&nbsp;2&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;^=&nbsp;3;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;oldv;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;==&nbsp;mtype)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;lock&nbsp;was&nbsp;held,&nbsp;possibly&nbsp;contended&nbsp;by&nbsp;others.&nbsp;&nbsp;From</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;now&nbsp;on,&nbsp;if&nbsp;we&nbsp;manage&nbsp;to&nbsp;acquire&nbsp;the&nbsp;lock,&nbsp;we&nbsp;have&nbsp;to</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;assume&nbsp;that&nbsp;others&nbsp;are&nbsp;still&nbsp;contending&nbsp;for&nbsp;it&nbsp;so&nbsp;that</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;we'll&nbsp;wake&nbsp;them&nbsp;when&nbsp;we&nbsp;unlock&nbsp;it.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new_lock_type&nbsp;=&nbsp;2;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wait_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;oldv,&nbsp;NULL);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutex_lock(pthread_mutex_t *mutex)
+{
+    int mtype, tid, new_lock_type, shared;
+
+    if (__unlikely(mutex == NULL))
+        return EINVAL;
+
+    mtype = (mutex-&gt;value &amp; MUTEX_TYPE_MASK);
+    shared = (mutex-&gt;value &amp; MUTEX_SHARED_MASK);
+
+    /* Handle normal case first */
+   if ( __likely(mtype == MUTEX_TYPE_NORMAL) ) {//type为normal，
+        _normal_lock(mutex);
+        return 0;
+    }
+
+    /* Do we already own this recursive or error-check mutex ? */
+    tid = __get_thread()-&gt;kernel_id;
+   if ( tid == MUTEX_OWNER(mutex) )//已经持有mutex，递归的情况
+    {
+        int  oldv, counter;
+
+        if (mtype == MUTEX_TYPE_ERRORCHECK) {
+            /* trying to re-lock a mutex we already acquired */
+            return EDEADLK;
+        }
+        /*
+         * We own the mutex, but other threads are able to change
+         * the contents (e.g. promoting it to "contended"), so we
+         * need to hold the global lock.
+         */
+    _recursive_lock();//更新counter
+        oldv         = mutex-&gt;value;
+        counter      = (oldv + (1 &lt;&lt; MUTEX_COUNTER_SHIFT)) &amp; MUTEX_COUNTER_MASK;
+        mutex-&gt;value = (oldv &amp; ~MUTEX_COUNTER_MASK) | counter;
+        _recursive_unlock();
+        return 0;
+    }
+
+    /* We don't own the mutex, so try to get it.
+     *
+     * First, we try to change its state from 0 to 1, if this
+     * doesn't work, try to change it to state 2.
+     */
+    new_lock_type = 1;
+
+    /* compute futex wait opcode and restore shared flag in mtype */
+    mtype |= shared;
+
+    for (;;) {
+        int  oldv;
+
+        _recursive_lock();
+        oldv = mutex-&gt;value;
+        if (oldv == mtype) { /* uncontended released lock =&gt; 1 or 2 */
+            mutex-&gt;value = ((tid &lt;&lt; 16) | mtype | new_lock_type);
+        } else if ((oldv &amp; 3) == 1) { /* locked state 1 =&gt; state 2 */
+            oldv ^= 3;
+            mutex-&gt;value = oldv;
+        }
+        _recursive_unlock();
+
+        if (oldv == mtype)
+            break;
+
+        /*
+         * The lock was held, possibly contended by others.  From
+         * now on, if we manage to acquire the lock, we have to
+         * assume that others are still contending for it so that
+         * we'll wake them when we unlock it.
+         */
+        new_lock_type = 2;
+
+        __futex_wait_ex(&amp;mutex-&gt;value, shared, oldv, NULL);
+    }
+    return 0;
+}
+</pre>
+<p></p>
+<p>normal 的情况<br>
+</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 8189px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_8" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_8" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=8&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;Lock&nbsp;a&nbsp;non-recursive&nbsp;mutex.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;As&nbsp;noted&nbsp;above,&nbsp;there&nbsp;are&nbsp;three&nbsp;states:</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;&nbsp;&nbsp;0&nbsp;(unlocked,&nbsp;no&nbsp;contention)</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;&nbsp;&nbsp;1&nbsp;(locked,&nbsp;no&nbsp;contention)</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;&nbsp;&nbsp;2&nbsp;(locked,&nbsp;contention)</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;Non-recursive&nbsp;mutexes&nbsp;don't&nbsp;use&nbsp;the&nbsp;thread-id&nbsp;or&nbsp;counter&nbsp;fields,&nbsp;and&nbsp;the</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;"type"&nbsp;value&nbsp;is&nbsp;zero,&nbsp;so&nbsp;the&nbsp;only&nbsp;bits&nbsp;that&nbsp;will&nbsp;be&nbsp;set&nbsp;are&nbsp;the&nbsp;ones&nbsp;in</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;the&nbsp;lock&nbsp;state&nbsp;field.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;__inline__&nbsp;</span><span class="keyword">void</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>_normal_lock(pthread_mutex_t*&nbsp;&nbsp;mutex)&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;We&nbsp;need&nbsp;to&nbsp;preserve&nbsp;the&nbsp;shared&nbsp;flag&nbsp;during&nbsp;operations&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;shared&nbsp;=&nbsp;mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;common&nbsp;case&nbsp;is&nbsp;an&nbsp;unlocked&nbsp;mutex,&nbsp;so&nbsp;we&nbsp;begin&nbsp;by&nbsp;trying&nbsp;to</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;change&nbsp;the&nbsp;lock's&nbsp;state&nbsp;from&nbsp;0&nbsp;to&nbsp;1.&nbsp;&nbsp;__atomic_cmpxchg()&nbsp;returns&nbsp;0</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;it&nbsp;made&nbsp;the&nbsp;swap&nbsp;successfully.&nbsp;&nbsp;If&nbsp;the&nbsp;result&nbsp;is&nbsp;nonzero,&nbsp;this</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;lock&nbsp;is&nbsp;already&nbsp;held&nbsp;by&nbsp;another&nbsp;thread.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__atomic_cmpxchg(shared|0,&nbsp;shared|1,&nbsp;&amp;mutex-&gt;value&nbsp;)&nbsp;!=&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;We&nbsp;want&nbsp;to&nbsp;go&nbsp;to&nbsp;sleep&nbsp;until&nbsp;the&nbsp;mutex&nbsp;is&nbsp;available,&nbsp;which</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;requires&nbsp;promoting&nbsp;it&nbsp;to&nbsp;state&nbsp;2.&nbsp;&nbsp;We&nbsp;need&nbsp;to&nbsp;swap&nbsp;in&nbsp;the&nbsp;new</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;state&nbsp;value&nbsp;and&nbsp;then&nbsp;wait&nbsp;until&nbsp;somebody&nbsp;wakes&nbsp;us&nbsp;up.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;__atomic_swap()&nbsp;returns&nbsp;the&nbsp;previous&nbsp;value.&nbsp;&nbsp;We&nbsp;swap&nbsp;2&nbsp;in&nbsp;and</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;see&nbsp;if&nbsp;we&nbsp;got&nbsp;zero&nbsp;back;&nbsp;if&nbsp;so,&nbsp;we&nbsp;have&nbsp;acquired&nbsp;the&nbsp;lock.&nbsp;&nbsp;If</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;not,&nbsp;another&nbsp;thread&nbsp;still&nbsp;holds&nbsp;the&nbsp;lock&nbsp;and&nbsp;we&nbsp;wait&nbsp;again.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;second&nbsp;argument&nbsp;to&nbsp;the&nbsp;__futex_wait()&nbsp;call&nbsp;is&nbsp;compared</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;against&nbsp;the&nbsp;current&nbsp;value.&nbsp;&nbsp;If&nbsp;it&nbsp;doesn't&nbsp;match,&nbsp;__futex_wait()</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;immediately&nbsp;(otherwise,&nbsp;it&nbsp;sleeps&nbsp;for&nbsp;a&nbsp;time&nbsp;specified</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;the&nbsp;third&nbsp;argument;&nbsp;0&nbsp;means&nbsp;sleep&nbsp;forever).&nbsp;&nbsp;This&nbsp;ensures</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;that&nbsp;the&nbsp;mutex&nbsp;is&nbsp;in&nbsp;state&nbsp;2&nbsp;when&nbsp;we&nbsp;go&nbsp;to&nbsp;sleep&nbsp;on&nbsp;it,&nbsp;which</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;guarantees&nbsp;a&nbsp;wake-up&nbsp;call.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(__atomic_swap(shared|2,&nbsp;&amp;mutex-&gt;value&nbsp;)&nbsp;!=&nbsp;(shared|0))</span><span class="comment">//等待muex</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wait_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;shared|2,&nbsp;0);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ANDROID_MEMBAR_FULL();&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">/*
+ * Lock a non-recursive mutex.
+ *
+ * As noted above, there are three states:
+ *   0 (unlocked, no contention)
+ *   1 (locked, no contention)
+ *   2 (locked, contention)
+ *
+ * Non-recursive mutexes don't use the thread-id or counter fields, and the
+ * "type" value is zero, so the only bits that will be set are the ones in
+ * the lock state field.
+ */
+static __inline__ void
+_normal_lock(pthread_mutex_t*  mutex)
+{
+    /* We need to preserve the shared flag during operations */
+    int  shared = mutex-&gt;value &amp; MUTEX_SHARED_MASK;
+    /*
+     * The common case is an unlocked mutex, so we begin by trying to
+     * change the lock's state from 0 to 1.  __atomic_cmpxchg() returns 0
+     * if it made the swap successfully.  If the result is nonzero, this
+     * lock is already held by another thread.
+     */
+    
+    if (__atomic_cmpxchg(shared|0, shared|1, &amp;mutex-&gt;value ) != 0) {
+        /*
+         * We want to go to sleep until the mutex is available, which
+         * requires promoting it to state 2.  We need to swap in the new
+         * state value and then wait until somebody wakes us up.
+         *
+         * __atomic_swap() returns the previous value.  We swap 2 in and
+         * see if we got zero back; if so, we have acquired the lock.  If
+         * not, another thread still holds the lock and we wait again.
+         *
+         * The second argument to the __futex_wait() call is compared
+         * against the current value.  If it doesn't match, __futex_wait()
+         * returns immediately (otherwise, it sleeps for a time specified
+         * by the third argument; 0 means sleep forever).  This ensures
+         * that the mutex is in state 2 when we go to sleep on it, which
+         * guarantees a wake-up call.
+         */
+    while (__atomic_swap(shared|2, &amp;mutex-&gt;value ) != (shared|0))//等待muex
+            __futex_wait_ex(&amp;mutex-&gt;value, shared, shared|2, 0);
+    }
+    ANDROID_MEMBAR_FULL();
+}
+</pre><br>
+<p></p>
+<p>在recursive的情况下，需要使用mutex来包含counter，</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 9117px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_9" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_9" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=9&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="keyword">static</span><span>&nbsp;pthread_mutex_t&nbsp;&nbsp;__recursive_lock&nbsp;=&nbsp;PTHREAD_MUTEX_INITIALIZER;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>_recursive_lock(<span class="keyword">void</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;_normal_lock(&amp;__recursive_lock);&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>_recursive_unlock(<span class="keyword">void</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;_normal_unlock(&amp;__recursive_lock&nbsp;);&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">static pthread_mutex_t  __recursive_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static void
+_recursive_lock(void)
+{
+    _normal_lock(&amp;__recursive_lock);
+}
+
+static void
+_recursive_unlock(void)
+{
+    _normal_unlock(&amp;__recursive_lock );
+}
+</pre><br>
+unlock的情况
+<p></p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 9461px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_10" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_10" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=10&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_unlock(pthread_mutex_t&nbsp;*mutex)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;mtype,&nbsp;tid,&nbsp;oldv,&nbsp;shared;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__unlikely(mutex&nbsp;==&nbsp;NULL))&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_TYPE_MASK);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;shared&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Handle&nbsp;common&nbsp;case&nbsp;first&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__likely(mtype&nbsp;==&nbsp;MUTEX_TYPE_NORMAL))&nbsp;{</span><span class="comment">//normal</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_normal_unlock(mutex);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Do&nbsp;we&nbsp;already&nbsp;own&nbsp;this&nbsp;recursive&nbsp;or&nbsp;error-check&nbsp;mutex&nbsp;?&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;tid&nbsp;=&nbsp;__get_thread()-&gt;kernel_id;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;tid&nbsp;!=&nbsp;MUTEX_OWNER(mutex)&nbsp;)</span><span class="comment">//error&nbsp;check的情况，错误退出</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EPERM;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;We&nbsp;do,&nbsp;decrement&nbsp;counter&nbsp;or&nbsp;release&nbsp;the&nbsp;mutex&nbsp;if&nbsp;it&nbsp;is&nbsp;0&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;&amp;&nbsp;MUTEX_COUNTER_MASK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;oldv&nbsp;-&nbsp;(1&nbsp;&lt;&lt;&nbsp;MUTEX_COUNTER_SHIFT);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;0;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;shared&nbsp;|&nbsp;mtype;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Wake&nbsp;one&nbsp;waiting&nbsp;thread,&nbsp;if&nbsp;any&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;((oldv&nbsp;&amp;&nbsp;3)&nbsp;==&nbsp;2)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wake_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;1);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;Release&nbsp;a&nbsp;non-recursive&nbsp;mutex.&nbsp;&nbsp;The&nbsp;caller&nbsp;is&nbsp;responsible&nbsp;for&nbsp;determining</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;that&nbsp;we&nbsp;are&nbsp;in&nbsp;fact&nbsp;the&nbsp;owner&nbsp;of&nbsp;this&nbsp;lock.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">static</span><span>&nbsp;__inline__&nbsp;</span><span class="keyword">void</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>_normal_unlock(pthread_mutex_t*&nbsp;&nbsp;mutex)&nbsp;&nbsp;</span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;ANDROID_MEMBAR_FULL();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;We&nbsp;need&nbsp;to&nbsp;preserve&nbsp;the&nbsp;shared&nbsp;flag&nbsp;during&nbsp;operations&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;shared&nbsp;=&nbsp;mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;mutex&nbsp;state&nbsp;will&nbsp;be&nbsp;1&nbsp;or&nbsp;(rarely)&nbsp;2.&nbsp;&nbsp;We&nbsp;use&nbsp;an&nbsp;atomic&nbsp;decrement</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;to&nbsp;release&nbsp;the&nbsp;lock.&nbsp;&nbsp;__atomic_dec()&nbsp;returns&nbsp;the&nbsp;previous&nbsp;value;</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;it&nbsp;wasn't&nbsp;1&nbsp;we&nbsp;have&nbsp;to&nbsp;do&nbsp;some&nbsp;additional&nbsp;work.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__atomic_dec(&amp;mutex-&gt;value)&nbsp;!=&nbsp;(shared|1))&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Start&nbsp;by&nbsp;releasing&nbsp;the&nbsp;lock.&nbsp;&nbsp;The&nbsp;decrement&nbsp;changed&nbsp;it&nbsp;from</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;"contended&nbsp;lock"&nbsp;to&nbsp;"uncontended&nbsp;lock",&nbsp;which&nbsp;means&nbsp;we&nbsp;still</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;hold&nbsp;it,&nbsp;and&nbsp;anybody&nbsp;who&nbsp;tries&nbsp;to&nbsp;sneak&nbsp;in&nbsp;will&nbsp;push&nbsp;it&nbsp;back</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;to&nbsp;state&nbsp;2.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Once&nbsp;we&nbsp;set&nbsp;it&nbsp;to&nbsp;zero&nbsp;the&nbsp;lock&nbsp;is&nbsp;up&nbsp;for&nbsp;grabs.&nbsp;&nbsp;We&nbsp;follow</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;this&nbsp;with&nbsp;a&nbsp;__futex_wake()&nbsp;to&nbsp;ensure&nbsp;that&nbsp;one&nbsp;of&nbsp;the&nbsp;waiting</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;threads&nbsp;has&nbsp;a&nbsp;chance&nbsp;to&nbsp;grab&nbsp;it.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;doesn't&nbsp;cause&nbsp;a&nbsp;race&nbsp;with&nbsp;the&nbsp;swap/wait&nbsp;pair&nbsp;in</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;_normal_lock(),&nbsp;because&nbsp;the&nbsp;__futex_wait()&nbsp;call&nbsp;there&nbsp;will</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;return&nbsp;immediately&nbsp;if&nbsp;the&nbsp;mutex&nbsp;value&nbsp;isn't&nbsp;2.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;shared;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Wake&nbsp;up&nbsp;one&nbsp;waiting&nbsp;thread.&nbsp;&nbsp;We&nbsp;don't&nbsp;know&nbsp;which&nbsp;thread&nbsp;will&nbsp;be</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;woken&nbsp;or&nbsp;when&nbsp;it'll&nbsp;start&nbsp;executing&nbsp;--&nbsp;futexes&nbsp;make&nbsp;no&nbsp;guarantees</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;here.&nbsp;&nbsp;There&nbsp;may&nbsp;not&nbsp;even&nbsp;be&nbsp;a&nbsp;thread&nbsp;waiting.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;newly-woken&nbsp;thread&nbsp;will&nbsp;replace&nbsp;the&nbsp;0&nbsp;we&nbsp;just&nbsp;set&nbsp;above</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;with&nbsp;2,&nbsp;which&nbsp;means&nbsp;that&nbsp;when&nbsp;it&nbsp;eventually&nbsp;releases&nbsp;the&nbsp;mutex</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;it&nbsp;will&nbsp;also&nbsp;call&nbsp;FUTEX_WAKE.&nbsp;&nbsp;This&nbsp;results&nbsp;in&nbsp;one&nbsp;extra&nbsp;wake</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;call&nbsp;whenever&nbsp;a&nbsp;lock&nbsp;is&nbsp;contended,&nbsp;but&nbsp;lets&nbsp;us&nbsp;avoid&nbsp;forgetting</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;anyone&nbsp;without&nbsp;requiring&nbsp;us&nbsp;to&nbsp;track&nbsp;the&nbsp;number&nbsp;of&nbsp;sleepers.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;It's&nbsp;possible&nbsp;for&nbsp;another&nbsp;thread&nbsp;to&nbsp;sneak&nbsp;in&nbsp;and&nbsp;grab&nbsp;the&nbsp;lock</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;between&nbsp;the&nbsp;zero&nbsp;assignment&nbsp;above&nbsp;and&nbsp;the&nbsp;wake&nbsp;call&nbsp;below.&nbsp;&nbsp;If</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;new&nbsp;thread&nbsp;is&nbsp;"slow"&nbsp;and&nbsp;holds&nbsp;the&nbsp;lock&nbsp;for&nbsp;a&nbsp;while,&nbsp;we'll</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;wake&nbsp;up&nbsp;a&nbsp;sleeper,&nbsp;which&nbsp;will&nbsp;swap&nbsp;in&nbsp;a&nbsp;2&nbsp;and&nbsp;then&nbsp;go&nbsp;back&nbsp;to</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;sleep&nbsp;since&nbsp;the&nbsp;lock&nbsp;is&nbsp;still&nbsp;held.&nbsp;&nbsp;If&nbsp;the&nbsp;new&nbsp;thread&nbsp;is&nbsp;"fast",</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;running&nbsp;to&nbsp;completion&nbsp;before&nbsp;we&nbsp;call&nbsp;wake,&nbsp;the&nbsp;thread&nbsp;we</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;eventually&nbsp;wake&nbsp;will&nbsp;find&nbsp;an&nbsp;unlocked&nbsp;mutex&nbsp;and&nbsp;will&nbsp;execute.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Either&nbsp;way&nbsp;we&nbsp;have&nbsp;correct&nbsp;behavior&nbsp;and&nbsp;nobody&nbsp;is&nbsp;orphaned&nbsp;on</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;wait&nbsp;queue.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wake_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;1);<span class="comment">//唤醒等待的</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutex_unlock(pthread_mutex_t *mutex)
+{
+    int mtype, tid, oldv, shared;
+
+    if (__unlikely(mutex == NULL))
+        return EINVAL;
+
+    mtype  = (mutex-&gt;value &amp; MUTEX_TYPE_MASK);
+    shared = (mutex-&gt;value &amp; MUTEX_SHARED_MASK);
+
+    /* Handle common case first */
+    if (__likely(mtype == MUTEX_TYPE_NORMAL)) {//normal
+        _normal_unlock(mutex);
+        return 0;
+    }
+
+    /* Do we already own this recursive or error-check mutex ? */
+    tid = __get_thread()-&gt;kernel_id;
+    if ( tid != MUTEX_OWNER(mutex) )//error check的情况，错误退出
+        return EPERM;
+
+    /* We do, decrement counter or release the mutex if it is 0 */
+    _recursive_lock();
+    oldv = mutex-&gt;value;
+    if (oldv &amp; MUTEX_COUNTER_MASK) {
+        mutex-&gt;value = oldv - (1 &lt;&lt; MUTEX_COUNTER_SHIFT);
+        oldv = 0;
+    } else {
+        mutex-&gt;value = shared | mtype;
+    }
+    _recursive_unlock();
+
+    /* Wake one waiting thread, if any */
+   if ((oldv &amp; 3) == 2) {
+        __futex_wake_ex(&amp;mutex-&gt;value, shared, 1);
+    }
+    return 0;
+}
+
+
+/*
+&nbsp;* Release a non-recursive mutex.&nbsp; The caller is responsible for determining
+&nbsp;* that we are in fact the owner of this lock.
+&nbsp;*/
+static __inline__ void
+_normal_unlock(pthread_mutex_t*&nbsp; mutex)
+{
+&nbsp;&nbsp;&nbsp; ANDROID_MEMBAR_FULL();
+
+&nbsp;&nbsp;&nbsp; /* We need to preserve the shared flag during operations */
+&nbsp;&nbsp;&nbsp; int&nbsp; shared = mutex-&gt;value &amp; MUTEX_SHARED_MASK;
+
+&nbsp;&nbsp;&nbsp; /*
+&nbsp;&nbsp;&nbsp;&nbsp; * The mutex state will be 1 or (rarely) 2.&nbsp; We use an atomic decrement
+&nbsp;&nbsp;&nbsp;&nbsp; * to release the lock.&nbsp; __atomic_dec() returns the previous value;
+&nbsp;&nbsp;&nbsp;&nbsp; * if it wasn't 1 we have to do some additional work.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; if (__atomic_dec(&amp;mutex-&gt;value) != (shared|1)) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Start by releasing the lock.&nbsp; The decrement changed it from
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * "contended lock" to "uncontended lock", which means we still
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * hold it, and anybody who tries to sneak in will push it back
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * to state 2.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Once we set it to zero the lock is up for grabs.&nbsp; We follow
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * this with a __futex_wake() to ensure that one of the waiting
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * threads has a chance to grab it.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * This doesn't cause a race with the swap/wait pair in
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * _normal_lock(), because the __futex_wait() call there will
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * return immediately if the mutex value isn't 2.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mutex-&gt;value = shared;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Wake up one waiting thread.&nbsp; We don't know which thread will be
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * woken or when it'll start executing -- futexes make no guarantees
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * here.&nbsp; There may not even be a thread waiting.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The newly-woken thread will replace the 0 we just set above
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * with 2, which means that when it eventually releases the mutex
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * it will also call FUTEX_WAKE.&nbsp; This results in one extra wake
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * call whenever a lock is contended, but lets us avoid forgetting
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * anyone without requiring us to track the number of sleepers.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * It's possible for another thread to sneak in and grab the lock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * between the zero assignment above and the wake call below.&nbsp; If
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the new thread is "slow" and holds the lock for a while, we'll
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * wake up a sleeper, which will swap in a 2 and then go back to
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * sleep since the lock is still held.&nbsp; If the new thread is "fast",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * running to completion before we call wake, the thread we
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * eventually wake will find an unlocked mutex and will execute.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Either way we have correct behavior and nobody is orphaned on
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the wait queue.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __futex_wake_ex(&amp;mutex-&gt;value, shared, 1);//唤醒等待的
+&nbsp;&nbsp;&nbsp; }
+}
+&nbsp;</pre>
+<p></p>
+<p>trylock<br>
+</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 11265px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_11" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_11" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=11&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_trylock(pthread_mutex_t&nbsp;*mutex)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;mtype,&nbsp;tid,&nbsp;oldv,&nbsp;shared;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__unlikely(mutex&nbsp;==&nbsp;NULL))&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_TYPE_MASK);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;shared&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Handle&nbsp;common&nbsp;case&nbsp;first&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;__likely(mtype&nbsp;==&nbsp;MUTEX_TYPE_NORMAL)&nbsp;)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__atomic_cmpxchg(shared|0,&nbsp;shared|1,&nbsp;&amp;mutex-&gt;value)&nbsp;==&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ANDROID_MEMBAR_FULL();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EBUSY;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Do&nbsp;we&nbsp;already&nbsp;own&nbsp;this&nbsp;recursive&nbsp;or&nbsp;error-check&nbsp;mutex&nbsp;?&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;tid&nbsp;=&nbsp;__get_thread()-&gt;kernel_id;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;tid&nbsp;==&nbsp;MUTEX_OWNER(mutex)&nbsp;)</span><span class="comment">//当前thread已经持有mutex</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;counter;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(mtype&nbsp;==&nbsp;MUTEX_TYPE_ERRORCHECK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;already&nbsp;locked&nbsp;by&nbsp;ourselves&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EDEADLK;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//更新counter计数器</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;counter&nbsp;=&nbsp;(oldv&nbsp;+&nbsp;(1&nbsp;&lt;&lt;&nbsp;MUTEX_COUNTER_SHIFT))&nbsp;&amp;&nbsp;MUTEX_COUNTER_MASK;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;(oldv&nbsp;&amp;&nbsp;~MUTEX_COUNTER_MASK)&nbsp;|&nbsp;counter;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Restore&nbsp;sharing&nbsp;bit&nbsp;in&nbsp;mtype&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;|=&nbsp;shared;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Try&nbsp;to&nbsp;lock&nbsp;it,&nbsp;just&nbsp;once.&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;==&nbsp;mtype)&nbsp;&nbsp;</span><span class="comment">/*&nbsp;uncontended&nbsp;released&nbsp;lock&nbsp;=&gt;&nbsp;state&nbsp;1&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;((tid&nbsp;&lt;&lt;&nbsp;16)&nbsp;|&nbsp;mtype&nbsp;|&nbsp;1);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;!=&nbsp;mtype)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EBUSY;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="cpp" style="display: none;">int pthread_mutex_trylock(pthread_mutex_t *mutex)
+{
+    int mtype, tid, oldv, shared;
+
+    if (__unlikely(mutex == NULL))
+        return EINVAL;
+
+    mtype  = (mutex-&gt;value &amp; MUTEX_TYPE_MASK);
+    shared = (mutex-&gt;value &amp; MUTEX_SHARED_MASK);
+
+    /* Handle common case first */
+    if ( __likely(mtype == MUTEX_TYPE_NORMAL) )
+    {
+        if (__atomic_cmpxchg(shared|0, shared|1, &amp;mutex-&gt;value) == 0) {
+            ANDROID_MEMBAR_FULL();
+            return 0;
+        }
+
+        return EBUSY;
+    }
+
+    /* Do we already own this recursive or error-check mutex ? */
+    tid = __get_thread()-&gt;kernel_id;
+    if ( tid == MUTEX_OWNER(mutex) )//当前thread已经持有mutex
+    {
+        int counter;
+
+        if (mtype == MUTEX_TYPE_ERRORCHECK) {
+            /* already locked by ourselves */
+            return EDEADLK;
+        }
+        //更新counter计数器
+        _recursive_lock();
+        oldv = mutex-&gt;value;
+        counter = (oldv + (1 &lt;&lt; MUTEX_COUNTER_SHIFT)) &amp; MUTEX_COUNTER_MASK;
+        mutex-&gt;value = (oldv &amp; ~MUTEX_COUNTER_MASK) | counter;
+        _recursive_unlock();
+        return 0;
+    }
+
+    /* Restore sharing bit in mtype */
+    mtype |= shared;
+
+    /* Try to lock it, just once. */
+    _recursive_lock();
+    oldv = mutex-&gt;value;
+    if (oldv == mtype)  /* uncontended released lock =&gt; state 1 */
+        mutex-&gt;value = ((tid &lt;&lt; 16) | mtype | 1);
+    _recursive_unlock();
+
+    if (oldv != mtype)
+        return EBUSY;
+
+    return 0;
+}</pre>
+<p></p>
+<p>timeout<br>
+</p>
+<p></p>
+<div class="dp-highlighter bg_cpp"><div class="bar"><div class="tools"><b>[cpp]</b> <a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 492px; top: 12308px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_12" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_12" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=12&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-cpp"><li class="alt"><span><span class="datatypes">int</span><span>&nbsp;pthread_mutex_lock_timeout_np(pthread_mutex_t&nbsp;*mutex,&nbsp;unsigned&nbsp;msecs)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;clockid_t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clock&nbsp;=&nbsp;CLOCK_MONOTONIC;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;timespec&nbsp;&nbsp;abstime;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;timespec&nbsp;&nbsp;ts;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mtype,&nbsp;tid,&nbsp;oldv,&nbsp;new_lock_type,&nbsp;shared;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;compute&nbsp;absolute&nbsp;expiration&nbsp;time&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;__timespec_to_relative_msec(&amp;abstime,&nbsp;msecs,&nbsp;clock);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__unlikely(mutex&nbsp;==&nbsp;NULL))&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EINVAL;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_TYPE_MASK);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;shared&nbsp;=&nbsp;(mutex-&gt;value&nbsp;&amp;&nbsp;MUTEX_SHARED_MASK);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Handle&nbsp;common&nbsp;case&nbsp;first&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;__likely(mtype&nbsp;==&nbsp;MUTEX_TYPE_NORMAL)&nbsp;)</span><span class="comment">//normal的情况</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;fast&nbsp;path&nbsp;for&nbsp;uncontended&nbsp;lock&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__atomic_cmpxchg(shared|0,&nbsp;shared|1,&nbsp;&amp;mutex-&gt;value)&nbsp;==&nbsp;0)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ANDROID_MEMBAR_FULL();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//在while循环中等待，直到超时或者获得mutex</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;loop&nbsp;while&nbsp;needed&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(__atomic_swap(shared|2,&nbsp;&amp;mutex-&gt;value)&nbsp;!=&nbsp;(shared|0))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__timespec_to_absolute(&amp;ts,&nbsp;&amp;abstime,&nbsp;clock)&nbsp;&lt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EBUSY;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wait_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;shared|2,&nbsp;&amp;ts);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ANDROID_MEMBAR_FULL();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Do&nbsp;we&nbsp;already&nbsp;own&nbsp;this&nbsp;recursive&nbsp;or&nbsp;error-check&nbsp;mutex&nbsp;?&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;tid&nbsp;=&nbsp;__get_thread()-&gt;kernel_id;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(&nbsp;tid&nbsp;==&nbsp;MUTEX_OWNER(mutex)&nbsp;)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;oldv,&nbsp;counter;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(mtype&nbsp;==&nbsp;MUTEX_TYPE_ERRORCHECK)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;already&nbsp;locked&nbsp;by&nbsp;ourselves&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EDEADLK;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;counter&nbsp;=&nbsp;(oldv&nbsp;+&nbsp;(1&nbsp;&lt;&lt;&nbsp;MUTEX_COUNTER_SHIFT))&nbsp;&amp;&nbsp;MUTEX_COUNTER_MASK;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;(oldv&nbsp;&amp;&nbsp;~MUTEX_COUNTER_MASK)&nbsp;|&nbsp;counter;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;We&nbsp;don't&nbsp;own&nbsp;the&nbsp;mutex,&nbsp;so&nbsp;try&nbsp;to&nbsp;get&nbsp;it.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;First,&nbsp;we&nbsp;try&nbsp;to&nbsp;change&nbsp;its&nbsp;state&nbsp;from&nbsp;0&nbsp;to&nbsp;1,&nbsp;if&nbsp;this</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;doesn't&nbsp;work,&nbsp;try&nbsp;to&nbsp;change&nbsp;it&nbsp;to&nbsp;state&nbsp;2.</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;new_lock_type&nbsp;=&nbsp;1;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*&nbsp;Compute&nbsp;wait&nbsp;op&nbsp;and&nbsp;restore&nbsp;sharing&nbsp;bit&nbsp;in&nbsp;mtype&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;mtype&nbsp;&nbsp;|=&nbsp;shared;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//循环等待，直到超时</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;<span class="keyword">for</span><span>&nbsp;(;;)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="datatypes">int</span><span>&nbsp;&nbsp;oldv;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span><span>&nbsp;timespec&nbsp;&nbsp;ts;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_lock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;=&nbsp;mutex-&gt;value;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;==&nbsp;mtype)&nbsp;{&nbsp;</span><span class="comment">/*&nbsp;uncontended&nbsp;released&nbsp;lock&nbsp;=&gt;&nbsp;1&nbsp;or&nbsp;2&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;((tid&nbsp;&lt;&lt;&nbsp;16)&nbsp;|&nbsp;mtype&nbsp;|&nbsp;new_lock_type);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>&nbsp;((oldv&nbsp;&amp;&nbsp;3)&nbsp;==&nbsp;1)&nbsp;{&nbsp;</span><span class="comment">/*&nbsp;locked&nbsp;state&nbsp;1&nbsp;=&gt;&nbsp;state&nbsp;2&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldv&nbsp;^=&nbsp;3;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mutex-&gt;value&nbsp;=&nbsp;oldv;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_recursive_unlock();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(oldv&nbsp;==&nbsp;mtype)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;lock&nbsp;was&nbsp;held,&nbsp;possibly&nbsp;contended&nbsp;by&nbsp;others.&nbsp;&nbsp;From</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;now&nbsp;on,&nbsp;if&nbsp;we&nbsp;manage&nbsp;to&nbsp;acquire&nbsp;the&nbsp;lock,&nbsp;we&nbsp;have&nbsp;to</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;assume&nbsp;that&nbsp;others&nbsp;are&nbsp;still&nbsp;contending&nbsp;for&nbsp;it&nbsp;so&nbsp;that</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;we'll&nbsp;wake&nbsp;them&nbsp;when&nbsp;we&nbsp;unlock&nbsp;it.</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new_lock_type&nbsp;=&nbsp;2;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//超时退出</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(__timespec_to_absolute(&amp;ts,&nbsp;&amp;abstime,&nbsp;clock)&nbsp;&lt;&nbsp;0)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;EBUSY;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__futex_wait_ex(&amp;mutex-&gt;value,&nbsp;shared,&nbsp;oldv,&nbsp;&amp;ts);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;0;&nbsp;&nbsp;</span></span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre style="font-family: SimSun; display: none;" name="code" class="cpp">int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
+{
+    clockid_t        clock = CLOCK_MONOTONIC;
+    struct timespec  abstime;
+    struct timespec  ts;
+    int              mtype, tid, oldv, new_lock_type, shared;
+
+    /* compute absolute expiration time */
+    __timespec_to_relative_msec(&amp;abstime, msecs, clock);
+
+    if (__unlikely(mutex == NULL))
+        return EINVAL;
+
+    mtype  = (mutex-&gt;value &amp; MUTEX_TYPE_MASK);
+    shared = (mutex-&gt;value &amp; MUTEX_SHARED_MASK);
+
+    /* Handle common case first */
+    if ( __likely(mtype == MUTEX_TYPE_NORMAL) )//normal的情况
+    {
+        /* fast path for uncontended lock */
+        if (__atomic_cmpxchg(shared|0, shared|1, &amp;mutex-&gt;value) == 0) {
+            ANDROID_MEMBAR_FULL();
+            return 0;
+        }
+         //在while循环中等待，直到超时或者获得mutex
+      /* loop while needed */
+      while (__atomic_swap(shared|2, &amp;mutex-&gt;value) != (shared|0)) {
+            if (__timespec_to_absolute(&amp;ts, &amp;abstime, clock) &lt; 0)
+                return EBUSY;
+
+            __futex_wait_ex(&amp;mutex-&gt;value, shared, shared|2, &amp;ts);
+        }
+        ANDROID_MEMBAR_FULL();
+        return 0;
+    }
+
+    /* Do we already own this recursive or error-check mutex ? */
+    tid = __get_thread()-&gt;kernel_id;
+    if ( tid == MUTEX_OWNER(mutex) )
+    {
+        int  oldv, counter;
+
+        if (mtype == MUTEX_TYPE_ERRORCHECK) {
+            /* already locked by ourselves */
+            return EDEADLK;
+        }
+
+        _recursive_lock();
+        oldv = mutex-&gt;value;
+        counter = (oldv + (1 &lt;&lt; MUTEX_COUNTER_SHIFT)) &amp; MUTEX_COUNTER_MASK;
+        mutex-&gt;value = (oldv &amp; ~MUTEX_COUNTER_MASK) | counter;
+        _recursive_unlock();
+        return 0;
+    }
+
+    /* We don't own the mutex, so try to get it.
+     *
+     * First, we try to change its state from 0 to 1, if this
+     * doesn't work, try to change it to state 2.
+     */
+    new_lock_type = 1;
+
+    /* Compute wait op and restore sharing bit in mtype */
+    mtype  |= shared;
+
+    //循环等待，直到超时
+ for (;;) {
+        int  oldv;
+        struct timespec  ts;
+
+        _recursive_lock();
+        oldv = mutex-&gt;value;
+        if (oldv == mtype) { /* uncontended released lock =&gt; 1 or 2 */
+            mutex-&gt;value = ((tid &lt;&lt; 16) | mtype | new_lock_type);
+        } else if ((oldv &amp; 3) == 1) { /* locked state 1 =&gt; state 2 */
+            oldv ^= 3;
+            mutex-&gt;value = oldv;
+        }
+        _recursive_unlock();
+
+        if (oldv == mtype)
+            break;
+
+        /*
+         * The lock was held, possibly contended by others.  From
+         * now on, if we manage to acquire the lock, we have to
+         * assume that others are still contending for it so that
+         * we'll wake them when we unlock it.
+         */
+        new_lock_type = 2;
+       //超时退出
+       if (__timespec_to_absolute(&amp;ts, &amp;abstime, clock) &lt; 0)
+            return EBUSY;
+
+        __futex_wait_ex(&amp;mutex-&gt;value, shared, oldv, &amp;ts);
+    }
+    return 0;
+}</pre><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p></p>
+&nbsp;<br>
+
+</div>
+
+<div class="share_buttons" id="sharePanel"><span>分享到：</span> <a name="sina" class="share_sina" title="分享到新浪微博"></a><a name="qq" class="share_qq" title="分享到腾讯微博"></a></div>
+<!--192.168.100.34-->
+<div class="article_next_prev">
+</div>
+
+
+    
+</div>
+<div id="ad_cen">
+<script type="text/javascript">BAIDU_CLB_SLOT_ID = "117306";</script>
+<script type="text/javascript" src="./Android pthread mutex 实现分析html_files/o.js"></script><script charset="utf-8" src="./Android pthread mutex 实现分析html_files/ecom"></script><div id="baidu_clb_slot_117306"><iframe id="baidu_clb_slot_iframe_117306" src="./Android pthread mutex 实现分析html_files/Android pthread mutex 实现分析html.html" onload="BAIDU_CLB_renderFrame(&#39;117306&#39;)" width="728" height="90" vspace="0" hspace="0" allowtransparency="true" scrolling="no" marginheight="0" marginwidth="0" frameborder="0" style="border: 0; vertical-align: bottom; margin: 0; display: block;"></iframe></div>
+</div>
+<script type="text/javascript">
+    //new Ad(4, 'ad_cen');
+</script>
+<div id="comment_title" class="panel_head">查看评论<a name="comments"></a></div>
+<div id="comment_list"><br>&nbsp;&nbsp;暂无评论<br><br><div class="clear"></div></div>
+<div id="comment_bar"></div>
+<div id="comment_form"><a name="commentbox"></a><a name="reply"></a><a name="quote"></a><form action="http://blog.csdn.net/BinaryPeople/comment/submit?id=7607171" method="post" onsubmit="return subform(this);"><div class="commentform"><div class="panel_head">发表评论</div><ul><li class="left">用 户 名：</li><li class="right">uplusplus</li></ul><ul><li class="left">评论内容：</li><li class="right" style="position:relative;"><div id="ubbtools"><a href="http://blog.csdn.net/binarypeople/article/details/7607171#insertcode" code="code"><img src="./Android pthread mutex 实现分析html_files/code.gif" border="0" alt="插入代码" title="插入代码"></a></div><div id="lang_list" style="display:none; position:absolute;top:25px; left:0px;"><a href="http://blog.csdn.net/binarypeople/article/details/7607171#html">HTML/XML</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#javascript">JavaScript</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#css">CSS</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#php">PHP</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#csharp">C#</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#cpp">C++</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#java">Java</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#python">Python</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#ruby">Ruby</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#vb">Visual Basic</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#delphi">Delphi</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#sql">SQL</a><a href="http://blog.csdn.net/binarypeople/article/details/7607171#plain">其它</a></div><textarea class="comment_content" name="comment_content" id="comment_content" style="width: 400px; height: 200px;"></textarea></li></ul><ul><input type="hidden" id="comment_replyId" name="comment_replyId"><input type="hidden" id="comment_userId" name="comment_userId" value="521203"><input type="hidden" id="commentId" name="commentId" value=""><input type="submit" class="comment_btn" value="提交">&nbsp;&nbsp;<span id="tip_comment" style="color: Red; display: none;"></span></ul></div></form></div>
+<div class="announce">* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '7607171';
+    var commentscount = 0;
+    var islock = false
+</script>
+<script type="text/javascript" src="./Android pthread mutex 实现分析html_files/comment.js"></script>
+<div id="ad_bot"></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+<div id="d-top" style="display: block;">
+<a id="d-top-a" href="http://blog.csdn.net/binarypeople/article/details/7607171#" title="回到顶部">
+<img src="./Android pthread mutex 实现分析html_files/top.png" alt="TOP"></a>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var d_top=$('#d-top');
+        document.onscroll=function(){
+            var scrTop=(document.body.scrollTop||document.documentElement.scrollTop);
+            if(scrTop>500){
+                d_top.show();
+            }else{
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function(){
+            scrollTo(0,0);
+            this.blur();
+            return false;
+        });
+    });
+</script>
+
+<div class="clear"></div>
+</div>
+</div>
+
+<div id="side">
+<div class="side">
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/BinaryPeople" target="_blank">
+    <img src="./Android pthread mutex 实现分析html_files/1_binarypeople.jpg" title="访问我的空间" style="max-width:90%">
+    </a>
+    <br>
+    <span><a href="http://my.csdn.net/BinaryPeople" class="user_name" target="_blank">BinaryPeople</a></span>
+</div>
+<div class="interact">
+<a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="javascript:void(0);" class="letter" onclick="loginto(1)" title="[发私信]"></a>
+</div>
+<div id="blog_medal">
+<div id="bms_box"></div></div>
+<ul id="blog_rank">
+    <li>访问：<span>594次</span></li>
+    <li>积分：<span>15分</span></li>
+    <li>排名：<span>千里之外</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>1篇</span></li>
+    <li>转载：<span>0篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>0条</span></li>
+</ul>
+</ul>
+</div>
+
+
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">
+<li>
+<a href="http://blog.csdn.net/binarypeople/article/category/1088441">杂感</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/binarypeople/article/category/1088442">Android</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/binarypeople/article/category/1088443">Linux</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/binarypeople/article/category/1088444">C++</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/binarypeople/article/category/1229711">webos</a><span>(0)</span>
+</li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list">
+<!--归档统计-->
+<li><a href="http://blog.csdn.net/binarypeople/article/month/2012/05">2012年05月</a><span>(1)</span></li>
+</div>
+</ul>
+</div>
+<div id="hotarticls" class="panel">
+<ul class="panel_head"><span>阅读排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="./Android pthread mutex 实现分析html_files/Android pthread mutex 实现分析html.html" title="Android pthread mutex 实现分析">Android pthread mutex 实现分析</a><span>(553)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="./Android pthread mutex 实现分析html_files/Android pthread mutex 实现分析html.html" title="Android pthread mutex 实现分析">Android pthread mutex 实现分析</a><span>(0)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend"></ul>
+</div>
+<script type="text/javascript">
+ new Ad(12, 'ad_commend');
+</script></div>
+<div class="clear"></div>
+</div>
+
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript" src="./Android pthread mutex 实现分析html_files/newblog.min.js"></script>
+<script type="text/javascript" src="./Android pthread mutex 实现分析html_files/showblogmedal.ashx"></script>
+
+<script type="text/javascript">
+document.write('<script type="text/javascript" src="http://csdnimg.cn/pubfooter/js/publib_footer.js?' + Math.floor(new Date()/120000).toString(36) + '="></'+'script>');
+</script><script type="text/javascript" src="./Android pthread mutex 实现分析html_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./Android pthread mutex 实现分析html_files/pub_footer_2012.css"><div id="pub_footerall" class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd><a href="http://wpa.qq.com/msgrd?v=3&uin=2355263776&site=qq&menu=yes" target="_blank" class="qq">QQ客服</a> <a href="http://e.weibo.com/csdnsupport/profile" target="_blank" class="weibo">微博客服</a> <a href="http://bbs.csdn.net/forums/Service" target="_blank" class="online">论坛反馈</a> <a href="mailto:webmaster@csdn.net" class="email">联系邮箱：webmaster@csdn.net</a> <span class="phone">服务热线：400-600-2320</span></dd><dd>京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>北京创新乐知信息技术有限公司 版权所有</dd><dd>世纪乐知(北京)网络技术有限公司 提供技术支持</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd>Copyright © 1999-2012, CSDN.NET, All Rights Reserved&nbsp;<a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./Android pthread mutex 实现分析html_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div><div id="note1" class="csdn_note" style="display: none; position: absolute; left: 650.9090576171875px; top: 30.27276611328125px; z-index: 9999; width: 440px;"><span class="notice_top_arrow"><span class="inner"></span></span><a href="javascript:void(0)" class="remove" style=""></a><div class="box"></div><iframe src="about:blank" frameborder="0" style="z-index:-1;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent"></iframe></div><div class="csdn_notice_tip" style="z-index: 999; display: none; position: absolute; left: 793.9090576171875px; top: 29.27276611328125px;"><iframe src="about:blank" frameborder="0" scrolling="no" style="z-index:-1;position:absolute;top:0;left:0;width:100%;height:100%;background:transparent"></iframe><div class="tip_text">您有<strong>0</strong>条新通知</div><a href="javascript:void(0)" class="remove2"></a></div><script id="noticeScript" type="text/javascript" btnid="header_notice_num" wrapid="note1" count="5" subcount="5" src="./Android pthread mutex 实现分析html_files/note.js"></script><script type="text/javascript" charset="utf-8" src="./Android pthread mutex 实现分析html_files/tracking.js"></script>
+
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./Android pthread mutex 实现分析html_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./Android pthread mutex 实现分析html_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./Android pthread mutex 实现分析html_files/msg.popup.js"></script>
+
+
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+
+</div>
+
+</body></html>

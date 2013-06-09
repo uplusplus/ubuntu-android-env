@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- saved from url=(0105)http://it.tomcat-lily.com/index.php/2011/01/%e8%87%aa%e5%b7%b1%e7%bc%96%e8%af%91ubuntu%e5%86%85%e6%a0%b8/ -->
+<html lang="zh-CN">
+
+<body class="wordpress ltr zh_CN child-theme y2013 m06 d07 h15 friday logged-out custom-background singular singular-post singular-post-93 layout-default">
+
+	
+	<div id="container">
+
+		
+		
+		
+
+		
+		
+	
+	<!-- #menu-secondary .menu-container -->
+
+	
+
+		
+		<div id="main">
+
+			<div class="wrap">
+
+			
+			
+	
+	<div id="content">
+
+		
+		<div class="hfeed">
+
+			
+				
+					
+					<div id="post-93" class="hentry post publish post-1 odd author-tomcat has-excerpt category-linux post_tag-debian post_tag-kernel post_tag-linux-2 post_tag-ubuntu">
+
+						
+						<h1 class="post-title entry-title"><a href="./ubuntu内核编译_files/ubuntu内核编译.html">自己编译Ubuntu内核</a></h1>
+						
+						<div class="entry-content">
+							<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 为什么要自己编译Ubuntu内核呢？</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ubuntu的缺省内核安装包的发布版一般会有i386和amd64两个版本，分别对应32位和64位系统。为了保持最大的兼容性，这两个版本的gcc编译参数分别march 386和Pentium4。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 但目前大部分的服务器都更换为Core2架构的CPU，支持SSE4以上的指令集，Ubuntu发布的安装包并没有针对Core2 CPU进行优化，浪费了CPU的性能。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 因此我们可以从Ubuntu官方的git下载最新发布的源代码，调整优化参数，编译出根据自己CPU优化的版本。</p>
+<p> <span id="more-93"></span>
+</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 本文其实是参考<a href="http://blog.avirtualhome.com/" target="_blank">Peter van der Does</a>的<a href="http://blog.avirtualhome.com/2010/05/05/how-to-compile-a-ubuntu-lucid-kernel/" target="_blank">How to compile a Ubuntu Lucid kernel</a>这篇文章编写的，我自己亲自操作过，并且写成了中文。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先，要安装好一大堆Ubuntu的工具：</p>
+<div><div id="highlighter_805124" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">apt-get </code><code class="bash functions">install</code> <code class="bash plain">fakeroot build-essential</code></div><div class="line number2 index1 alt1"><code class="bash plain">apt-get </code><code class="bash functions">install</code> <code class="bash plain">crash kexec-tools makedumpfile kernel-wedge</code></div><div class="line number3 index2 alt2"><code class="bash plain">apt-get build-dep linux</code></div><div class="line number4 index3 alt1"><code class="bash plain">apt-get </code><code class="bash functions">install</code> <code class="bash plain">git-core libncurses5 libncurses5-dev</code></div><div class="line number5 index4 alt2"><code class="bash plain">apt-get </code><code class="bash functions">install</code> <code class="bash plain">libelf-dev asciidoc binutils-dev</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后创建一个目录（例如/data/kernel-core2），通过git获取最新的Ubuntu内核源代码：</p>
+<div><div id="highlighter_715901" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cd</code> <code class="bash plain">/data/kernel-core2</code></div><div class="line number2 index1 alt1"><code class="bash plain">git clone git:</code><code class="bash plain">//kernel</code><code class="bash plain">.ubuntu.com</code><code class="bash plain">/ubuntu/ubuntu-maverick</code><code class="bash plain">.git </code><code class="bash functions">source</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 我这里选择的是Ubuntu当前的发行版本Maverick，你也可以在<a title="http://kernel.ubuntu.com/git" href="http://kernel.ubuntu.com/git" target="_blank">http://kernel.ubuntu.com/git</a>上选择你喜欢的版本来编译，例如更新的Natty，或者稳定的Hardy。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; git会拿到几百兆内核源代码，这些代码放在了我们刚才指定的source目录中。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ubuntu的源代码每天都有专人更新维护，所以每次下载的时候，其内核小版本都可能会有所改变，我们进去目录检查一下当前最新的版本是啥：</p>
+<div><div id="highlighter_606127" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cd</code> <code class="bash functions">source</code></div><div class="line number2 index1 alt1"><code class="bash functions">less</code> <code class="bash plain">debian.master</code><code class="bash plain">/changelog</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 通常在第一行，你会看到类似这样的字样：</p>
+<div><div id="highlighter_931581" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">linux (2.6.35-25.44) maverick-proposed; urgency=low</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 那么当前最新版本就是这个了，我们先在本地建立一个新的叫做core2的git分支。</p>
+<div><div id="highlighter_545507" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">git checkout Ubuntu-2.6.35-25.44 -b core2</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接下来，我们要建立自己的kernel make config文件，这里要以Ubuntu原来的config文件为基础创建。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 原来的config文件都存放在debian.master/config文件中，我们根据实际不同情况进行选择。</p>
+<ul>
+<li>32位的config存放在i386目录中；
+</li><li>32位系统但内存大于4G，要选择config.flavour.generic-pae这个文件，否则3.8G以上的内存将访问不到；
+</li><li>64位的config存放在amd64目录中；
+</li><li>64位的系统可以根据需要，Desktop选择config.flavour.generic，Server选择config.flavour.server，其Preemption Model等一些选项会有所不同。 </li>
+</ul>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面以64位server为例举例：</p>
+<div><div id="highlighter_224569" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cp</code> <code class="bash plain">debian.master</code><code class="bash plain">/config/amd64/config</code><code class="bash plain">.flavour.server debian.master</code><code class="bash plain">/config/amd64/config</code><code class="bash plain">.flavour.core2</code></div><div class="line number2 index1 alt1"><code class="bash plain">fakeroot debian</code><code class="bash plain">/rules</code> <code class="bash plain">clean</code></div><div class="line number3 index2 alt2"><code class="bash plain">debian</code><code class="bash plain">/rules</code> <code class="bash plain">updateconfigs</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; config文件一定要以config.flavour开头，否则不会被认出。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这样，我们的config文件就准备好了。我们可以开始修改它的编译参数：</p>
+<div><div id="highlighter_766276" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">debian/rules editconfigs</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 输入这条命令后，console会逐个config文件你Y/N，当看到刚刚新建的core2文件时，就可以Y了：</p>
+<div><div id="highlighter_149470" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">Do you want to edit config: amd64/config.flavour.core2? [Y/n] Y</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后，进入标准的Linux Kernel make menuconfig的菜单。我们就可以选择自己的优化参数了，特别是下面这组：</p>
+<div><div id="highlighter_317444" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">Processor type and features&nbsp; ---&gt;</code></div><div class="line number2 index1 alt1"><code class="plain spaces">&nbsp;&nbsp;</code><code class="plain plain">Processor family (Generic-x86-64)&nbsp; ---&gt;</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当前有的选项包括Pentium4、Athlon64、Core2和Atom，根据你的CPU进行选择。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后你还可以顺便把和你系统无关的东西关掉，例如去掉针对AMD CPU的优化，去掉Server系统可能没有的无线网卡等硬件。这么做，可以缩小内核的尺寸。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 做完这些选择，退出时选择保存文件，我们的修改就被保存在config.flavour.core2文件中了。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在，将我们的config文件备份，一会儿要用到。</p>
+<div><div id="highlighter_676350" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cp</code> <code class="bash plain">debian.master</code><code class="bash plain">/config/amd64/config</code><code class="bash plain">.flavour.core2 ../</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在正式开始编译前，需要清理git tree：</p>
+<div><div id="highlighter_967876" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">git reset --hard</code></div><div class="line number2 index1 alt1"><code class="bash plain">git clean -xdf</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面，可以开始准备编译了（下面的操作记得换成你的版本）：</p>
+<div><div id="highlighter_259708" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cp</code> <code class="bash plain">debian.master</code><code class="bash plain">/abi/2</code><code class="bash plain">.6.35-25.43</code><code class="bash plain">/amd64/server</code> <code class="bash plain">debian.master</code><code class="bash plain">/abi/2</code><code class="bash plain">.6.35-25.43</code><code class="bash plain">/amd64/core2</code></div><div class="line number2 index1 alt1"><code class="bash functions">cp</code> <code class="bash plain">debian.master</code><code class="bash plain">/abi/2</code><code class="bash plain">.6.35-25.43</code><code class="bash plain">/amd64/server</code><code class="bash plain">.modules debian.master</code><code class="bash plain">/abi/2</code><code class="bash plain">.6.35-25.43</code><code class="bash plain">/amd64/core</code><code class="bash plain">.modules</code></div><div class="line number3 index2 alt2"><code class="bash functions">cp</code> <code class="bash plain">debian.master</code><code class="bash plain">/control</code><code class="bash plain">.d</code><code class="bash plain">/vars</code><code class="bash plain">.server debian.master</code><code class="bash plain">/control</code><code class="bash plain">.d</code><code class="bash plain">/vars</code><code class="bash plain">.core2</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 把我们刚才备份的config文件放回来：</p>
+<div><div id="highlighter_486535" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash functions">cp</code> <code class="bash plain">..</code><code class="bash plain">/config</code><code class="bash plain">.flavour.core2 debian.master</code><code class="bash plain">/config/amd64/</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改下面这些文件：</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>文件：debian.master/etc/getabis</strong></p>
+<div><div id="highlighter_51263" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">getall amd64 generic server virtual</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改为：</p>
+<div><div id="highlighter_147332" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">getall amd64 generic server virtual core2</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果你在编译32位内核，请修改i386那一行。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>文件：debian.master/rules.d/amd64.mk</strong> （如果是32位为i386.mk）</p>
+<div><div id="highlighter_128315" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">flavours&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = generic server virtual</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改为：</p>
+<div><div id="highlighter_182967" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">flavours&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = generic server virtual core2</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>文件：debian.master/control.d/vars.core2</strong></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 前面几行修改为：</p>
+<div><div id="highlighter_367021" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">arch="amd64"</code></div><div class="line number2 index1 alt1"><code class="plain plain">supported="Core2"</code></div><div class="line number3 index2 alt2"><code class="plain plain">target="Geared toward 64 bit Intel Core2 server systems."</code></div><div class="line number4 index3 alt1"><code class="plain plain">desc="x86_64"</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 然后我们在本地commit git：</p>
+<div><div id="highlighter_863234" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">git add .</code></div><div class="line number2 index1 alt1"><code class="bash plain">git commit -a -m </code><code class="bash string">"Core2 modifications"</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 下面，我们终于可以开始编译内核了，编译之前，应该先做一次make clean。</p>
+<div><div id="highlighter_208554" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">fakeroot debian</code><code class="bash plain">/rules</code> <code class="bash plain">clean</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 编译好的deb打包文件，会存放在source目录上一层，我们这次的例子就是/data/kernel-core2/。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 生成independent包：</p>
+<div><div id="highlighter_786908" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">skipabi=</code><code class="bash functions">true</code> <code class="bash plain">skipmodule=</code><code class="bash functions">true</code> <code class="bash plain">fakeroot debian</code><code class="bash plain">/rules</code> <code class="bash plain">binary-indep</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这个命令会生成以下几个文件：</p>
+<div><div id="highlighter_487471" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">linux-source-2.6.35_2.6.35-25.44_all.deb</code></div><div class="line number2 index1 alt1"><code class="plain plain">linux-doc_2.6.35-25.44_all.deb</code></div><div class="line number3 index2 alt2"><code class="plain plain">linux-tools-common_2.6.35-25.44_all.deb</code></div><div class="line number4 index3 alt1"><code class="plain plain">linux-headers-2.6.35-25_2.6.35-25.44_all.deb</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 生成内核文件：</p>
+<div><div id="highlighter_67095" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">skipabi=</code><code class="bash functions">true</code> <code class="bash plain">skipmodule=</code><code class="bash functions">true</code> <code class="bash plain">fakeroot debian</code><code class="bash plain">/rules</code> <code class="bash plain">binary-core2</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这个命令会生成下面两个文件：</p>
+<div><div id="highlighter_566801" class="syntaxhighlighter nogutter  plain"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain plain">linux-image-2.6.35-25-core2_2.6.35-25.44_amd64.deb</code></div><div class="line number2 index1 alt1"><code class="plain plain">linux-headers-2.6.35-25-core2_2.6.35-25.44_amd64.deb</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在deb包已经生成出来了，理论上你可以把这些包安装到任何debian和ubuntu的版本上面运行。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 安装命令是：</p>
+<div><div id="highlighter_663940" class="syntaxhighlighter nogutter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="bash plain">dpkg -i linux-headers-2.6.35-25-core2_2.6.35-25.44_amd64.deb linux-headers-2.6.35-25_2.6.35-25.44_all.deb linux-image-2.6.35-25-core2_2.6.35-25.44_amd64.deb</code></div></div></td></tr></tbody></table></div></div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 安装后，修改grub的启动参数，通常在/boot/grub/grub.cfg或这/boot/grub/menu.lst。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 重启，看看你的/proc/version是不是已经变成了新的内核版本。然后运行一下benchmark程序吧。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 我自己的经验是，浮点运算能力提高最大！</p>
+													</div>
+
+						
+						
+					</div>
+
+					
+					
+					
+					
+
+				
+			
+		</div>
+
+		
+		
+	
+		
+
+	
+	</div>
+
+	
+				
+				
+	
+	
+
+	
+
+				
+			</div>
+
+		</div>
+
+		
+		
+		
+		
+		
+
+		
+	</div>
+
+	
+		
+
+
+
+
+	
+
+
+</body></html>

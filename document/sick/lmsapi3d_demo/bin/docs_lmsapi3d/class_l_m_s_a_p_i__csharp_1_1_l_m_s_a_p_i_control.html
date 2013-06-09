@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>LMSAPI3D: Referencia de la Clase LMSAPI_csharp::LMSAPIControl</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- Generado por Doxygen 1.5.2 -->
+<div class="tabs">
+  <ul>
+    <li><a href="index.html"><span>Página&nbsp;principal</span></a></li>
+    <li><a href="modules.html"><span>Módulos</span></a></li>
+    <li class="current"><a href="annotated.html"><span>Estructuras&nbsp;de&nbsp;Datos</span></a></li>
+  </ul>
+</div>
+<div class="tabs">
+  <ul>
+    <li><a href="annotated.html"><span>Estructura&nbsp;de&nbsp;datos</span></a></li>
+    <li><a href="functions.html"><span>Campos&nbsp;de&nbsp;datos</span></a></li>
+  </ul>
+</div>
+<div class="nav">
+<b>LMSAPI_csharp</b>::<a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html">LMSAPIControl</a></div>
+<h1>Referencia de la Clase LMSAPI_csharp::LMSAPIControl</h1><!-- doxytag: class="LMSAPI_csharp::LMSAPIControl" -->Clase para adminstrar las propiedades de conexión y la captura del sensor. Contiene una copia offline de los parámetros de medición y almacena los objetos de conexión (LMSAPI_CONNECTION) y de lectura de datos (LMSAPI_DATA).  
+<a href="#_details">Más...</a>
+<p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Métodos públicos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#45f69c067289e13000343fbb71d973fd">stablish_connection</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Establece una conexión con el sensor según los parámetros asignados.  <a href="#45f69c067289e13000343fbb71d973fd"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#15f4fc4c13d796c43e90674b5550dc93">end_connection</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Cierra la conexión con el sensor.  <a href="#15f4fc4c13d796c43e90674b5550dc93"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#5370488a9d2b380ef8d7b679c78f5ef1">simulate_laser_data</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Crea un objeto de lectura de datos (LMSAPI_DATA) con datos simulados, sin necesidad de conexión con el sensor. POST: laser_data != null.  <a href="#5370488a9d2b380ef8d7b679c78f5ef1"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#d9132d53a67722cba6149fb2a030f6b0">request_laser_data</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Obtiene datos del sensor en el objeto de lectura laser_data. Si no hay conexión entonces obtiene datos simulados.  <a href="#d9132d53a67722cba6149fb2a030f6b0"></a><br></td></tr>
+<tr><td colspan="2"><br><h2>Campos de datos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#fb55cf103ea64a9107cc65bc85be71a1">angular_range</a> = 100</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Rango angular: 100 180.  <a href="#fb55cf103ea64a9107cc65bc85be71a1"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#d710ab36fe782af34675574daf31bd19">angular_resolution</a> = 100</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Resolución: 100 (1 grado),50(0.5 grados),25 (0.25 grados).  <a href="#d710ab36fe782af34675574daf31bd19"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#f90b4be395d3ee315f6ec00e0cc9bce1">distance_range</a> = 8</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Rango de distancias: 8, 80.  <a href="#f90b4be395d3ee315f6ec00e0cc9bce1"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#50cb327fddcd6e660ba955fd418ad7e3">scale_distance</a> = 1000.0f</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Escala de medición.  <a href="#50cb327fddcd6e660ba955fd418ad7e3"></a><br></td></tr>
+</table>
+<hr><a name="_details"></a><h2>Descripción detallada</h2>
+Clase para adminstrar las propiedades de conexión y la captura del sensor. Contiene una copia offline de los parámetros de medición y almacena los objetos de conexión (LMSAPI_CONNECTION) y de lectura de datos (LMSAPI_DATA). 
+<p>
+
+<p>
+<hr><h2>Documentación de las funciones miembro</h2>
+<a class="anchor" name="45f69c067289e13000343fbb71d973fd"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::stablish_connection" ref="45f69c067289e13000343fbb71d973fd" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LMSAPI_csharp::LMSAPIControl::stablish_connection           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Establece una conexión con el sensor según los parámetros asignados. 
+<p>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd>true si la conexión se realizó con exito</dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="15f4fc4c13d796c43e90674b5550dc93"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::end_connection" ref="15f4fc4c13d796c43e90674b5550dc93" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMSAPI_csharp::LMSAPIControl::end_connection           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Cierra la conexión con el sensor. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="5370488a9d2b380ef8d7b679c78f5ef1"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::simulate_laser_data" ref="5370488a9d2b380ef8d7b679c78f5ef1" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LMSAPI_csharp::LMSAPIControl::simulate_laser_data           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Crea un objeto de lectura de datos (LMSAPI_DATA) con datos simulados, sin necesidad de conexión con el sensor. POST: laser_data != null. 
+<p>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd></dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="d9132d53a67722cba6149fb2a030f6b0"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::request_laser_data" ref="d9132d53a67722cba6149fb2a030f6b0" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LMSAPI_csharp::LMSAPIControl::request_laser_data           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Obtiene datos del sensor en el objeto de lectura laser_data. Si no hay conexión entonces obtiene datos simulados. 
+<p>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd></dd></dl>
+
+</div>
+</div><p>
+<hr><h2>Documentación de los campos</h2>
+<a class="anchor" name="fb55cf103ea64a9107cc65bc85be71a1"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::angular_range" ref="fb55cf103ea64a9107cc65bc85be71a1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#fb55cf103ea64a9107cc65bc85be71a1">LMSAPI_csharp::LMSAPIControl::angular_range</a> = 100          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rango angular: 100 180. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="d710ab36fe782af34675574daf31bd19"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::angular_resolution" ref="d710ab36fe782af34675574daf31bd19" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#d710ab36fe782af34675574daf31bd19">LMSAPI_csharp::LMSAPIControl::angular_resolution</a> = 100          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Resolución: 100 (1 grado),50(0.5 grados),25 (0.25 grados). 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="f90b4be395d3ee315f6ec00e0cc9bce1"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::distance_range" ref="f90b4be395d3ee315f6ec00e0cc9bce1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#f90b4be395d3ee315f6ec00e0cc9bce1">LMSAPI_csharp::LMSAPIControl::distance_range</a> = 8          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rango de distancias: 8, 80. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="50cb327fddcd6e660ba955fd418ad7e3"></a><!-- doxytag: member="LMSAPI_csharp::LMSAPIControl::scale_distance" ref="50cb327fddcd6e660ba955fd418ad7e3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_l_m_s_a_p_i_control.html#50cb327fddcd6e660ba955fd418ad7e3">LMSAPI_csharp::LMSAPIControl::scale_distance</a> = 1000.0f          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Escala de medición. 
+<p>
+
+</div>
+</div><p>
+<hr size="1">
+<table border = 0 width = "100%">
+<tr>
+<td width="10px">
+<a href="http://www.umb.edu.co">
+<img src="umb.jpg" alt="Unversidad Manuela Beltran"   align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://www.sick.es/es/es.html">
+<img src="logosick.gif" alt="SICK AG" height="46px" align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://sourceforge.net">
+<img src="sflogo.png" alt="Source Forge" height="46px" align="left" border="0"></a>
+</td>
+<td>
+<address style="text-align: right;"><small> Documento generado en&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.2 </small>
+</address>
+</td>
+</tr>
+</table>
+</body>
+</html>

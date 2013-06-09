@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>LMSAPI3D: Referencia de la Clase LMSAPI_csharp::LaserData3D</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- Generado por Doxygen 1.5.2 -->
+<div class="tabs">
+  <ul>
+    <li><a href="index.html"><span>Página&nbsp;principal</span></a></li>
+    <li><a href="modules.html"><span>Módulos</span></a></li>
+    <li class="current"><a href="annotated.html"><span>Estructuras&nbsp;de&nbsp;Datos</span></a></li>
+  </ul>
+</div>
+<div class="tabs">
+  <ul>
+    <li><a href="annotated.html"><span>Estructura&nbsp;de&nbsp;datos</span></a></li>
+    <li><a href="functions.html"><span>Campos&nbsp;de&nbsp;datos</span></a></li>
+  </ul>
+</div>
+<div class="nav">
+<b>LMSAPI_csharp</b>::<a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html">LaserData3D</a></div>
+<h1>Referencia de la Clase LMSAPI_csharp::LaserData3D</h1><!-- doxytag: class="LMSAPI_csharp::LaserData3D" -->Clase para almacenar mediciones sucesivamente durante un barrido vertical. Esto es útil para medir sólidos. También tiene funciones para la representación de los datos en 3D. Para iniciar una serie de mediciones, utilice begin_capturing y luego capture_data.  
+<a href="#_details">Más...</a>
+<p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Métodos públicos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#856248fbf1d9f994d7a0b8875280c488">begin_capturing</a> (<a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a> laser_buffer)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Función para iniciar un barrido de mediciones.  <a href="#856248fbf1d9f994d7a0b8875280c488"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#18169802550fa2f64b2f0f2ea9116c6a">capture_data</a> (<a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a> laser_buffer)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Llamese despues de llamar <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#856248fbf1d9f994d7a0b8875280c488" title="Función para iniciar un barrido de mediciones.">begin_capturing()</a>.  <a href="#18169802550fa2f64b2f0f2ea9116c6a"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#d732a4db94dafc99cf8e4b3bfabbc8f8">export_to_model</a> (<a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data_scene_node.html">LaserDataSceneNode</a> node)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Convierte los datos almacenados en un Objeto 3D. Se toma en cuenta el tipo de barrido (angular o linear vertical).  <a href="#d732a4db94dafc99cf8e4b3bfabbc8f8"></a><br></td></tr>
+<tr><td colspan="2"><br><h2>Campos de datos</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#00196135cc4abd1c1448a6ac4be8d12f">m_vertical_sampler_angular</a> = false</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Barrido verticla angular o lineal.  <a href="#00196135cc4abd1c1448a6ac4be8d12f"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#e8498a2c641f3716ddf3d5e5d817c8c6">m_vertical_sampler_min</a> = 0.0f</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Rango mínimo de distancia en el barrido.  <a href="#e8498a2c641f3716ddf3d5e5d817c8c6"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#1a628e4e22ddcf34940592d242964bfd">m_vertical_sampler_max</a> = 0.0f</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Rango máximo de distancia en el barrido.  <a href="#1a628e4e22ddcf34940592d242964bfd"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#cd3197a5dfb80de685a021578af512a5">m_vertical_sampler_count</a> = 10</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Numero de lecturas del laser durante el barrido.  <a href="#cd3197a5dfb80de685a021578af512a5"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#da804b33efaf7fb56dd59608fb69507a">m_vertical_scale</a> = 0.01f</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Escala de distancias en el barrido linear. 0.01 Indica que se trata de centímetros.  <a href="#da804b33efaf7fb56dd59608fb69507a"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#6c7bb1d4445e700072ed3228bedff584">m_mesh_resolution</a> = 5</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Resolución angular para la representación de la malla 3D. 1 Es la máxima resolución.  <a href="#6c7bb1d4445e700072ed3228bedff584"></a><br></td></tr>
+</table>
+<hr><a name="_details"></a><h2>Descripción detallada</h2>
+Clase para almacenar mediciones sucesivamente durante un barrido vertical. Esto es útil para medir sólidos. También tiene funciones para la representación de los datos en 3D. Para iniciar una serie de mediciones, utilice begin_capturing y luego capture_data. 
+<p>
+
+<p>
+<hr><h2>Documentación de las funciones miembro</h2>
+<a class="anchor" name="856248fbf1d9f994d7a0b8875280c488"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::begin_capturing" ref="856248fbf1d9f994d7a0b8875280c488" args="(LMSAPI_DATA laser_buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMSAPI_csharp::LaserData3D::begin_capturing           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a>&nbsp;</td>
+          <td class="paramname"> <em>laser_buffer</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Función para iniciar un barrido de mediciones. 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>laser_buffer</em>&nbsp;</td><td>Objeto de lectura de datos</td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="18169802550fa2f64b2f0f2ea9116c6a"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::capture_data" ref="18169802550fa2f64b2f0f2ea9116c6a" args="(LMSAPI_DATA laser_buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LMSAPI_csharp::LaserData3D::capture_data           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_l_m_s_a_p_i_1_1_l_m_s_a_p_i___d_a_t_a.html">LMSAPI_DATA</a>&nbsp;</td>
+          <td class="paramname"> <em>laser_buffer</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Llamese despues de llamar <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#856248fbf1d9f994d7a0b8875280c488" title="Función para iniciar un barrido de mediciones.">begin_capturing()</a>. 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>laser_buffer</em>&nbsp;</td><td>Objeto de lectura de datos</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Devuelve:</b></dt><dd>false si se ha completado el número de capturas</dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="d732a4db94dafc99cf8e4b3bfabbc8f8"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::export_to_model" ref="d732a4db94dafc99cf8e4b3bfabbc8f8" args="(LaserDataSceneNode node)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMSAPI_csharp::LaserData3D::export_to_model           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data_scene_node.html">LaserDataSceneNode</a>&nbsp;</td>
+          <td class="paramname"> <em>node</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Convierte los datos almacenados en un Objeto 3D. Se toma en cuenta el tipo de barrido (angular o linear vertical). 
+<p>
+<dl compact><dt><b>Parámetros:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>El nodo Irrlicht donde se representarán los datos</td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<hr><h2>Documentación de los campos</h2>
+<a class="anchor" name="00196135cc4abd1c1448a6ac4be8d12f"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_vertical_sampler_angular" ref="00196135cc4abd1c1448a6ac4be8d12f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#00196135cc4abd1c1448a6ac4be8d12f">LMSAPI_csharp::LaserData3D::m_vertical_sampler_angular</a> = false          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Barrido verticla angular o lineal. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="e8498a2c641f3716ddf3d5e5d817c8c6"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_vertical_sampler_min" ref="e8498a2c641f3716ddf3d5e5d817c8c6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#e8498a2c641f3716ddf3d5e5d817c8c6">LMSAPI_csharp::LaserData3D::m_vertical_sampler_min</a> = 0.0f          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rango mínimo de distancia en el barrido. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="1a628e4e22ddcf34940592d242964bfd"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_vertical_sampler_max" ref="1a628e4e22ddcf34940592d242964bfd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#1a628e4e22ddcf34940592d242964bfd">LMSAPI_csharp::LaserData3D::m_vertical_sampler_max</a> = 0.0f          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rango máximo de distancia en el barrido. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="cd3197a5dfb80de685a021578af512a5"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_vertical_sampler_count" ref="cd3197a5dfb80de685a021578af512a5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#cd3197a5dfb80de685a021578af512a5">LMSAPI_csharp::LaserData3D::m_vertical_sampler_count</a> = 10          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Numero de lecturas del laser durante el barrido. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="da804b33efaf7fb56dd59608fb69507a"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_vertical_scale" ref="da804b33efaf7fb56dd59608fb69507a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#da804b33efaf7fb56dd59608fb69507a">LMSAPI_csharp::LaserData3D::m_vertical_scale</a> = 0.01f          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Escala de distancias en el barrido linear. 0.01 Indica que se trata de centímetros. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="6c7bb1d4445e700072ed3228bedff584"></a><!-- doxytag: member="LMSAPI_csharp::LaserData3D::m_mesh_resolution" ref="6c7bb1d4445e700072ed3228bedff584" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint <a class="el" href="class_l_m_s_a_p_i__csharp_1_1_laser_data3_d.html#6c7bb1d4445e700072ed3228bedff584">LMSAPI_csharp::LaserData3D::m_mesh_resolution</a> = 5          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Resolución angular para la representación de la malla 3D. 1 Es la máxima resolución. 
+<p>
+
+</div>
+</div><p>
+<hr size="1">
+<table border = 0 width = "100%">
+<tr>
+<td width="10px">
+<a href="http://www.umb.edu.co">
+<img src="umb.jpg" alt="Unversidad Manuela Beltran"   align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://www.sick.es/es/es.html">
+<img src="logosick.gif" alt="SICK AG" height="46px" align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://sourceforge.net">
+<img src="sflogo.png" alt="Source Forge" height="46px" align="left" border="0"></a>
+</td>
+<td>
+<address style="text-align: right;"><small> Documento generado en&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.2 </small>
+</address>
+</td>
+</tr>
+</table>
+</body>
+</html>

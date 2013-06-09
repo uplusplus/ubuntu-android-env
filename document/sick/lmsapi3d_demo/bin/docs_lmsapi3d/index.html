@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>LMSAPI3D: LMSAPI3D: APLICACIÓN DE GRAFICACIÓN DE SOLIDOS CON EL LASER SICK LMS200</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- Generado por Doxygen 1.5.2 -->
+<div class="tabs">
+  <ul>
+    <li class="current"><a href="index.html"><span>Página&nbsp;principal</span></a></li>
+    <li><a href="modules.html"><span>Módulos</span></a></li>
+    <li><a href="annotated.html"><span>Estructuras&nbsp;de&nbsp;Datos</span></a></li>
+  </ul>
+</div>
+<h1>LMSAPI3D: APLICACIÓN DE GRAFICACIÓN DE SOLIDOS CON EL LASER SICK LMS200</h1>
+<p>
+<h3 align="center">0.11Beta. </h3><h2><a class="anchor" name="INTRO">
+INTRODUCCIÓN</a></h2>
+<b>LMSAPI3D</b> es una aplicación de ejemplo realizada en el entorno <b>.NET</b>, la cual se incorpora la funcionalidad de la librería <a href="http://lmsapi.sf.net">LMSAPI</a> en la medición de sólidos, y utiliza el poder gráfico de <a href="http://irrlichtnetcp.sourceforge.net/">IRRLICHT.NET</a> en la visualización de las mediciones.  <p>
+<ul>
+<li>Descarge en <a href="http://sf.net/projects/lmsapi">Proyecto LMSAPI</a> los aplicativos de demostración, incluyendo <b>LMSAPI3D</b>.</li><li><a class="el" href="req_min.html">REQUERIMIENTOS MÍNIMOS DE INSTALACIÓN</a>  </li></ul>
+<h2><a class="anchor" name="vista">
+VISTA DE LA APLICACIÓN LMSAPI3D</a></h2>
+<div align="center">
+<img src="LMSAPI3D_app.png" alt="LMSAPI3D_app.png">
+<p><strong>LMSAPI3D</strong></p></div>
+<h2><a class="anchor" name="CONNECTION">
+CONEXIÓN</a></h2>
+<div align="center">
+<img src="LMSAPI3D_conexion.png" alt="LMSAPI3D_conexion.png">
+<p><strong>Panel de conexión con el sensor</strong></p></div>
+<p>
+En la pestaña de conexión se establecen los parámetros de medición y de configuración del sensor láser. Aqui se especifican los rangos de medición durante todo el barrido, y el puerto de conexión. <p>
+También cuenta con un modo de <b>simulación</b> el cuál se puede utilizar para probar el desempeño del aplicativo sin necesidad de tener conexión con el sensor láser. Este simulador genera datos aleatorios que posteriormente serán graficados en 3D. <h2><a class="anchor" name="TRAVERSE">
+BARRIDO Y SENSADO</a></h2>
+<div align="center">
+<img src="LMSAPI3D_barrido.png" alt="LMSAPI3D_barrido.png">
+<p><strong>Panel de configuración del barrido</strong></p></div>
+<p>
+Para medir sólidos es necesario realizar mediciones sucesivas desplazando el sensor en forma vertical. <p>
+<b>LMSAPI3D</b> permite registrar barridos <b>angulares</b> los cuales tienen intervalos en ángulos, o <b>lineales</b> los cuales tienen intervalos en centímetros. <p>
+En este panel se especifican el rango de medición vertical, el número de mediciones y la resolución de la gráfica. La resolución máxima es de <b>1</b> la cual representa todos los datos de la simulación. <p>
+Cuando se dá la orden de <b>graficar</b>, el sistema pedirá confirmación en cada instante en el cual el sensor tomará secciones horizontales del sólido. <div align="center">
+<img src="LMSAPI3D_confirmar.png" alt="LMSAPI3D_confirmar.png">
+<p><strong>Confirmación de la medición de cada sección.</strong></p></div>
+<h2><a class="anchor" name="EXPORT">
+EXPORTAR LA GRÁFICA</a></h2>
+<b>LMSAPI3D</b> permite exportar la malla 3D a tres formatos: 3D Studio (*.3ds), Wavefront (*.obj) y VRML (*.wrl): <div align="center">
+<img src="LMSAPI3D_export.png" alt="LMSAPI3D_export.png">
+<p><strong>Exporta la gráfica a un formato de malla 3D.</strong></p></div>
+<hr size="1">
+<table border = 0 width = "100%">
+<tr>
+<td width="10px">
+<a href="http://www.umb.edu.co">
+<img src="umb.jpg" alt="Unversidad Manuela Beltran"   align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://www.sick.es/es/es.html">
+<img src="logosick.gif" alt="SICK AG" height="46px" align="left" border="0"></a>
+</td>
+<td width="10px">
+<a href="http://sourceforge.net">
+<img src="sflogo.png" alt="Source Forge" height="46px" align="left" border="0"></a>
+</td>
+<td>
+<address style="text-align: right;"><small> Documento generado en&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.2 </small>
+</address>
+</td>
+</tr>
+</table>
+</body>
+</html>

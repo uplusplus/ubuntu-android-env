@@ -1,0 +1,67 @@
+# depslib dependency file v1.0
+1177083381 source:c:\desarrollo\lmsapi\tests\data_test\main.cpp
+	"lmsapi_sensor.h"
+	<stdio.h>
+	<string.h>
+
+1177082935 c:\desarrollo\lmsapi\include\lmsapi_sensor.h
+	"lmsapi_serial.h"
+	"lmsapi_crc.h"
+
+1177082935 c:\desarrollo\lmsapi\include\lmsapi_serial.h
+	"lmsapi_console.h"
+	<termios.h>
+	<stdio.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+	<termios.h>
+	<unistd.h>
+	<signal.h>
+	<windows.h>
+	<stdio.h>
+
+1173818789 c:\desarrollo\lmsapi\include\lmsapi_console.h
+	"lmsapi_config.h"
+
+1177083307 c:\desarrollo\lmsapi\include\lmsapi_config.h
+	"stdint.h"
+	<limits.h>
+	<memory.h>
+	<assert.h>
+
+1130458202 c:\desarrollo\lmsapi\include\stdint.h
+	<stddef.h>
+
+1173748062 c:\desarrollo\lmsapi\include\lmsapi_crc.h
+	"lmsapi_console.h"
+
+1178318617 source:c:\lms200\lms_200\tests\data_test\main.cpp
+	"lmsapi_sensor.h"
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<conio.h>
+
+1178317969 c:\lms200\lms_200\include\lmsapi_sensor.h
+	"lmsapi_serial.h"
+	"lmsapi_crc.h"
+
+1178308640 c:\lms200\lms_200\include\lmsapi_serial.h
+	"lmsapi_console.h"
+
+1178308776 c:\lms200\lms_200\include\lmsapi_console.h
+	"lmsapi_config.h"
+
+1178307486 c:\lms200\lms_200\include\lmsapi_config.h
+	"stdint.h"
+	<limits.h>
+	<memory.h>
+	<assert.h>
+
+1130458202 c:\lms200\lms_200\include\stdint.h
+	<stddef.h>
+
+1178308754 c:\lms200\lms_200\include\lmsapi_crc.h
+	"lmsapi_console.h"
+

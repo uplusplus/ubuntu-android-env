@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-debugging/ -->
+<html lang="en"><!--<![endif]--><!--
+	generated 134 seconds ago
+	generated in 0.412 seconds
+	served from batcache in 0.003 seconds
+	expires in 166 seconds
+-->
+
+<body class="single single-post postid-23 single-format-standard single-author highlander-enabled highlander-light">
+<div id="wrapper" class="hfeed">
+	<!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<!-- #nav-above -->
+
+				<div id="post-23" class="post-23 post type-post status-publish format-standard hentry category-android tag-android tag-cc tag-debug tag-eclipse tag-ndk">
+											<h2 class="entry-title"><a href="./使用eclipse调试ndk_files/使用eclipse调试ndk.html" rel="bookmark">Using Eclipse for Android C/C++&nbsp;Debugging</a></h2>					
+					<!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>Yes. You can use Eclipse for debugging of C/C++ code. I personally prefer <em>cgdb</em> but if you want to debug in Eclipse here is how.</p>
+<p><span id="more-23"></span></p>
+<p>See my&nbsp;<a title="Using cgdb with ndk-debug (and cgdb tutorial)" href="http://mhandroid.wordpress.com/2011/01/23/using-cgdb-with-ndk-debug-and-cgdb-tutorial/">previous spot</a> how to set up <em>cgdb</em> debugger if you think it will suit you.</p>
+<p>See my <a title="Using Eclipse for Android C/C++ Development" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/">blog spot</a> how to set up Eclipse for compiling and editing C/C++ code.</p>
+<p><strong>0) Prerequisities</strong></p>
+<p>You need Eclipse with CDT installed.<br>
+See <a title="Using Eclipse for Android C/C++ Development" href="http://mhandroid.wordpress.com/2011/01/23/using-eclipse-for-android-cc-development/">my previous spot</a> how to do it.</p>
+<p>You also need Android ndk. Download it from&nbsp;<a rel="noreferrer" href="http://developer.android.com/sdk/ndk/index.html">http://developer.android.com/sdk/ndk/index.html</a> and unpack it somewhere.</p>
+<p><strong>1) In Eclipse open your Android project which contains C/C++ code that you want to debug.</strong></p>
+<p>For this tutorial I’ve created simple MyAndroidProject.</p>
+<p><strong>2) Set android:debuggable=”true”. Set android:targetSdkVersion=”9″. </strong></p>
+<p><em>android:debuggable</em> is&nbsp;a property of&nbsp;<em>&lt;application&gt;</em> tag in your&nbsp;<em>AndroidManifest.xml</em>. You can set it either directly in xml or in <em>Application</em> tab as in the screenshot.</p>
+<p><strong> </strong><a href="http://mhandroid.files.wordpress.com/2011/01/12.png"><img class="alignnone size-full wp-image-152" title="Set android:debuggable=&quot;true&quot;" src="./使用eclipse调试ndk_files/12.png" alt="" width="640" height="448"></a></p>
+<p><em>android:targetSdkVersion=”9″</em> is a property of <em>&lt;uses-sdk&gt;</em> tag&nbsp;in your&nbsp;<em>AndroidManifest.xml</em>. You can set it either directly in xml or in&nbsp;<em>Manifest</em> tab as in the screenshot.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/41.png"><img class="alignnone size-full wp-image-157" title="Set android:targetSdkVersion=&quot;9&quot;" src="./使用eclipse调试ndk_files/41.png" alt="" width="640" height="448"></a></p>
+<p><strong>3) Run your application in debug mode and try to run <em>ndk-gdb</em> from console</strong></p>
+<p>To run application in debug mode press debug button (green bug/spider button in toolbox). In console go to your project directory and run <em>ndk-gdb</em>. It should succeed. If it fails you have to resolve the problem. Running <em>ndk-gdb</em> does not only ensure us that we are doing everything right so far, but also creates <em>app_process</em>, <em>gdb.setup</em> and<em> libc.so</em> files in <em>obj/local/armeabi/</em> subdirectory of our project. Those files will be needed in later steps.</p>
+<p><strong>4) Create C/C++ debug configuration</strong></p>
+<p>Click on combo-box like down arrow next to debug button. Pop-up menu will appear and then select <em>Debug Configurations…</em></p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/21.png"><img class="alignnone size-full wp-image-156" title="Select Debug Configurations... in Debug button pop-up" src="./使用eclipse调试ndk_files/21.png" alt="" width="640" height="448"></a></p>
+<p>In <em>Debug Configurations</em> window select <em>C/C++ Application</em> and press <em>New</em> button as advised on the right pane.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/31.png"><img class="alignnone size-full wp-image-160" title="Create new C/C++ debug configuration" src="./使用eclipse调试ndk_files/31.png" alt="" width="640" height="476"></a></p>
+<p><strong>5) Set <em>name</em> of the debug configuration, and fill information on <em>Main</em> tab.</strong></p>
+<p>Select <em>Standard Create Process Launcher</em> by clicking on the blue&nbsp;<em>Select other…</em> link at the bottom of the window.</p>
+<p>In <em>C/C++ Application</em> entry fill the path to the <em>app_process</em> binary which is located in <em>obj/local/armeabi/</em> subdirectory of your project.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/51.png"><img class="alignnone size-full wp-image-163" title="Fill Main tab with information about C/C++ debug configuration" src="./使用eclipse调试ndk_files/51.png" alt="" width="640" height="414"></a></p>
+<p><strong>6) Click on <em>Debugger</em> tab and fill information about debugger.</strong></p>
+<p>Choose <em>gdbserver Debugger</em> as a Debugger.</p>
+<p>It’s good idea to set initial breakpoint to some function but Android projects do not contain <em>main</em> function so fill some appropriate function name in <em>Stop on startup</em> field (I filled&nbsp;<em>Java_com_example_map_MyAndroidProject_doSomething</em> but you can see only&nbsp;<em>Java_com_exam</em> on the screenshot).</p>
+<p>Set path to <em>GDB debugger</em>. The debugger is distributed with the Android ndk. Its located at <em>toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb</em>.</p>
+<p>Set path to <em>GDB command line</em>. This path should point to&nbsp;<em>obj/local/armeabi/gdb2.setup</em> file inside your project. You don’t have <em>gdb2.setup</em> file there yet but you will create one in a while.</p>
+<p><a href="http://mhandroid.files.wordpress.com/2011/01/61.png"><img class="alignnone size-full wp-image-164" title="Fill Debugger-&gt;Main with information about debugger" src="./使用eclipse调试ndk_files/61.png" alt="" width="640" height="312"></a></p>
+<p><strong>7) Click on the <em>Connection</em> tab (so you are in <em>Debugger-&gt;Connection</em> section of your C/C++ debug configuration) and fill information about connecting <em>gdb</em> with <em>gdbserver</em>.</strong></p>
+<p>Choose <em>TCP</em> as a type of connection and choose <em>5039</em> as a <em>Port number</em>.</p>
+<p><strong><a href="http://mhandroid.files.wordpress.com/2011/01/71.png"><img class="alignnone size-full wp-image-165" title="Fill Debugger-&gt;Connection with information about connection" src="./使用eclipse调试ndk_files/71.png" alt="" width="640" height="312"></a></strong></p>
+<p><strong>8) Finally click <em>Apply</em> to save all the information about your C/C++ debug configuration.</strong></p>
+<p>This will save your new C/C++ debug configuration. Later, when running your application in debug mode you can choose in combo box associated with Debug button what debug configuration you want to use.&nbsp;Now you have two debug configurations. Android Java one which was created automatically for you when you’ve created Android project. And C/C++ one you’ve just created.</p>
+<p><strong>9) Go to the&nbsp;<em>obj/local/armeabi/</em> subdirectory of your project and copy <em>gdb.setup</em> file to <em>gdb2.setup</em> file. Remove&nbsp;<em>target remote :5039</em> line from <em>gdb2.setup</em>.</strong></p>
+<p>Eclipse don’t like&nbsp;<em>target remote :5039</em> line in gdb setup file because it wants to enter this command internally (that is why you configured port 5039 in the previous step). Because the <em>gdb.setup</em> file is recreated by ndk scripts you have to copy it to the&nbsp;<em>gdb2.setup</em> and point Eclipse to the <em>gdb2.setup</em> file (we did this in step 6).</p>
+<p><strong>10) Go to the directory with Android ndk and copy <em>ndk-gdb</em> to <em>ndk-gdb-eclipse</em>. Remove execution of gdb command from <em>ndk-gdb-eclipse</em>.</strong></p>
+<p>Original content of ndk-gdb (Android NDK, r5):</p>
+<div><div id="highlighter_537189" class="syntaxhighlighter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number578 index0 alt1">578</div><div class="line number579 index1 alt2">579</div><div class="line number580 index2 alt1">580</div><div class="line number581 index3 alt2">581</div></td><td class="code"><div class="container"><div class="line number578 index0 alt1"><code class="bash keyword">if</code> <code class="bash plain">[ -n </code><code class="bash string">"$OPTION_EXEC"</code> <code class="bash plain">] ; </code><code class="bash keyword">then</code></div><div class="line number579 index1 alt2"><code class="bash spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="bash functions">cat</code> <code class="bash plain">$OPTION_EXEC &gt;&gt; $GDBSETUP</code></div><div class="line number580 index2 alt1"><code class="bash keyword">fi</code></div><div class="line number581 index3 alt2"><code class="bash plain">$GDBCLIENT -x `native_path $GDBSETUP`</code></div></div></td></tr></tbody></table></div></div>
+<p><em> </em><br>
+Content of ndk-gdb-eclipse:</p>
+<div><div id="highlighter_88676" class="syntaxhighlighter  bash"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number578 index0 alt1">578</div><div class="line number579 index1 alt2">579</div><div class="line number580 index2 alt1">580</div><div class="line number581 index3 alt2">581</div></td><td class="code"><div class="container"><div class="line number578 index0 alt1"><code class="bash keyword">if</code> <code class="bash plain">[ -n </code><code class="bash string">"$OPTION_EXEC"</code> <code class="bash plain">] ; </code><code class="bash keyword">then</code></div><div class="line number579 index1 alt2"><code class="bash spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="bash functions">cat</code> <code class="bash plain">$OPTION_EXEC &gt;&gt; $GDBSETUP</code></div><div class="line number580 index2 alt1"><code class="bash keyword">fi</code></div><div class="line number581 index3 alt2"><code class="bash comments">## $GDBCLIENT -x `native_path $GDBSETUP`</code></div></div></td></tr></tbody></table></div></div>
+<p>Eclipse will run the <em>gdb</em> binary itself. So we have to remove the execution of <em>gdb</em> from<em> ndk-gdb</em>. To save original content it is good idea to copy the <em>ndk-gdb</em> to <em>ndk-gdb-eclipse</em>.</p>
+<p><strong>11) Now you are done. Put breakpoint in Java code after the execution of <em>System.loadLibrary()</em> and start your application in Debug mode.</strong></p>
+<p>Start your application in debug mode by clicking on Debug button. It will automatically choose Android debug mode. Later you will have to take care to choose Android Java debugging configuration by clicking on combo arrow associated with the debug button.</p>
+<p>The reason that breakpoint should be after <em>System.loadLibrary()</em> call is that our C/C++ code will be already loaded in that point and we can set breakpoints in it.</p>
+<p><strong>12) When execution reach the breakpoint run <em>ndk-gdb-eclipse</em> from your project directory and start debugging in C/C++ debug mode.</strong></p>
+<p>Go to the directory with your project and run <em>ndk-gdb-eclipse</em>. This will start server-part of the debugging infrastructure. Now click on the combo arrow associated with the debug button in Eclipse and choose <em>Debug Configurations…</em> Choose your C/C++ debug configuration and click <em>Debug</em> button.</p>
+<p>The C/C++ debug configuration will be added to recently used debug configurations so later you don’t have to walk into the <em>Debug Configurations…</em> window again and you can choose between Android Java debug configuration and C/C++ debug configuration by just clicking on the combo arrow associated with debug button in Eclipse. However always make sure which debug configuration you are about to execute as this is where mistakes happen very often (at least for me).</p>
+<p>After you’ve started C/C++ debug configuration click <em>Resume</em> button (or press F8). The application should resume its run and stop on C/C++ breakpoint (if you have one).</p>
+<p><strong>13) Now you are debugging the C/C++ code. Have fun!</strong></p>
+<p>Try to set some breakpoints in C/C++ code, etc.</p>
+<p><strong>Note on running <em>ndk-gdb-eclipse</em></strong></p>
+<p>You have to run <em>ndk-gdb-eclipse</em> every time before starting C/C++ debug session. This script starts the <em>gdbserver</em> binary on device/emulator so gdb (run by Eclipse) can connect to it.</p>
+<p>I made several attempts to force Eclipse to run <em>ndk-gdb-eclipse</em> script itself on start of C/C++ debug session. The most logical point is to write small script which will run <em>ndk-gdb-eclipse</em> without parameters (or with <em>–force</em> parameter) and then run <em>gdb</em> from Android ndk toolchain with all the parameters. This script can be used as <em>GDB debugger</em> command in the <em>Debugger</em> tab. But even if this script (and <em>ndk-gdb-eclipse</em> inside) was run successfully, the resulting connection of gdb and gdbserver always broke apart.</p>
+<p><strong>Final note and thanks!</strong></p>
+<p>This tutorial is heavily inspired by Sequoyah Project native debug tutorial.&nbsp;See&nbsp;<a href="http://www.eclipse.org/sequoyah/documentation/native_debug.php">http://www.eclipse.org/sequoyah/documentation/native_debug.php</a></p>
+
+
+
+
+
+											</div>
+
+					
+
+					<!-- .entry-utility -->
+				</div>
+
+				
+
+				
+			<!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<!-- #footer -->
+
+</div><!-- #wrapper -->
+
+
+
+
+
+
+
+
+	
+
+
+
+	
+		
+		
+		
+
+
+
+
+
+
+
+
+</body></html>

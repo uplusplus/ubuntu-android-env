@@ -1,0 +1,8 @@
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\LMSAPI_csharp.LMSAPIForm.resources
+obj\Release\LMSAPI_csharp.csproj.GenerateResource.Cache
+bin\Release\LMSAPI_csharp.exe
+bin\Release\LMSAPI_csharp.pdb
+obj\Release\LMSAPI_csharp.Properties.Resources.resources
+obj\Release\LMSAPI_csharp.exe
+obj\Release\LMSAPI_csharp.pdb

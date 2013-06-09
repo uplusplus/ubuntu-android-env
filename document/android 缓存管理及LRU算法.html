@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0063)http://www.androidlearner.net/android-cache-management-lru.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="zh-CN"><head profile="http://gmpg.org/xfn/11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<title>android 缓存管理及LRU算法 | Android同路人</title>
+		<link rel="stylesheet" type="text/css" media="all" href="./android 缓存管理及LRU算法_files/style.css">
+	<link rel="pingback" href="http://www.androidlearner.net/xmlrpc.php">
+<link rel="shortcut icon" href="http://www.androidlearner.net/favicon.ico" type="image/x-icon">
+<link rel="Bookmark" href="http://www.androidlearner.net/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" title="Android同路人 » Feed" href="http://www.androidlearner.net/feed">
+<link rel="alternate" type="application/rss+xml" title="Android同路人 » 评论 Feed" href="http://www.androidlearner.net/comments/feed">
+<link rel="alternate" type="application/rss+xml" title="Android同路人 » android 缓存管理及LRU算法 评论 Feed" href="http://www.androidlearner.net/android-cache-management-lru.html/feed">
+<link rel="stylesheet" id="wp-pagenavi-css" href="./android 缓存管理及LRU算法_files/pagenavi-css.css" type="text/css" media="all">
+<script type="text/javascript" src="./android 缓存管理及LRU算法_files/comment-reply.js"></script><style type="text/css"></style>
+<script type="text/javascript" src="./android 缓存管理及LRU算法_files/jquery.min.js"></script>
+<script type="text/javascript" src="./android 缓存管理及LRU算法_files/jquery-ui.min.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.androidlearner.net/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.androidlearner.net/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="android 数据库打包发布" href="http://www.androidlearner.net/android-database-publish-with-apk.html">
+<link rel="next" title="android 电池管理" href="http://www.androidlearner.net/android-battery-management.html">
+<meta name="generator" content="WordPress 3.4.1">
+<link rel="canonical" href="./android 缓存管理及LRU算法_files/android 缓存管理及LRU算法.html">
+<link rel="shortlink" href="http://www.androidlearner.net/?p=247">
+
+<!-- All in One SEO Pack 1.6.15.2 by Michael Torbert of Semper Fi Web Design[305,369] -->
+<meta name="keywords" content="lru,缓存">
+<!-- /all in one seo pack -->
+	<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+<style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #e1ebf9; }
+</style>
+<meta id="syntaxhighlighteranchor" name="syntaxhighlighter-version" content="3.1.3">
+</head>
+<body class="single single-post postid-247 single-format-standard custom-background">
+<div id="nav">
+	<div id="menus">
+		<ul><li><a href="http://www.androidlearner.net/">首页</a></li></ul>
+		<div class="menu"><ul><li class="page_item page-item-2"><a href="http://www.androidlearner.net/about">关于</a></li></ul></div>
+	</div>
+	<div id="search">
+		<form id="searchform" method="get" action="http://www.androidlearner.net/">
+<input type="text" value="站内搜索" onfocus="if (this.value == &#39;站内搜索&#39;) {this.value = &#39;&#39;;}" onblur="if (this.value == &#39;&#39;) {this.value = &#39;站内搜索&#39;;}" size="35" maxlength="50" name="s" id="s">
+<input type="submit" id="searchsubmit" value="搜索">
+</form>	</div>
+</div>
+<div id="wrapper">
+	<div id="header">		<h1><a href="http://www.androidlearner.net/">Android同路人</a></h1>
+		<h2>拥抱移动互联网</h2>
+		<div class="clear"></div>
+				<div id="header_image">
+			<div id="header_image_border">
+				<a href="http://www.androidlearner.net/"><img src="./android 缓存管理及LRU算法_files/cropped-1.jpg" width="950" height="180" alt=""></a>
+			</div>
+		</div>
+			</div><div id="content">
+		<div class="post-247 post type-post status-publish format-standard hentry category-othertopics tag-lru tag-38 post-single" id="post-247"><!-- post div -->
+		<h2 class="title">android 缓存管理及LRU算法</h2>
+		<div class="post-info-top">
+			<span class="post-info-date">
+				作者: <a href="http://www.androidlearner.net/author/atomfirefly" title="查看 曲天 的所有文章" rel="author">曲天</a>
+				日期:				2012/03/27							</span>
+						<span id="addcomment"><a href="http://www.androidlearner.net/android-cache-management-lru.html#respond" rel="nofollow" title="发表评论？">发表评论</a> (0)</span>
+			<span id="gotocomments"><a href="http://www.androidlearner.net/android-cache-management-lru.html#comments" rel="nofollow" title="查看评论？">查看评论</a></span>
+					</div>
+		<div class="clear"></div>
+		<div class="entry">
+			<p><strong>1、为什么要用缓存</strong></p>
+<p>缓存是存取数据的临时地，因为取原始数据代价太大了，加了缓存，可以取得快些。缓存可以认为是原始数据的子集，它是从原始数据里复制出来的，并且为了能被取回，被加上了标志。</p>
+<p>在android开发中，经常要访问网络数据比如大量网络图片，如果每次需要同一张图片都去网络获取，这代价显然太大了。可以考虑设置本地文件缓存和内存缓存，存储从网络取得的数据；本地文件缓存空间并非是无限大的，容量越大读取效率越低，可设置一个折中缓存容量比如10M，如果缓存已满，我们需要采用合适的替换策略换掉一个已有的数据对象，并替之已一个新的数据对象；内存缓存作为最先被读取的数据，应该存储那些经常使用的数据对象，且内存容量有限，内存缓存的容量也应该限定。依照这样的做法，取得一个图片（总图片数为N）的流程应该是这样的：<br>
+a.先在内存缓存取(设存储K个)，若取到则返回（命中率为K/N，时间为tA），否则进行b；<br>
+b.在本地文件缓存（设能存储M个）中取，若取到则返回并更新内存缓存（命中率为（M-K）/N,时间为tB），否则进行c；<br>
+c.通过网络下载图片，并更新本地文件缓存和内存缓存(命中率为(N-M)/N，时间为tC)；</p>
+<p>取一张图片的时间期望为：W = tA * (K/N) + tB * (M-K)/N + tC * (N-M)/N ，其中tA &lt; tB &lt; tC ,为使W代价小，即尽可能快的取得数据，我们应该提高内存缓存的命中率和本地文件缓存的命中率，但两者的容量都是有限制的，所以必须使用适合替换算法来更新两者所存储的对象。选择合适的替换算法是缓存的难点所在。</p>
+<p><strong>2、常见缓存交换算法介绍</strong></p>
+<p><strong></strong><br>
+最理想的替换算法是每次调换出的数据对象是所有缓存中最迟将被使用的，这可以最大限度的推迟数据对象调换。可惜的是，我们无法预知用户的访问，所以这种算法是无法实现的。<br>
+实际中常见的缓存算法有以下几种（参考文档a）：</p>
+<p>Least Frequently Used（LFU）<br>
+对每个缓存对象计算他们被使用的频率。把最不常用的缓存对象换走。</p>
+<p>Least Recently User（LRU）<br>
+把最近最少使用的缓存对象给换走。总是需要去了解在什么时候，用了哪个缓存对象。如果有人想要了解为什么总能把最近最少使用的对象踢掉，是非常困难的。浏览器就是使用了LRU作为缓存算法。新的对象会被放在缓存的顶部，当缓存达到了容量极限，我会把底部的对象踢走，而技巧就是：我会把最新被访问的缓存对象，放到缓存池的顶部。<br>
+所以，经常被读取的缓存对象就会一直呆在缓存池中。可以用数据或者链表实现。其改进算法有LRU2 和 2Q。</p>
+<p>Least Recently Used 2（LRU2）<br>
+把被两次访问过的对象放入缓存池，当缓存池满了之后，我会把有两次最少使用的缓存对象踢走。因为需要跟踪对象2次，访问负载就会随着缓存池的增加而增加。如果用在大容量的缓存池中，就会有问题。另外，还需跟踪那么不在缓存的对象，因为他们还没有被第二次读取。这比LRU好。<span id="more-247"></span></p>
+<p>Two Queues（2Q）<br>
+把被访问的数据放到LRU的缓存中，如果该对象再一次被访问，就把他转移到第二个更大的LRU缓存。替换掉缓存对象是为了保持第一个缓存池是第二个缓存池的1/3。当缓存的访问负载是固定的时候，把 LRU 换成 LRU2，就比增加缓存的容量更好。这种机制使得该算法比 LRU2 更好。</p>
+<p>Adaptive Replacement Cache（ARC）<br>
+这种算法介于 LRU 和 LFU 之间，由2个 LRU 组成，第一个，也就是 L1，包含的条目是最近只被使用过一次的，而第二个 LRU，也就是L2，包含的是最近被使用过两次的条目。因此，L1 放的是新的对象，而 L2 放的是常用的对象。该算法是是性能最好的缓存算法之一，能够自调，并且是低负载的。保存着历史对象，这样，就可以记住那些被移除的对象，同时，也可以看到被替换掉的对象是否可以留下，取而代之的是替换别的对象。该算法记忆力很差，但是很快，适用性也强。</p>
+<p>Most Recently Used（MRU）<br>
+该算法与 LRU是对应的。它替换掉最近最多被使用的对象，你一定会问为什么。原因是，当一次访问过来的时候，有些事情是无法预测的，并且在缓存系统中找出最少最近使用的对象是一项时间复杂度非常高的运算。该算法在数据库内存缓存中很见！每当一次缓存记录的使用，会把它放到栈的顶端。当栈满了的时候，会把栈顶的对象给换成新进来的对象！</p>
+<p>First in First out（FIFO）<br>
+这是一个低负载的算法，并且对缓存对象的管理要求不高。通过一个队列去跟踪所有的缓存对象，最近最常用的缓存对象放在后面，而更早的缓存对象放在前面，当缓存容量满时，排在前面的缓存对象会被踢走，然后把新的缓存对象加进去。很快，但是不适用。</p>
+<p>Second Chance<br>
+改进的FIFO算法，比 FIFO 好的地方是改善了 FIFO 的成本。一样是在观察队列的前端，但是很FIFO的立刻替换不同，它会检查即将要被踢出的对象有没有之前被使用过的标志（1一个bit表示），如果没有被使用过，就把他换出；否则，把这个标志位清除，然后把这个缓存对象当做新增缓存对象加入队列。你可以想象就这就像一个环队列。当再一次在队头碰到这个对象时，由于它已经没有标志位，可以立刻就它换出。在速度上比FIFO快。</p>
+<p>CLock<br>
+这是一个更好的FIFO，也比 second chance更好。因为它不会像second chance那样把有标志的缓存对象放到队列的尾部，但是也可以达到second chance的效果。它持有一个装有缓存对象的环形列表，头指针指向列表中最老的缓存对象。当缓存miss发生并且没有新的缓存空间时，它会根据指针指向的缓存对象的标志位去决定应该怎么做。如果标志是0，直接用新的缓存对象替代这个缓存对象；如果标志位是1，把头指针递增，然后重复这个过程，直到新的缓存对象能够被放入。</p>
+<p>Simple time-based<br>
+通过绝对的时间周期去失效那些缓存对象。对于新增的对象，保存特定的时间。很快，但不适用。</p>
+<p>Extended time-based expiration<br>
+通过相对时间去失效缓存对象的；对于新增的缓存对象，保存特定的时间，比如是每5分钟，每天的12点。</p>
+<p>Sliding time-based expiration<br>
+被管理的缓存对象的生命起点是在这个缓存的最后被访问时间算起。很快，不太适用。</p>
+<p>缓存算法主要考虑到了下面几点：</p>
+<p>成本。如果缓存对象有不同的成本，应该把那些难以获得的对象保存下来。<br>
+容量。如果缓存对象有不同的大小，应该把那些大的缓存对象清除，这样就可以让更多的小缓存对象进来了。<br>
+时间。一些缓存还保存着缓存的过期时间。电脑会失效他们，因为他们已经过期了。</p>
+<p><strong>3、LRU算法实现</strong><br>
+具体的实现可以参考文档d。本文将考虑使用软引用（参考e）结合LRU算法实现如上所述的android二级缓存，稍后贴出代码。其实LRU算法JDK源码中LinkedHashMap这个类已经自带了类似功能，只需稍微修改即可，参见<a href="http://zhangshixi.iteye.com/blog/673789">这里</a>。</p>
+<p><strong>4、总结</strong><br>
+文档c是android中一个具体的二级缓存实现。在实际应用中，我们还需要根据不同类型的文件采用不同的缓存策略，比如区分经常更新的小数据和不经常更新的大数据。更多的考虑可以参考文档b。</p>
+<p><strong>5、参考文档</strong><br>
+a.<a href="http://www.zavakid.com/26">有关缓存算法</a>&nbsp; ， 它翻译自<a href="http://www.jtraining.com/component/content/article/35-jtraining-blog/98.html">这里</a></p>
+<p>b.谦虚的天下写了篇<a href="http://www.cnblogs.com/qianxudetianxia/archive/2012/02/20/2112128.html"> App缓存管理</a></p>
+<p>c.<a href="http://mobile.51cto.com/android-288600.htm">Android远程图片获取和本地缓存</a></p>
+<p>d.<a href="http://blog.csdn.net/javaeyejavafan_303/article/details/2054214">LRU算法实现缓存</a></p>
+<p>e.<a href="http://blog.csdn.net/helixiuqqq/article/details/6610199">SoftReference </a></p>
+					</div><!-- END entry -->
+		<div class="add-info">
+					</div>
+		<div class="post-info-bottom">
+			<span class="post-info-category"><a href="http://www.androidlearner.net/category/othertopics" title="查看 其他话题 中的全部文章" rel="category tag">其他话题</a></span><span class="post-info-tags"><a href="http://www.androidlearner.net/tag/lru" rel="tag">LRU</a>, <a href="http://www.androidlearner.net/tag/%e7%bc%93%e5%ad%98" rel="tag">缓存</a></span>
+		</div>
+		<div id="nav-below">
+			<div class="nav-previous"><a href="http://www.androidlearner.net/android-database-publish-with-apk.html" rel="prev"><span class="meta-nav">←</span> android 数据库打包发布</a></div>
+			<div class="nav-next"><a href="http://www.androidlearner.net/android-battery-management.html" rel="next">android 电池管理 <span class="meta-nav">→</span></a></div>
+		</div><!-- #nav-below -->					
+	</div><!-- END post -->
+	<!-- You can start editing here. -->
+
+		
+	
+	<script type="text/javascript">
+	/* <![CDATA[ */
+		function grin(tag) {
+			var myField;
+			tag = ' ' + tag + ' ';
+			if (document.getElementById('comment') && document.getElementById('comment').type == 'textarea') {
+				myField = document.getElementById('comment');
+			} else {
+				return false;
+			}
+			if (document.selection) {
+				myField.focus();
+				sel = document.selection.createRange();
+				sel.text = tag;
+				myField.focus();
+			}
+			else if (myField.selectionStart || myField.selectionStart == '0') {
+				var startPos = myField.selectionStart;
+				var endPos = myField.selectionEnd;
+				var cursorPos = endPos;
+				myField.value = myField.value.substring(0, startPos)
+							  + tag
+							  + myField.value.substring(endPos, myField.value.length);
+				cursorPos += tag.length;
+				myField.focus();
+				myField.selectionStart = cursorPos;
+				myField.selectionEnd = cursorPos;
+			}
+			else {
+				myField.value += tag;
+				myField.focus();
+			}
+		}
+	/* ]]> */
+	</script>
+									<div id="respond">
+				<h3 id="reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://www.androidlearner.net/android-cache-management-lru.html#respond" style="display:none;"><small>取消回复</small></a></small></h3>
+									<form action="http://www.androidlearner.net/wp-comments-post.php" method="post" id="commentform">
+																										<p class="comment-form-author"><input id="author" name="author" type="text" value="" size="30"> <label for="author"><small>昵称</small></label></p>
+<p class="comment-form-email"><input id="email" name="email" type="text" value="" size="30"> <label for="email">邮箱</label></p>
+<p class="comment-form-url"><input id="url" name="url" type="text" value="" size="30"> <label for="url">网址</label></p>
+												<p class="smilies">
+	<a href="javascript:grin(':?:')"><img src="./android 缓存管理及LRU算法_files/icon_question.gif" alt=""></a>
+	<a href="javascript:grin(':razz:')"><img src="./android 缓存管理及LRU算法_files/icon_razz.gif" alt=""></a>
+	<a href="javascript:grin(':sad:')"><img src="./android 缓存管理及LRU算法_files/icon_sad.gif" alt=""></a>
+	<a href="javascript:grin(':evil:')"><img src="./android 缓存管理及LRU算法_files/icon_evil.gif" alt=""></a>
+	<a href="javascript:grin(':!:')"><img src="./android 缓存管理及LRU算法_files/icon_exclaim.gif" alt=""></a>
+	<a href="javascript:grin(':smile:')"><img src="./android 缓存管理及LRU算法_files/icon_smile.gif" alt=""></a>
+	<a href="javascript:grin(':oops:')"><img src="./android 缓存管理及LRU算法_files/icon_redface.gif" alt=""></a>
+	<a href="javascript:grin(':grin:')"><img src="./android 缓存管理及LRU算法_files/icon_biggrin.gif" alt=""></a>
+	<a href="javascript:grin(':eek:')"><img src="./android 缓存管理及LRU算法_files/icon_surprised.gif" alt=""></a>
+	<a href="javascript:grin(':shock:')"><img src="./android 缓存管理及LRU算法_files/icon_eek.gif" alt=""></a>
+	<a href="javascript:grin(':???:')"><img src="./android 缓存管理及LRU算法_files/icon_confused.gif" alt=""></a>
+	<a href="javascript:grin(':cool:')"><img src="./android 缓存管理及LRU算法_files/icon_cool.gif" alt=""></a>
+	<a href="javascript:grin(':lol:')"><img src="./android 缓存管理及LRU算法_files/icon_lol.gif" alt=""></a>
+	<a href="javascript:grin(':mad:')"><img src="./android 缓存管理及LRU算法_files/icon_mad.gif" alt=""></a>
+	<a href="javascript:grin(':twisted:')"><img src="./android 缓存管理及LRU算法_files/icon_twisted.gif" alt=""></a>
+	<a href="javascript:grin(':roll:')"><img src="./android 缓存管理及LRU算法_files/icon_rolleyes.gif" alt=""></a>
+	<a href="javascript:grin(':wink:')"><img src="./android 缓存管理及LRU算法_files/icon_wink.gif" alt=""></a>
+	<a href="javascript:grin(':idea:')"><img src="./android 缓存管理及LRU算法_files/icon_idea.gif" alt=""></a>
+	<a href="javascript:grin(':arrow:')"><img src="./android 缓存管理及LRU算法_files/icon_arrow.gif" alt=""></a>
+	<a href="javascript:grin(':neutral:')"><img src="./android 缓存管理及LRU算法_files/icon_neutral.gif" alt=""></a>
+	<a href="javascript:grin(':cry:')"><img src="./android 缓存管理及LRU算法_files/icon_cry.gif" alt=""></a>
+	<a href="javascript:grin(':mrgreen:')"><img src="./android 缓存管理及LRU算法_files/icon_mrgreen.gif" alt=""></a>
+	<br></p><div class="QapTcha" style=""><div class="bgSlider"><div class="Slider ui-draggable" style="position: relative;"></div></div><div class="Icons"></div><div class=" TxtStatus dropError">发表评论前，请滑动滚动条解锁</div><div class="clr"></div><input name="qnwKCjj82#y8bfb3#X2Tn8ThnDsAPCuT" value="FZzPpz5" type="hidden"></div><p class="comment-form-comment"><textarea aria-required="true" rows="8" cols="45" name="comment" id="comment" onkeydown="if(event.ctrlKey){if(event.keyCode==13){document.getElementById(&#39;submit&#39;).click();return false}};"></textarea></p>												<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="提交" disabled="disabled">
+							<input type="hidden" name="comment_post_ID" value="247" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+						</p>
+						<input type="hidden" name="human_form" value="968c315dc1bed355b9d044f0dc1d5319">					</form>
+							</div><!-- #respond -->
+						</div><!--content-->
+<div id="sidebar-border">
+	<div id="rss_border">
+		<div class="rss_border">
+			<div id="rss_wrap">
+				<div class="rss_wrap">
+										<a class="rss rss_text" href="http://www.androidlearner.net/feed" rel="bookmark" title="RSS 订阅">RSS 订阅</a>
+																													</div>
+			</div>
+		</div>
+	</div>
+	<div id="sidebar">
+
+		<div id="recent-posts-2" class="widget widget_recent_entries">		<h3 class="widgettitle">近期文章</h3>		<ul>
+				<li><a href="http://www.androidlearner.net/android-popupwindow-exception.html" title="android popupwindow报错两则">android popupwindow报错两则</a></li>
+				<li><a href="http://www.androidlearner.net/comparison-method-violates-its-general-contract.html" title="android 报错Comparison method violates its general contract">android 报错Comparison method violates its general contract</a></li>
+				<li><a href="http://www.androidlearner.net/crash-badtokenexception.html" title="android 报错WindowManager$BadTokenException">android 报错WindowManager$BadTokenException</a></li>
+				<li><a href="http://www.androidlearner.net/android-huawei-log-device-is-empty.html" title="android 华为机器提示log device is empty">android 华为机器提示log device is empty</a></li>
+				<li><a href="http://www.androidlearner.net/android-handler-static.html" title="android Handler应设为static">android Handler应设为static</a></li>
+				</ul>
+		</div><div id="recent-comments-2" class="widget widget_recent_comments"><h3 class="widgettitle">近期评论</h3><ul id="recentcomments"><li class="recentcomments"><a href="http://blog.xxshitou.com/" rel="external nofollow" class="url">石头</a> 发表在《<a href="http://www.androidlearner.net/a-picker-scroll-widget.html#comment-255">android 一个滚动选择控件</a>》</li><li class="recentcomments">qutian 发表在《<a href="http://www.androidlearner.net/android-avoiding-memory-leaks.html#comment-254">android 避免内存泄漏 – Avoiding Memory Leaks</a>》</li><li class="recentcomments"><a href="http://lovecicy.com/" rel="external nofollow" class="url">YuC</a> 发表在《<a href="http://www.androidlearner.net/android-avoiding-memory-leaks.html#comment-253">android 避免内存泄漏 – Avoiding Memory Leaks</a>》</li><li class="recentcomments"><a href="http://blog.xxshitou.com/" rel="external nofollow" class="url">石头</a> 发表在《<a href="http://www.androidlearner.net/about#comment-162">关于</a>》</li><li class="recentcomments"><a href="http://blog.xxshitou.com/" rel="external nofollow" class="url">石头</a> 发表在《<a href="http://www.androidlearner.net/about#comment-98">关于</a>》</li></ul></div><div id="archives-2" class="widget widget_archive"><h3 class="widgettitle">文章归档</h3>		<ul>
+			<li><a href="http://www.androidlearner.net/2013/05" title="2013 年五月">2013 年五月</a></li>
+	<li><a href="http://www.androidlearner.net/2013/03" title="2013 年三月">2013 年三月</a></li>
+	<li><a href="http://www.androidlearner.net/2013/02" title="2013 年二月">2013 年二月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/12" title="2012 年十二月">2012 年十二月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/11" title="2012 年十一月">2012 年十一月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/10" title="2012 年十月">2012 年十月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/09" title="2012 年九月">2012 年九月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/08" title="2012 年八月">2012 年八月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/07" title="2012 年七月">2012 年七月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/06" title="2012 年六月">2012 年六月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/05" title="2012 年五月">2012 年五月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/03" title="2012 年三月">2012 年三月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/02" title="2012 年二月">2012 年二月</a></li>
+	<li><a href="http://www.androidlearner.net/2012/01" title="2012 年一月">2012 年一月</a></li>
+	<li><a href="http://www.androidlearner.net/2011/12" title="2011 年十二月">2011 年十二月</a></li>
+	<li><a href="http://www.androidlearner.net/2011/11" title="2011 年十一月">2011 年十一月</a></li>
+	<li><a href="http://www.androidlearner.net/2011/10" title="2011 年十月">2011 年十月</a></li>
+		</ul>
+</div><div id="categories-2" class="widget widget_categories"><h3 class="widgettitle">文章分类</h3>		<ul>
+	<li class="cat-item cat-item-18"><a href="http://www.androidlearner.net/category/othertopics" title="其他话题">其他话题</a> (20)
+</li>
+	<li class="cat-item cat-item-16"><a href="http://www.androidlearner.net/category/tools" title="android相关工具">周边工具</a> (7)
+</li>
+	<li class="cat-item cat-item-15"><a href="http://www.androidlearner.net/category/datastorage" title="数据有关">数据存储</a> (3)
+</li>
+	<li class="cat-item cat-item-14"><a href="http://www.androidlearner.net/category/userinterface" title="界面相关">用户界面</a> (16)
+</li>
+	<li class="cat-item cat-item-17"><a href="http://www.androidlearner.net/category/programerror" title="程序错误">程序报错</a> (9)
+</li>
+		</ul>
+</div><div id="tag_cloud-2" class="widget widget_tag_cloud"><h3 class="widgettitle">各种标签</h3><div class="tagcloud"><a href="http://www.androidlearner.net/tag/activity" class="tag-link-23" title="2 个话题" style="font-size: 11.8769230769pt;">Activity</a>
+<a href="http://www.androidlearner.net/tag/android" class="tag-link-3" title="6 个话题" style="font-size: 19.8461538462pt;">android</a>
+<a href="http://www.androidlearner.net/tag/anr" class="tag-link-22" title="3 个话题" style="font-size: 14.4615384615pt;">ANR</a>
+<a href="http://www.androidlearner.net/tag/asynctask" class="tag-link-27" title="1 个话题" style="font-size: 8pt;">AsyncTask</a>
+<a href="http://www.androidlearner.net/tag/broadcast" class="tag-link-42" title="1 个话题" style="font-size: 8pt;">BroadCast</a>
+<a href="http://www.androidlearner.net/tag/httpurlconnection" class="tag-link-28" title="1 个话题" style="font-size: 8pt;">HttpURLConnection</a>
+<a href="http://www.androidlearner.net/tag/imagebutton" class="tag-link-19" title="1 个话题" style="font-size: 8pt;">ImageButton</a>
+<a href="http://www.androidlearner.net/tag/lint" class="tag-link-26" title="1 个话题" style="font-size: 8pt;">Lint</a>
+<a href="http://www.androidlearner.net/tag/listview" class="tag-link-31" title="1 个话题" style="font-size: 8pt;">ListView</a>
+<a href="http://www.androidlearner.net/tag/lru" class="tag-link-39" title="1 个话题" style="font-size: 8pt;">LRU</a>
+<a href="http://www.androidlearner.net/tag/monkey" class="tag-link-57" title="2 个话题" style="font-size: 11.8769230769pt;">monkey</a>
+<a href="http://www.androidlearner.net/tag/onconfigurationchanged" class="tag-link-46" title="1 个话题" style="font-size: 8pt;">onConfigurationChanged</a>
+<a href="http://www.androidlearner.net/tag/sdcard" class="tag-link-34" title="1 个话题" style="font-size: 8pt;">sdcard</a>
+<a href="http://www.androidlearner.net/tag/strictmode" class="tag-link-61" title="2 个话题" style="font-size: 11.8769230769pt;">StrictMode</a>
+<a href="http://www.androidlearner.net/tag/thumbnailutils" class="tag-link-44" title="1 个话题" style="font-size: 8pt;">ThumbnailUtils</a>
+<a href="http://www.androidlearner.net/tag/usb%e8%b0%83%e8%af%95" class="tag-link-48" title="1 个话题" style="font-size: 8pt;">usb调试</a>
+<a href="http://www.androidlearner.net/tag/viewflow" class="tag-link-43" title="1 个话题" style="font-size: 8pt;">ViewFlow</a>
+<a href="http://www.androidlearner.net/tag/viewpager" class="tag-link-36" title="1 个话题" style="font-size: 8pt;">ViewPager</a>
+<a href="http://www.androidlearner.net/tag/webview" class="tag-link-62" title="2 个话题" style="font-size: 11.8769230769pt;">WebView</a>
+<a href="http://www.androidlearner.net/tag/wifi" class="tag-link-8" title="1 个话题" style="font-size: 8pt;">WIFI</a>
+<a href="http://www.androidlearner.net/tag/%e5%86%85%e5%ad%98%e6%b3%84%e6%bc%8f" class="tag-link-65" title="2 个话题" style="font-size: 11.8769230769pt;">内存泄漏</a>
+<a href="http://www.androidlearner.net/tag/%e5%8f%8d%e7%bc%96%e8%af%91" class="tag-link-6" title="1 个话题" style="font-size: 8pt;">反编译</a>
+<a href="http://www.androidlearner.net/tag/%e5%ad%97%e4%bd%93%e5%8a%a0%e7%b2%97" class="tag-link-50" title="1 个话题" style="font-size: 8pt;">字体加粗</a>
+<a href="http://www.androidlearner.net/tag/%e5%af%b9%e8%af%9d%e6%a1%86" class="tag-link-9" title="5 个话题" style="font-size: 18.3384615385pt;">对话框</a>
+<a href="http://www.androidlearner.net/tag/%e5%b1%8f%e5%b9%95%e9%80%82%e9%85%8d" class="tag-link-4" title="1 个话题" style="font-size: 8pt;">屏幕适配</a>
+<a href="http://www.androidlearner.net/tag/%e5%b7%a6%e5%8f%b3%e6%bb%91%e5%8a%a8" class="tag-link-37" title="2 个话题" style="font-size: 11.8769230769pt;">左右滑动</a>
+<a href="http://www.androidlearner.net/tag/%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96" class="tag-link-35" title="3 个话题" style="font-size: 14.4615384615pt;">性能优化</a>
+<a href="http://www.androidlearner.net/tag/%e6%8a%a5%e9%94%99" class="tag-link-10" title="8 个话题" style="font-size: 22pt;">报错</a>
+<a href="http://www.androidlearner.net/tag/%e6%8b%96%e5%8a%a8%e6%8e%a7%e4%bb%b6" class="tag-link-30" title="1 个话题" style="font-size: 8pt;">拖动控件</a>
+<a href="http://www.androidlearner.net/tag/%e6%95%b0%e6%8d%ae%e5%ba%93" class="tag-link-11" title="2 个话题" style="font-size: 11.8769230769pt;">数据库</a>
+<a href="http://www.androidlearner.net/tag/%e6%96%87%e4%bb%b6%e8%af%bb%e5%86%99" class="tag-link-33" title="1 个话题" style="font-size: 8pt;">文件读写</a>
+<a href="http://www.androidlearner.net/tag/%e6%9d%83%e9%99%90%e5%88%97%e8%a1%a8" class="tag-link-32" title="1 个话题" style="font-size: 8pt;">权限列表</a>
+<a href="http://www.androidlearner.net/tag/%e6%b0%b4%e5%8d%b0" class="tag-link-12" title="1 个话题" style="font-size: 8pt;">水印</a>
+<a href="http://www.androidlearner.net/tag/%e6%b5%81%e7%95%85%e6%80%a7" class="tag-link-20" title="1 个话题" style="font-size: 8pt;">流畅性</a>
+<a href="http://www.androidlearner.net/tag/%e6%b6%88%e6%81%af%e6%9c%ba%e5%88%b6" class="tag-link-25" title="1 个话题" style="font-size: 8pt;">消息机制</a>
+<a href="http://www.androidlearner.net/tag/%e6%bb%9a%e5%8a%a8%e9%80%89%e6%8b%a9%e6%8e%a7%e4%bb%b6" class="tag-link-29" title="1 个话题" style="font-size: 8pt;">滚动选择控件</a>
+<a href="http://www.androidlearner.net/tag/%e7%81%b5%e6%95%8f%e6%80%a7" class="tag-link-21" title="1 个话题" style="font-size: 8pt;">灵敏性</a>
+<a href="http://www.androidlearner.net/tag/%e7%84%a6%e7%82%b9" class="tag-link-7" title="1 个话题" style="font-size: 8pt;">焦点</a>
+<a href="http://www.androidlearner.net/tag/%e7%94%b5%e6%b1%a0" class="tag-link-40" title="1 个话题" style="font-size: 8pt;">电池</a>
+<a href="http://www.androidlearner.net/tag/%e7%b3%bb%e7%bb%9f%e8%ae%be%e7%bd%ae" class="tag-link-49" title="1 个话题" style="font-size: 8pt;">系统设置</a>
+<a href="http://www.androidlearner.net/tag/%e7%ba%bf%e7%a8%8b" class="tag-link-24" title="1 个话题" style="font-size: 8pt;">线程</a>
+<a href="http://www.androidlearner.net/tag/%e7%bc%93%e5%ad%98" class="tag-link-38" title="1 个话题" style="font-size: 8pt;">缓存</a>
+<a href="http://www.androidlearner.net/tag/%e7%bc%a9%e7%95%a5%e5%9b%be" class="tag-link-45" title="1 个话题" style="font-size: 8pt;">缩略图</a>
+<a href="http://www.androidlearner.net/tag/%e8%8f%9c%e5%8d%95" class="tag-link-13" title="1 个话题" style="font-size: 8pt;">菜单</a>
+<a href="http://www.androidlearner.net/tag/%e8%b5%b0%e9%a9%ac%e7%81%af" class="tag-link-47" title="1 个话题" style="font-size: 8pt;">走马灯</a></div>
+</div><div id="linkcat-5" class="widget widget_links"><h3 class="widgettitle">友情链接</h3>
+	<ul class="xoxo blogroll">
+<li><a href="http://wiki.heyitao.com/" title="曲天的藏经阁">曲天的藏经阁</a></li>
+<li><a href="http://blog.xxshitou.com/" title="小小的石头，有大大的梦想，欢迎来到石头的世界，你将和我翱翔在IT的海洋" target="_blank">石头的博客</a></li>
+<li><a href="http://drizzlenextdoor.com/" rel="friend" title="细雨邻家" target="_blank">细雨邻家</a></li>
+<li><a href="http://www.sharegogo.com/" title="记录点滴，分享无限" target="_blank">记录点滴，分享无限</a></li>
+<li><a href="http://shine.sinaapp.com/" title="这一生，注定了的漂泊" target="_blank">这一生，注定了的漂泊</a></li>
+
+	</ul>
+</div>
+
+
+	</div><!-- end: #sidebar -->
+</div><!-- end: #sidebar-border --></div><!--wrapper-->
+<div class="clear"></div>
+<div id="footer">
+	<div id="footer-inside">
+		<p>
+			版权所有 © 2013 Android同路人 | <a href="http://www.androidlearner.net/wp-login.php">登录</a>			
+		</p>
+		<span id="back-to-top">↑ <a href="http://www.androidlearner.net/android-cache-management-lru.html#" rel="nofollow" title="Back to top">回到顶部</a></span>
+	</div>
+</div><!--footer-->
+<link rel="stylesheet" href="./android 缓存管理及LRU算法_files/myQaptcha.jquery.css" type="text/css">
+<script type="text/javascript" src="./android 缓存管理及LRU算法_files/jquery.ui.touch.js"></script>
+<script type="text/javascript">var myQaptchaJqueryPage="http://www.androidlearner.net/wp-content/plugins/myqaptcha/jquery/myQaptcha.jquery.php";</script>
+<script type="text/javascript" src="./android 缓存管理及LRU算法_files/myqaptcha.jquery.js"></script>
+<script type="text/javascript">jQuery(document).ready(function(){if(jQuery("p:has('textarea')").length>0) jQuery("p:has('textarea')").before('<div class="QapTcha"></div>'); else jQuery("#comment").before('<div class="QapTcha"></div>');jQuery('.QapTcha').QapTcha({disabledSubmit:true,autoRevert:true});});</script>
+<!-- androidlearner.net Baidu tongji analytics -->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F2788eab07f178d60dfc96efc9bd9e83f' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="./android 缓存管理及LRU算法_files/h.js" type="text/javascript"></script>
+
+</body></html>
